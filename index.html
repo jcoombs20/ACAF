@@ -6,23 +6,26 @@
 
     <!--link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/-->
     <link rel="stylesheet" href="styles/bootstrap.min.css"/>
+    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.4.0/introjs.min.css"/-->
+    <link rel="stylesheet" href="introjs.min.css"/>
     <!--link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/-->
     <link rel="stylesheet" href="leaflet.css"/>
     <!--link rel="stylesheet" href="http://colorbrewer2.org/export/colorbrewer.css"/-->
     <link rel="stylesheet" href="colorbrewer.css"/>
     <link rel="stylesheet" href="styles/Control.BingGeocoder.css"/>
-    <link rel="stylesheet" href="styles/Control.extentHistory.css"/>
-    <link rel="stylesheet" href="leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="styles/Control.maxExtent.css"/>
+    <link rel="stylesheet" href="leaflet-draw-old/dist/leaflet.draw.css"/>
+    <link rel="stylesheet" href="leaflet.measurecontrol/leaflet.measurecontrol.css"/>
     <link rel="stylesheet" href="styles/Control.mousePosition.css"/>
-    <link rel="stylesheet" href="styles/Control.downLoadFile.css"/>
+    <!--link rel="stylesheet" href="styles/Control.downLoadFile.css"/-->
     <link rel="stylesheet" href="styles/Control.print.css"/>
-    <link rel="stylesheet" href="styles/Control.birdSong.css"/>
     <link rel="stylesheet" href="styles/birds.css"/>
 
     <!--script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script-->
     <script src="leaflet.js"></script>
     <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script-->
-    <script src="jquery.min.js"></script>
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="jquery-ui.min.js"></script>
     <!--script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script-->
     <script src="bootstrap.min.js"></script>
     <script src="http://maps.google.com/maps/api/js?v=3"></script>
@@ -30,13 +33,12 @@
     <script src="Bing_tile.js"></script>
     <script src="Google_tile.js"></script>
     <script src="Control.BingGeocoder.js"></script>
-    <script src="Control.extentHistory.js"></script>
-    <script src="leaflet-draw/dist/leaflet.draw.js"></script>
-    <!--script src="leaflet-geometryutil/src/leaflet.geometryutil.js"></script-->
+    <script src="Control.maxExtent.js"></script>
+    <script src="leaflet-draw-old/dist/leaflet.draw.js"></script>
+    <script src="leaflet.measurecontrol/leaflet.measurecontrol.js"></script>
     <script src="Control.mousePosition.js"></script>
     <script src="Control.downLoadFile.js"></script>
     <script src="Control.print.js"></script>
-    <script src="Control.birdSong.js"></script>
 
     <!--script src="http://d3js.org/d3.v3.min.js"></script-->
     <script src="d3.v3.min.js"></script>
@@ -59,6 +61,25 @@
         $('[data-toggle="tooltip"]').tooltip();   
       });
 
+      //******Call funtion to reposition windows on resize
+      window.addEventListener('resize', resizePanels);
+
+      function resizePanels() {
+        var bodyRect = document.body.getBoundingClientRect();
+        var tmpWindows = ["legendDiv", "drawDiv", "songsDiv", "downloadDiv"];
+        
+        tmpWindows.forEach(function(win) {
+          var winRect = document.getElementById(win).getBoundingClientRect();
+          if(winRect.bottom > bodyRect.bottom) {
+            d3.select("#" + win).style("top", bodyRect.height - winRect.height + "px");
+          }
+          if(winRect.right > bodyRect.right) {
+            d3.select("#" + win).style("left", bodyRect.width - winRect.width + "px");
+          }
+        });
+      }
+
+
       //******Add Map
       var map = new L.Map('map', {center: new L.LatLng(42.2, -72.03), zoomControl: false, zoom: 9, minZoom: 2, maxZoom: 20, inertiaDeceleration: 1000});
 
@@ -66,10 +87,10 @@
       var tmpGeo;
 
       //******Add map controls
-      L.control.mousePosition().addTo(map);
       L.control.scale({ maxWidth: 200 }).addTo(map);
-      L.control.zoom({ position: 'topleft', zoomInTitle: "Zoom in (can also be done with mouse wheel, double-click, '+' key, or by pressing the 'shift' key while clicking and dragging a rectangle)", zoomOutTitle: "Zoom out (can also be done with the mouse wheel or the '-' key)" }).addTo(map);
-      L.control.navbar().addTo(map);
+      L.control.mousePosition().addTo(map);
+      L.control.zoom({ position: 'bottomright', zoomInTitle: "Zoom in (can also be done with mouse wheel, double-click, '+' key, or by pressing the 'shift' key while clicking and dragging a rectangle)", zoomOutTitle: "Zoom out (can also be done with the mouse wheel or the '-' key)" }).addTo(map);
+      L.control.maxExtent().addTo(map);
 
       //******Add draw controls
       var drawnItems = new L.FeatureGroup();
@@ -90,7 +111,6 @@
           poly: {allowIntersection: false, drawError: {color: '#b00b00', timout: 1500}}
       	}
       });
-      map.addControl(drawControl);
 
       map.on('draw:created', function (e) {
         getShape(e.layerType, e.layer); 
@@ -99,7 +119,7 @@
         drawnItems._layers[L.stamp(e.layer)]["layerType"] = e.layerType;
         tmpGeo = e.layer.toGeoJSON();
         d3.select(".leaflet-draw-section").style("pointer-events", "none").style("opacity", "0.4");
-        d3.select("#shapeDiv").style("display", "inline-block");
+        //toolWindowToggle("draw");
       });
 
       map.on('draw:deleted', function (e) {
@@ -107,7 +127,7 @@
         d3.select(".leaflet-draw-section").style("opacity", "1");
         d3.select("#edgeText").attr("value", "");
         d3.select("#areaText").attr("value", "");
-        d3.select("#shapeDiv").style("display", "none");
+        //d3.select("#shapeDiv").style("display", "none");
       });
 
       map.on('draw:editmove', function (e) {
@@ -192,41 +212,148 @@
       }
 
 
-      //******Bing geocoder control
+      //***Bing geocoder control
       var tmpPoint = new L.marker;
       var bingGeocoder = new L.Control.BingGeocoder('At3gymJqaoGjGje-JJ-R5tJOuilUk-gd7SQ0DBZlTXTsRoMfVWU08ZWF1X7QKRRn', { callback: function (results) {
-                     var bbox = results.resourceSets[0].resources[0].bbox,
-                            first = new L.LatLng(bbox[0], bbox[1]),
-                            second = new L.LatLng(bbox[2], bbox[3]),
-                            tmpBounds = new L.LatLngBounds([first, second]);
-                     this._map.fitBounds(tmpBounds);
-                     this._map.removeLayer(tmpPoint);
-                     tmpPoint = new L.marker(results.resourceSets[0].resources[0].point.coordinates).bindPopup(results.resourceSets[0].resources[0].address.formattedAddress);
-                     this._map.addLayer(tmpPoint);
-                   }
+        if(results.statusCode == 200) {
+          if(d3.select("#bingGeocoderSubmit").classed("glyphicon-search")) {
+            $(document).ready(function(){
+              $('[data-toggle="tooltip"]').tooltip();   
+            });
+            document.getElementById("bingGeocoderInput").blur();
+            var bbox = results.resourceSets[0].resources[0].bbox,
+              first = new L.LatLng(bbox[0], bbox[1]),
+              second = new L.LatLng(bbox[2], bbox[3]),
+              tmpBounds = new L.LatLngBounds([first, second]);
+            this._map.fitBounds(tmpBounds);
+            this._map.removeLayer(tmpPoint);
+            tmpPoint = new L.marker(results.resourceSets[0].resources[0].point.coordinates);  //.bindPopup(results.resourceSets[0].resources[0].address.formattedAddress);
+            this._map.addLayer(tmpPoint);
+            d3.select(".leaflet-marker-icon")
+              .attr("id","mapIcon")
+              .attr("data-toggle", "tooltip")
+              .attr("data-container", "body")
+              .attr("data-placement", "auto top")
+              .attr("data-html", "true")
+              .attr("title", '<p><b><center>' + results.resourceSets[0].resources[0].name + '</center></b></p>');
+            d3.select(tmpPoint)
+              .on("click", function() { clearSearch(); });
+            d3.select("#bingGeocoderSubmit")
+              .classed("glyphicon-search", false)
+              .classed("glyphicon-remove", true)
+              .style({"background":"#ff0040", "background":"linear-gradient(#ff0040, #b3002d)", "color":"#990000"})
+              .property("title", "Click to clear search results");
+          }
+          else {
+            clearSearch();
+          }
+        }
+        }
       });
 
-      map.addControl(bingGeocoder);
+      //******Clear the results of the geo search
+      function clearSearch() {
+        map.removeLayer(tmpPoint);
+        d3.select(".tooltip").remove();
+        d3.select("#bingGeocoderInput").property("value", "");
 
-      //******Add basemaps
-      var googleHybrid = new L.Google('HYBRID');
-      var googleSatellite = new L.Google('SATELLITE');
-      var googleStreet = new L.Google('ROADMAP');
-      var googleTerrain = new L.Google('TERRAIN');
+        d3.select("#bingGeocoderSubmit")
+          .classed("glyphicon-remove", false)
+          .classed("glyphicon-search", true)
+          .style({"background":"", "color":""})
+          .property("title", "Click to zoom to specified location");
+      }
+
+
+
+      //******Add base layers
+      var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+      });
+      var googleSatellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+      }); 
+      var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+      });
+      var googleTerrain = googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+      });
+
       var bingHybrid = new L.BingLayer("At3gymJqaoGjGje-JJ-R5tJOuilUk-gd7SQ0DBZlTXTsRoMfVWU08ZWF1X7QKRRn", {type: 'AerialWithLabels'});
       var bingSatellite = new L.BingLayer("At3gymJqaoGjGje-JJ-R5tJOuilUk-gd7SQ0DBZlTXTsRoMfVWU08ZWF1X7QKRRn", {type: 'Aerial'});
       var bingStreet = new L.BingLayer("At3gymJqaoGjGje-JJ-R5tJOuilUk-gd7SQ0DBZlTXTsRoMfVWU08ZWF1X7QKRRn", {type: 'Road'});
       var usgsTopo = new L.tileLayer('http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 15,
+            zIndex: 0,
             attribution: '<a href="http://www.doi.gov">U.S. Department of the Interior</a> | <a href="http://www.usgs.gov">U.S. Geological Survey</a> | <a href="http://www.usgs.gov/laws/policies_notices.html">Policies</a>'
             });
+      var states = new L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/CL/wms", {
+          layers: 'us_states',
+          format: 'image/png',
+          transparent: true,
+          version: '1.1.0',
+          maxZoom: 20,
+        });
       var blank = new L.tileLayer('');
     
       map.addLayer(googleHybrid);
 
       //******Add Geoserver Layers
-      var gsHuc8 = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/crossings/wms", {
-        layers: 'crossings:deerfield_huc8',
+      var baww = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:baww_wgs84',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+        maxZoom: 20
+      });
+
+      var coye = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:coye_wgs84',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+        maxZoom: 20
+      });
+
+      var cswa = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:cswa_wgs84',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+        maxZoom: 20
+      });
+
+      var eato = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:eato_wgs84',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+        maxZoom: 20
+      });
+
+      var grca = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:grca_wgs84',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+        maxZoom: 20
+      });
+
+      var inbu = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:inbu_wgs84',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0',
+        maxZoom: 20
+      });
+
+      var praw = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        layers: 'birds:praw_wgs84',
         format: 'image/png',
         transparent: true,
         version: '1.1.0',
@@ -267,23 +394,40 @@
 
       //******Make layer controller
       var baseLayers = {"Google Hybrid": googleHybrid, "Google Satellite": googleSatellite, "Google Street": googleStreet, "Google Terrain": googleTerrain, "Bing Hybrid": bingHybrid, "Bing Satellite": bingSatellite, "Bing Street": bingStreet, "USGS Topo": usgsTopo, "None": blank};
-      var overlays = {"DOT Districts": gsDOTDistricts, "Counties": gsCounties, "Towns": gsTowns, "HUC 12 Watersheds": gsHUC12};
-      L.control.layers(baseLayers, overlays).addTo(map);
+      var overlays = {"Black & White Warbler": baww, "Common Yellowthroat": coye, "Prairie Warbler": praw, "Counties": gsCounties, "Towns": gsTowns, "HUC 12 Watersheds": gsHUC12};
+      //L.control.layers(baseLayers, overlays).addTo(map);
 
       d3.select(".leaflet-control-layers-base").property("title", "Click on radio button to change the baselayer option");
       d3.select(".leaflet-control-layers-overlays").property("title", "Check the box to add layer to map (may be slight delay)");
 
-      //******Add bird Song tool
-      var birdSong = new L.Control.birdSong();
-      map.addControl(birdSong);
-
       //******Add Download tool
       var downLoadFile = new L.Control.downLoadFile();
-      map.addControl(downLoadFile);
+      //map.addControl(downLoadFile);
 
       //******Add Print tool
       var printMap = new L.Control.print();
-      map.addControl(printMap);
+      //map.addControl(printMap);
+
+
+
+      //******Make layer controller
+      //***baselayers
+      var layerNames = {};
+      layerNames.baseLayers = {"Google Terrain": googleTerrain, "Google Hybrid": googleHybrid, "Google Satellite": googleSatellite, "Google Street": googleStreet, "Bing Hybrid": bingHybrid, "Bing Satellite": bingSatellite, "Bing Street": bingStreet, "USGS Topo": usgsTopo, "State Outlines": states, "None": blank};
+      layerNames.baseLayers.keys = d3.keys(layerNames.baseLayers);
+      layerNames.baseLayers.values = d3.values(layerNames.baseLayers);
+
+      //***Bird layers
+      var birdTitles = ["Black and White Warbler", "Chestnut Sided Warbler", "Common Yellowthroat", "Eastern Towhee", "Gray Catbird", "Indigo Bunting", "Prairie Warbler"];
+      var birdLayers = [baww, cswa, coye, eato, grca, inbu, praw];
+      var birdID = ["baww", "cswa", "coye", "eato", "grca", "inbu", "praw"];
+      layerNames.birds = {};
+      birdTitles.forEach(function(tmpTitle,i) {
+        layerNames.birds[tmpTitle] = birdLayers[i];
+      });
+      layerNames.birds.keys = d3.keys(layerNames.birds);
+      layerNames.birds.values = d3.values(layerNames.birds);
+
 
 
 
@@ -291,9 +435,548 @@
       d3.select("body")
         .append("div")
         .attr("class", "header")
-        .style("padding", "5px")
-        .style("height", "50px")
-        .html('<span class="brand">ACAF: Avian Community Assemblage Forecaster</span> <div class="pull-right"><a title="Click to display information on how to use this tool" href="#" data-toggle="modal" data-target="#helpDiv">About ACAF</a> | <a title="Click to go to the Ecosheds homepage" href="http://ecosheds.org">SHEDS Home</a>');
+        .html('<span class="brand">ACAF: Avian Community Assemblage Forecaster</span> <div id="headerLinks"><a title="Click to display information on how to use this tool" href="#" data-toggle="modal" data-target="#helpDiv">About ACAF</a><a title="Click to go to the Ecosheds homepage" href="http://ecosheds.org" target="_blank">SHEDS Home</a></div><div id="printDownload" class="pull-right"><span id="downloadControl" class="glyphicon glyphicon-download-alt" title="Download spatial data" onclick="toolWindowToggle(&quot;download&quot;)"></span><span id="printControl" class="glyphicon glyphicon-print" title="Print current map" onclick="window.print()"></span></div>');
+
+
+
+      //******Make headerControls div
+      d3.select("body")
+        .append("div")
+        .attr("id", "headerControls");
+
+
+
+      //******Add toolbar tools
+      //***Baselayers
+      d3.select("#headerControls")
+        .append("div")
+        .attr("id", "mapTools")
+        .append("div")
+        .attr("id", "baselayerSelect")
+        .attr("class", "layerList")
+        .append("div")
+        .attr("id", "baselayerList")
+        .attr("class", "cl_select")
+        .property("title", "Click to change map baselayer")
+        .html('<span id="baselayerListHeader">Change Map Baselayer</span><span class="glyphicon glyphicon-triangle-bottom pull-right" style="position:relative;top:3px;"></span>')
+        .on("click", function() { if(d3.select("#baselayerListDropdown").style("display") == "none") {d3.select("#baselayerListDropdown").style("display", "inline-block");} else {d3.select("#baselayerListDropdown").style("display", "none");} });;
+
+      d3.select("#baselayerSelect")
+        .append("div")
+        .attr("id", "baselayerListDropdown")
+        .attr("class", "layerListDropdown")
+        .on("mouseleave", function() { d3.select(this).style("display", "none") });
+
+      //******Add baselayer options
+      d3.select("#baselayerListDropdown").selectAll("div")
+        .data(layerNames.baseLayers.keys)
+        .enter()
+          .append("div")
+          .attr("class", "layerName")
+          .text(function(d) { return d; })
+          .property("value", function(d,i) { return i; })
+          .property("title", function(d) { return d; })
+          .on("click", function() { changeBaselayer(this); })
+          .append("span")
+          .attr("class", "glyphicon glyphicon-ok pull-right activeOverlay")
+          .style("visibility", function(d,i) { if(i == 0) {return "visible";} else {return "hidden";} });
+
+
+      //******Initialize baselayer
+      map.addLayer(googleTerrain);
+
+      //******Function to change baselayer on select change
+      function changeBaselayer(tmpDiv) {
+        //***Remove old layer
+        var layerDivs = d3.select("#baselayerListDropdown").selectAll("div");
+        
+        layerDivs[0].forEach(function(tmpLayer) {
+          if(d3.select(tmpLayer).select("span").style("visibility") == "visible") {
+            d3.select(tmpLayer).select("span").style("visibility", "hidden");
+            map.removeLayer(layerNames.baseLayers.values[d3.select(tmpLayer).property("value")]);
+          }
+        });
+
+        //***Add new layer
+        d3.select(tmpDiv).select("span").style("visibility", "visible");
+        map.addLayer(layerNames.baseLayers.values[tmpDiv.value]);
+        layerNames.baseLayers.values[tmpDiv.value].bringToBack();       
+      }
+
+
+
+
+
+
+      //***Bird layers
+      d3.select("#mapTools")
+        .append("div")
+        .attr("id", "birdSelect")
+        .attr("class", "layerList")
+        .append("div")
+        .attr("id", "birdList")
+        .attr("class", "cl_select")
+        .property("title", "Click to select bird occupancy layers to display on map")
+        .html('<span id="birdListHeader">View Bird Occupancy Map Layers</span><span class="glyphicon glyphicon-triangle-bottom pull-right" style="position:relative;top:3px;"></span>')
+        .on("click", function() { if(d3.select("#birdListDropdown").style("display") == "none") {d3.select("#birdListDropdown").style("display", "inline-block");} else {d3.select("#birdListDropdown").style("display", "none");} });;
+
+      d3.select("#birdSelect")
+        .append("div")
+        .attr("id", "birdListDropdown")
+        .attr("class", "layerListDropdown")
+        .on("mouseleave", function() { d3.select(this).style("display", "none") });
+
+      //******Add bird options
+      d3.select("#birdListDropdown").selectAll("div")
+        .data(layerNames.birds.keys)
+        .enter()
+          .append("div")
+          .attr("class", "layerName")
+          .text(function(d) { return d; })
+          .property("value", function(d,i) { return i; })
+          .property("title", function(d) { return d; })
+          .property("name", function(d,i) { return birdID[i]; })
+          .on("click", function() { changeBird(this); })
+          .append("span")
+          .attr("class", "glyphicon glyphicon-ok pull-right activeBird")
+          .style("visibility", function(d) { if(d == "Deerfield Watershed") {return "visible";} else {return "hidden";} });
+
+      //******Add Geoserver Deerfield HUC8 layer to map
+      //map.addLayer(gsHuc8);
+
+      //******Function to add/remove bird layer
+      function changeBird(tmpDiv) {
+        if(d3.select(tmpDiv).select("span").style("visibility") == "hidden") {
+          d3.select(tmpDiv).select("span").style("visibility", "visible");
+          map.addLayer(layerNames.birds.values[tmpDiv.value]);
+          layerNames.birds.values[tmpDiv.value].bringToFront();
+          addLegendImg(tmpDiv.name + "_wgs84", tmpDiv.title, layerNames.birds.values[tmpDiv.value], ["birds",tmpDiv.title]);
+        } 
+        else {
+          d3.select(tmpDiv).select("span").style("visibility", "hidden");
+          map.removeLayer(layerNames.birds.values[tmpDiv.value]);
+          remLegendImg(tmpDiv.name);
+        }
+      }
+
+
+
+
+
+      //******Add geolocater
+      d3.select("#headerControls")
+        .append("div")
+        .attr("id", "bingGeoLocate");
+        //.attr("class", "layerList");
+
+      document.getElementById('bingGeoLocate').appendChild(bingGeocoder.onAdd(map));
+
+
+
+
+
+
+      //Add panel icons
+      d3.select("#headerControls")
+        .append("div")
+        .attr("id", "panelTools");
+
+      var hcPanels = ["draw", "songs"];
+      var hcGlyphs = ["glyphicon-pencil", "glyphicon-music"];
+      var hcLabel = ["Draw & Measure", "Bird Songs & Photos"]
+      d3.select("#panelTools").selectAll("divs")
+        .data(hcPanels)
+        .enter()
+          .append("div")
+          .attr("id", function(d) { return "hc" + d.charAt(0).toUpperCase() + d.slice(1) + "Div"; })
+          .attr("class", "hcPanelDivs layerList")
+          .property("title", function(d,i) { return "Click to show " + hcLabel[i] + " window"; })
+          .html(function(d,i) { return '<span class="glyphicon ' + hcGlyphs[i] + '"></span><p>' + hcLabel[i] + '</p>'; })
+          .on("click", function(d) { if(d != "attrSelect") { return toolWindowToggle(d);} });
+
+
+
+
+
+
+      //******Function to toggle tool windows
+      var toggleWords = {"legend":"Layers", "draw":"Draw & Measure", "songs":"Bird Songs & Photos", "download":"Downloads"}
+
+      function toolWindowToggle(tmpDiv) {
+        if (d3.select("#" + tmpDiv + "Div").style("opacity") == "1") {
+          d3.select("#" + tmpDiv + "Div").transition().style({"opacity":"0", "visibility":"hidden"});
+          d3.select("#hc" + tmpDiv.charAt(0).toUpperCase() + tmpDiv.slice(1) + "Div").property("title", "Click to show " + toggleWords[tmpDiv] + " window");
+          
+        }
+        else {
+          d3.select("#" + tmpDiv + "Div").transition().duration(250).ease("cubic").style({"opacity":"1", "display":"block", "visibility":"visible"});            
+          d3.select("#hc" + tmpDiv.charAt(0).toUpperCase() + tmpDiv.slice(1) + "Div").property("title", "Click to hide " + toggleWords[tmpDiv] + " window");
+          setZ(d3.select("#" + tmpDiv + "Div")[0][0]);
+        }
+      }
+
+
+
+
+
+
+      function setZ(tmpWin) {
+        if (d3.select("#map").classed("introjs-showElement") == false) {
+          d3.selectAll("#legendDiv,#drawDiv,#songsDiv,#downloadDiv").style("z-index", function() { if(d3.select(this).style("opacity") == 1) {return 1001;} else {return 7500;} }); 
+          d3.select(tmpWin).style("z-index", 1002);
+        }
+      }
+
+
+
+
+
+      //******Adds images to the legend
+      var legendDivs = [];   //global array of active legends
+
+      function addLegendImg(tmpName, tmpTitle, tmpLayer, tmpPath) {
+        legendDivs.push(tmpName);
+        d3.selectAll(".layerLegend").style("display", "none");
+
+        d3.select("#legendImgDiv")
+          .append("div")
+          .attr("id", tmpName + "Legend")
+          .attr("value", tmpPath)
+          .attr("class", "layerLegend")
+          .style("margin-top", "25px")
+          .append("h3")
+          .attr("class", "legendTitle")
+          .text(tmpTitle);
+
+        d3.select("#" + tmpName + "Legend")
+          .append("img")
+          .attr("class", "legendImg")
+          .attr("src", "http://felek.cns.umass.edu:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName)
+          .property("title", tmpTitle);
+
+        d3.select("#" + tmpName + "Legend")
+          .append("input")
+          .attr({type: "range", name: "layer", min: 0, max: 100, value: 100})
+          .attr("id", "legendSlider")
+          .property("title", tmpTitle + " Layer Opacity: 100%")
+          .on("input", function() { layerOpacity(this, tmpLayer); });
+
+        d3.select("#" + tmpName + "Legend")
+          .append("p")
+          .attr("class", "legendTrans")
+          .text("Transparency");
+
+        d3.select("#legendDefault").style("display", "none");
+
+        d3.select("#legendImgDiv")
+          .style("display", "block");
+        
+        if(legendDivs.length > 1) {
+          d3.select("#legendPrev").style("visibility", "visible");
+          d3.select("#legendNext").style("visibility", "hidden");
+        }
+
+        if(d3.select("#legendDiv").style("opacity") == 0) {
+          toolWindowToggle("legend");
+        }
+
+        setTimeout(function() { resizePanels(); }, 300);
+      }
+
+
+
+
+
+
+
+      //******Removes images to the legend
+      function remLegendImg(tmpName) {
+        var tmpBi = 0;
+        if(d3.select("#" + tmpName + "Legend").style("display") == "block") {
+          tmpBi = 1;
+        }
+
+        d3.select("#" + tmpName + "Legend").remove();
+        legendDivs.splice(legendDivs.indexOf(tmpName),1);
+
+        if(tmpBi == 1 && legendDivs.length > 0) {
+          d3.select("#" + legendDivs[0] + "Legend").style("display", "block");
+          var keys = d3.select("#" + legendDivs[0] + "Legend").attr("value").split(",");
+          if(keys.length == 2) {
+            layerNames[keys[0]][keys[1]].bringToFront();
+          }
+          else {
+            layerNames[keys[0]][keys[1]][keys[2]].bringToFront();
+          }
+        }
+
+        if(legendDivs.length == 0) {
+          d3.select("#legendImgDiv").style("display", "none");
+          d3.select("#legendDefault").style("display", "block");
+        }
+        else if(tmpBi == 1) {
+          if(legendDivs.length == 1) {
+            d3.selectAll("#legendPrev,#legendNext").style("visibility", "hidden");
+          }
+          else {
+            d3.select("#legendPrev").style("visibility", "hidden");
+            d3.select("#legendNext").style("visibility", "visible");
+          }
+        }
+      }
+
+
+
+
+
+      //******Change current legend div
+      function changeLegend(tmpDir) {
+        var tmpBi = 0;
+        legendDivs.some(function(tmpName,i) {
+          if(d3.select("#" + tmpName + "Legend").style("display") == "block") {
+            tmpBi = 1;
+            d3.selectAll(".layerLegend").style("display", "none");
+            if(tmpDir == "prev") {
+              d3.select("#" + legendDivs[i-1] + "Legend").style("display", "block");
+                var keys = d3.select("#" + legendDivs[i-1] + "Legend").attr("value").split(",");
+                if(keys.length == 2) {
+                  layerNames[keys[0]][keys[1]].bringToFront();
+                }
+                else {
+                  layerNames[keys[0]][keys[1]][keys[2]].bringToFront();
+                }
+            }
+            else {
+              d3.select("#" + legendDivs[i+1] + "Legend").style("display", "block");
+                var keys = d3.select("#" + legendDivs[i+1] + "Legend").attr("value").split(",");
+                if(keys.length == 2) {
+                  layerNames[keys[0]][keys[1]].bringToFront();
+                }
+                else {
+                  layerNames[keys[0]][keys[1]][keys[2]].bringToFront();
+                }
+            }
+          }
+          return tmpBi == 1;
+        });
+
+        tmpBi = 0;
+        legendDivs.some(function(tmpName,i) {
+          if(d3.select("#" + tmpName + "Legend").style("display") == "block") {
+            tmpBi = 1;
+            if(i == 0) {
+              d3.select("#legendPrev").style("visibility", "hidden");
+              d3.select("#legendNext").style("visibility", "visible");
+            }
+            else if(i == (legendDivs.length - 1)) {
+              d3.select("#legendPrev").style("visibility", "visible");
+              d3.select("#legendNext").style("visibility", "hidden");
+            }
+            else {
+              d3.select("#legendPrev").style("visibility", "visible");
+              d3.select("#legendNext").style("visibility", "visible");
+            }
+          }
+          return tmpBi == 1;
+        });              
+      }
+        
+
+
+
+
+
+
+      //******Make div for legend
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "legendDiv");
+
+      $('#legendDiv').draggable({containment: "html", cancel: ".toggle-group,input,textarea,button,select,option"});
+
+      d3.select("#legendDiv")
+        .append("h4")
+        .text("Legend")
+        .attr("class", "legTitle")
+        .attr("id", "legendTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Legend</center></b></u></p><p>Displays legends for added map layers enabling their interpretation along with control over their transparency.</p>"</span>');
+ 
+      d3.select("#legendTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Layers window")
+        .on("click", function() { toolWindowToggle("legend"); });
+
+      d3.select("#legendDiv")
+        .append("div")
+        .attr("id", "legendDefault")
+        .text("Add a map layer to view its legend...");
+
+      d3.select("#legendDiv")
+        .append("div")
+        .attr("id", "legendImgDiv")
+        .html('<span id="legendPrev" class="glyphicon glyphicon-menu-left pull-left" title="View previous legend" onclick="changeLegend(\'prev\')"></span><span id="legendNext" class="glyphicon glyphicon-menu-right pull-right" title="View next legend" onclick="changeLegend(\'next\')"></span>');
+
+
+
+
+
+      //******Change transparency of current legend layer
+      function layerOpacity(tmpSlider, tmpLayer) {
+        var tmpOpacity = tmpSlider.value/100; 
+        tmpSlider.title = "Opacity: " + tmpSlider.value + "%"; 
+        tmpLayer.setOpacity(tmpOpacity);
+      } 
+
+
+
+
+
+      //*****Make div for downloads
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "downloadDiv");
+
+      $('#downloadDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#downloadDiv")
+        .append("h4")
+        .text("Downloads")
+        .attr("class", "legTitle")
+        .attr("id", "downloadTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Downloads</center></b></u></p><p>Download zip files containing GeoTIFFs for Species Occupancy layers, or a shapefile or geoJSON file of the Wildlife Opening created.</p>"></span>');
+ 
+      d3.select("#downloadTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Downloads window")
+        .on("click", function() { toolWindowToggle("download"); });
+
+      d3.select("#downloadDiv")
+        .append("div")
+        .attr("id", "dlOptions")
+        .append("select")
+        .attr("id", "dlSelect")
+        .attr("class", "shapeUnit")
+        .style("width", "calc(100% - 10px)")
+        .property("title", "Select the format of the output file")
+        .append("option")
+        .property("value", "zip")
+        .text("Shapefile");
+
+      d3.select("#dlSelect")
+        .append("option")
+        .property("value", "json")
+        .text("GeoJSON");
+
+      d3.select("#downloadDiv")
+        .append("div")
+        .attr("class", "legendBtn")
+        .html('<a id="dlButton" href="#" title="Download the above layer to the specified format">Download</a>');
+
+
+
+
+
+
+      //*****Make div for drawing & measuring
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "drawDiv");
+
+      $('#drawDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#drawDiv")
+        .append("h4")
+        .text("Draw & Measure")
+        .attr("class", "legTitle")
+        .attr("id", "drawTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Draw & Measure</center></b></u></p><p>Use the drawing tools to create, edit, and remove wildlife opening areas on the map.<br><br>Use the measuring tool to determine distances between wildlife openings and landscape features (e.g. power corridors, water bodies).</p>"></span>');
+ 
+      d3.select("#drawTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Draw & Measure window")
+        .on("click", function() { toolWindowToggle("draw"); });
+
+
+
+
+
+
+
+      //******Leaflet Draw toolbar
+      d3.select("#drawDiv")
+        .append("div")
+        .attr("id", "drawToolDiv")
+        .append("div")
+        .attr("id", "drawToolbar")
+        .html('<h4 class="shapeTitle" title="Use the below tools to draw a wildlife opening on the map">Draw Wildlife Opening</h4>');
+
+      document.getElementById("drawToolbar").appendChild(drawControl.onAdd(map));
+
+
+
+
+
+      //******Leaflet Measure Tool
+      d3.select("#drawToolDiv")
+        .append("div")
+        .attr("id", "measureTool")
+        .html('<h4 class="shapeTitle" title="Use the below tool to measure distances on the map">Measure Distance</h4>');
+
+      var measureTool = new L.Control.measureControl();
+      document.getElementById("measureTool").appendChild(measureTool.onAdd(map));
+
+      //******Disable measure feature if shape is selected
+      d3.select(".leaflet-draw-toolbar").selectAll("a")
+        .on("click", function(d) { 
+          if(d3.select(".leaflet-control-draw-measure").style("background-color") == "rgb(144, 238, 144)") {
+            measureTool.toggle();
+          }
+          d3.select(this)
+            .style("border-color", "lightgreen")
+            .attr("value", "active");
+        });
+
+
+
+
+
+
+
+      //*****Make div for songs & photos
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "songsDiv");
+
+      $('#songsDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#songsDiv")
+        .append("h4")
+        .text("Bird Songs & Photos")
+        .attr("class", "legTitle")
+        .attr("id", "songsTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Bird Songs & Photos</center></b></u></p><p>Listen to calls and view images of bird species found in wildlife openings.</p>"></span>');
+ 
+      d3.select("#songsTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Bird Songs & Photos window")
+        .on("click", function() { toolWindowToggle("songs"); });
+
+
+
+
+
 
 
       //*******Make Help/information div
@@ -306,34 +989,31 @@
         .attr("class", "modal-dialog modal-lg")
         .attr("id", "infoDiv")
         .append("div")
-        .attr("class", "helpHeader")
-        .text("Avian Community Assemblage Forcaster")
+        .attr("class", "helpTitle")
+        .text("ACAF: Avian Community Assemblage Forecaster")
+        .property("title", "ACAF: Avian Community Assemblage Forecaster informational details")
         .append("span")
-        .attr("class", "glyphicon glyphicon-remove-sign pull-right minimize-button")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
         .attr("data-toggle", "modal")
         .attr("data-target", "#helpDiv")
         .property("title", "Close help");
         
-      d3.select("#infoDiv")
-        .append("hr")
-        .attr("class", "hr");
-
       d3.select("#infoDiv")
         .append("div")
         .text("Helpful information coming soon...");
 
 
       //******Add in edge and area text boxes, and unit selector
-      d3.select("body")
+      d3.select("#drawDiv")
         .append("div")
         .attr("id", "shapeDiv")
-        .style("display", "none")
         .append("div")
         .attr("id", "edgeDiv")
         .attr("class", "shape")
         .append("h4")
         .attr("class", "shapeTitle")
-        .text("Shape Edge");
+        .text("Edge Length")
+        .property("title", "Length of the wildlife opening perimeter");
 
 
       d3.select("#shapeDiv")
@@ -342,21 +1022,22 @@
         .attr("class", "shape")
         .append("h4")
         .attr("class", "shapeTitle")
-        .text("Shape Area");
+        .text("Opening Area")
+        .property("title", "Area of the wildlife opening");
 
       d3.select("#edgeDiv")
         .append("input")
         .attr({type: "text"})
         .attr("id", "edgeText")
         .attr("class", "shapeVals")
-        .property("title", "Length of the treatment shape");
+        .property("title", "Length of the wildlife opening perimeter");
 
       d3.select("#areaDiv")
         .append("input")
         .attr({type: "text"})
         .attr("id", "areaText")
         .attr("class", "shapeVals")
-        .property("title", "Area of the treatment shape");
+        .property("title", "Area of the wildlife opening");
 
       var selectEdge = d3.select("#edgeDiv")
         .append("select")
@@ -476,18 +1157,12 @@
       }
 
       //******Add in bird song and pictures
-      d3.select("body")
+      d3.select("#songsDiv")
         .append("div")
         .attr("id", "songs")
         .append("h4")
         .attr("id", "species")
         .text("Spinus tristis");
-
-      d3.select("#songs")
-        .append("span")
-        .attr("class", "glyphicon glyphicon-remove-sign pull-right minimize-button")
-        .property("title", "Close window")
-        .on("click", function() { d3.select("#songs").style("display", "none")});
 
       d3.select("#songs")
         .append("img")
@@ -533,6 +1208,7 @@
         var select = d3.select("#songs")
           .append("select")
           .attr("id", "songSelect")
+          .attr("class", "shapeUnit")
           .property("title", "Select species to hear its song and display a photo")
           .on("change", function() {
             d3.select("#species").text(birds.latin[this.value]);

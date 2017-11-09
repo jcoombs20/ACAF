@@ -1,22 +1,63 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  min-width: 1280px;
+  min-height: 594px;
+}
+
 #map {
   position: absolute;
   top: 0px;
   left: 0px;
   height: 100%;
   Width: 100%;
+  background: white;
+}
+
+.glyphicon-triangle-top, .glyphicon-triangle-bottom {
+  color: black;
+}
+
+.glyphicon {
+  opacity: 0.7;
+  margin-left: 20px;
+  font-size: 15px;
+  top: 2px;
+  cursor: pointer;
+}
+
+.glyphicon:hover {
+  opacity: 1;
+}
+
+.glyphicon-info-sign {
+  margin-right: 5px;
+}
+
+a {
+  cursor: pointer;
+}
+
+a:focus, select:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+.header, .header h2, .header h4, #headerControls{
+  min-width: 1280px;
 }
 
 .header {
   position: fixed;
   width: 100%;
-  height: 60px;
+  height: 40px;
+  padding: 3px 0px 3px 15px;
   top: 0;
   left: 0;
-  background: rgba(40, 40, 40, 0.5);
+  background: #262c40;
   color: white;
-  padding: 10px;
   font-family: 'Open Sans', "proxima-nova-alt", Helvetica, Arial, sans-serif;
-  z-index: 2000;
+  z-index: 1000;
 }
 
 .header a {
@@ -32,7 +73,32 @@
 
 .header .brand {
   font-variant: small-caps;
-  font-size: 24pt;
+  font-size: 20pt;
+}
+
+#headerLinks {
+  display: inline-block;
+}
+
+#headerLinks>a {
+  margin-left: 25px;
+  color: #b3d9ff;
+}
+
+#headerLinks>a:hover {
+  text-decoration: none;
+  color: white;
+}
+
+#printDownload>span{
+  color: #b3d9ff;
+  opacity: 1;
+  font-size: 24px;
+  margin: 3px 20px 0px 0px;
+}
+
+#printDownload>span:hover {
+  color: white;
 }
 
 #helpDiv {
@@ -40,17 +106,678 @@
   justify-content: center;
 }
 
-#infoDiv {
-  width: 500px;
-  height: 400px;
-  background: rgba(255,255,255,1);
-  border-style: solid;
+#headerLinks {
+  display: inline-block;
+}
+
+#headerLinks>a {
+  margin-left: 25px;
+  color: #b3d9ff;
+}
+
+#headerLinks>a:hover {
+  text-decoration: none;
+  color: white;
+}
+
+#printDownload>span{
+  color: #b3d9ff;
+  opacity: 1;
+  font-size: 24px;
+  margin: 3px 20px 0px 0px;
+}
+
+#printDownload>span:hover {
+  color: white;
+}
+
+#headerControls {
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  width: 100%;
+  position: absolute;
+  top: 37px;
+  left: 0px;
+  height: 37px;
+  display: block;
+  color: #b3d9ff;
+  padding: 1px 9px;
+  border-bottom: solid 1px black;
+}
+
+.cl_select {
+  background: white;
+  border-radius: 4px;
+  padding: 3px;
+  border: 1px solid #666666;
+  color: #666666;
+  font-size: 13px;
+  background: lightgray;
+  background: linear-gradient(#f2f2f2, #cccccc);
+  height: 25px;
+  cursor: pointer;
+}
+
+.cl_select:hover {
   border-color: black;
-  border-width: 2px;
+  color: black;
+}
+
+.layerList {
+  display: inline-block;
+  float: left;
+  margin: 2px 5px;
+  padding: 3px 1px;
+}
+
+.layerList span {
+  opacity: 1;
+}
+
+.layerListDropdown {
+  display: inline-block;
+  position: absolute;
+  background: white;
+  border: 1px gray solid;
+  border-radius: 0px 0px 4px 4px;
+  color: #666666;
+  font-size: 13px;
+  z-index: 2000;
+  display: none;
+}
+
+.layerName {
+  padding: 0px 5px;
+}
+
+.layerName:hover {
+  color: black;
+  background: #f2f2f2;
+  cursor: pointer;
+  border-radius: 0px 0px 4px 4px;
+}
+
+#baselayerList {
+  width: 186px;
+  margin-left: 0px;
+}
+
+#baselayerListDropdown {
+  width: 186px;
+}
+
+#birdList {
+  width: 240px;
+}
+
+#birdListDropdown {
+  width: 240px;
+}
+
+#bingGeocoderInput {
+  border-radius: 4px;
+  border: 1px solid gray;
+  padding: 2px 5px;
+  height: 25px;
+}
+
+#bingGeocoderSubmit {
+  margin-left: 0px;
+  height: 25px;
+  border: 1px solid lightgray;
+  background: #00ff00;
+  background: linear-gradient(#00ff00, #008000);
+  color: #003300;
+  opacity: 1;
+  text-shadow: 0px 1px white;
+  border-radius: 4px;
+  position: relative;
+  top: 2px;
+}
+
+#bingGeocoderSubmit:hover {
+  border-color: white;
+}
+
+#bingGeocoderInput:hover {
+  color: black;
+  border-color: black;
+}
+
+#panelTools {
+  width: 664px;
+  height: 25px;
+  display: inline-block;
+  float: left;
+}
+
+.hcPanelDivs {
+  float: left;
+  border-left: 1px solid #262c40;
+  position: relative;
+  top: -5px;
+  height: 40px;
+  padding: 8px 2px 5px 2px;
+  cursor: pointer;
+}
+
+.hcPanelDivs:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.hcPanelDivs>span {
+  font-size: 18px;
+  opacity: 1;
+  margin-left: 5px;
+  top: 0px;
+}
+
+.hcPanelDivs>p {
+  display: inline-block;
+  margin: 4px 5px 0px 5px;
+  font-size: 15px;
+  font-weight: bold;
+  position: relative;
+  top: -3px;
+}
+
+#legendDiv {
+  position: absolute;
+  top: 85px;
+  left: 15px;
+  width: auto;
+  min-width: 169px;
+  margin: 0px;
+  z-index: 1002;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+}
+
+.legTitle {
+  color: white;
+  padding: 5px 15px 0px 15px;
+  height: 30px;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  border-radius: 4px 4px 0px 0px;
+  margin: 0px;
+}
+
+.legTitle:hover {
+  //background: rgba(0,0,255,0.5)
+}
+
+.legendTitle {
+  margin: 20px 5px 5px 5px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+#legendDefault {
+  font-style: italic;
+  padding: 5px;
+  background: white;
+  border-radius: 0px 0px 4px 4px;
+  font-size: 13px;
+}
+
+#legendImgDiv {
+  display: none;
+  text-align: center;
+  padding: 0px 5px 5px 5px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+#legendPrev, #legendNext {
+  margin: 0px;
+  visibility: hidden;
+}
+
+.legendImg {
+  border: 1px solid #333333;
+  display: block;
+  margin: auto;
+  border-radius: 4px;
+}
+
+.helpTitle {
+  text-align: left;
+  font-size: 24px;
+  padding: 5px 15px 0px 15px;
+  font-variant: small-caps;
+  color: white;
+  border-bottom: 1px solid gray;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  border-radius: 4px 4px 0px 0px;
+}
+
+.legendTrans {
+  font-size: 13px;
+  color: #333333;
+  display: block;
+  margin: 0px 5px;
+}
+
+.layerTitle {
+  margin: 0px 2px 7px 2px;
+  font-weight: bold;
+  display: inline-block;
+  font-size: 1em;
+}
+
+input[type=range] {
+  height: 12px;
+  -webkit-appearance: none;
+  margin: 10px 0px 0px 0px;
+  width: 162px;
+  display: inline-block;
+  background: none;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  background: #90b1d5; /* For browsers that do not support gradients */
+  background: linear-gradient(to left, #90b1d5, #2a3b6f); /* Standard syntax */
+  border-radius: 5px;
+  border: 0px solid #000000;
+}
+input[type=range]:hover::-webkit-slider-runnable-track {
+  background: orange; /* For browsers that do not support gradients */
+  background: linear-gradient(to left, #90b1d5, #2a3b6f); /* Standard syntax */
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  border: 1px solid #808080;
+  height: 18px;
+  width: 18px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -4.5px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #90b1d5; /* For browsers that do not support gradients */
+  background: linear-gradient(to left, #90b1d5, #2a3b6f); /* Standard syntax */
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  background: lightgray; /* For browsers that do not support gradients */
+  background: lightgray; /* Standard syntax */
+  border-radius: 5px;
+  border: 0px solid #000000;
+}
+input[type=range]::-moz-range-progress {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  background: #90b1d5; /* For browsers that do not support gradients */
+  background: linear-gradient(to left, #90b1d5, #2a3b6f); /* Standard syntax */
+  border-radius: 5px;
+  border: 0px solid #000000;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  border: 1px solid #808080;
+  height: 18px;
+  width: 18px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #90b1d5; /* For browsers that do not support gradients */
+  background: linear-gradient(to left, #90b1d5, #2a3b6f); /* Standard syntax */
+  border: 0px solid #000000;
+  border-radius: 10px;
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+}
+input[type=range]::-ms-fill-upper {
+  background: lightgray;
+  border: 0px solid #000000;
+  border-radius: 10px;
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+}
+input[type=range]::-ms-thumb {
+  margin-top: 1px;
+  box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  webkit-box-shadow: inset 0px 3px 5px rgba(0,0,0,0.3);
+  border: 1px solid #808080;
+  height: 18px;
+  width: 18px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #90b1d5; /* For browsers that do not support gradients */
+  background: linear-gradient(to left, #90b1d5, #2a3b6f); /* Standard syntax */
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: lightgray;
+}
+
+#downloadDiv {
+  position: absolute;
+  top: 85px;
+  right: 50px;
+  width: 100%;
+  max-width: 200px;
+  min-width: 200px;
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+}  
+
+#dlOptions {
+  padding: 10px;
+}
+
+.filterAttrList {
+  border: solid 1px #666666;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: left;
+  color: #666666;
+  width: 100%;
+  margin: 10px 0px;
+  background: lightgray;
+  background: linear-gradient(#f2f2f2, #cccccc);
+  height: 25px;
+  cursor: pointer;
+}
+
+#dlButton {
+  color: white;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  padding-top: 5px;
+}
+
+#dlButton:hover, #dlButton:visited, #dlButton:focus {
+  text-decoration: none;
+}
+
+.legendBtn {
+  margin: 5px 15px 10px 15px;
+  width: calc(100% - 30px);
+  font-weight: bold;
+  font-size: 15px;
+  text-shadow: 0px 2px black;
+  box-shadow: none;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  border-radius: 4px;
+  border: solid 1px #333333;
+  height: 37px;
+  text-align: center;
+}
+
+.legendBtn:hover {
+  border: solid 1px white;
+}
+
+.legendBtn:active {
+  //background: silver;
+  box-shadow: 3px 3px 7px 1px rgba(0,0,0,0.4) inset;
+}
+
+#drawDiv {
+  position: absolute;
+  top: 85px;
+  left: 250px;
+  width: 100%;
+  max-width: 400px;
+  min-width: 400px;
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+}
+
+#drawToolbar, #measureTool {
+  display: inline-block;
+  margin: 5px;
+  margin-bottom: 10px;
+  padding: 5px;
+  text-align: center;
+}
+
+#drawToolbar {
+  float: left;
+}
+
+#measureTool {
+  float: right;
+}
+
+#drawToolDiv {
+  padding: 5px;
+}
+
+.leaflet-draw {
+  display: inline-block;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.leaflet-draw-toolbar {
+  margin: 0px;
+  box-shadow: none;
+}
+
+.leaflet-draw-toolbar.leaflet-bar a {
+  display: inline-block;
+  margin-left: 2px;
+  width: 27px !important;
+  height: 27px!important;
+  border-radius: 4px !important;
+  border: 1px solid #333333;
+}
+
+.leaflet-draw-toolbar.leaflet-bar a:hover {
+  display: inline-block;
+  border-color: aqua;
+}
+
+.leaflet-draw-section {
+  display: inline-block;
+}
+
+.leaflet-draw-actions {
+  top: 27px !important;
+  left: 0px !important;
+}
+
+.leaflet-draw-actions>li>a {
+  border-radius: 4px !important;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  border: 1px solid black !important;
+  font-size: 12px;
+  height: 28px;
+}
+
+.leaflet-draw-actions>li>a:hover {
+  background: linear-gradient(#434d70, #56638f);
+  border-color: white !important;
+}
+
+#measureTool .leaflet-bar {
+  box-shadow: none;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+#measureTool>.leaflet-bar>a {
+  width: 27px;
+  height: 27px;
+  border: 1px solid #333333;
+  background-color: #ff6666;
+}
+
+#measureTool>.leaflet-bar>a:hover {
+  border-color: aqua;
+}
+
+#shapeDiv {
+  width: calc(100% - 10px);
+  height: 100%;
+  //border: 1px solid black;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+}
+
+.shape {
+  width: 50%;
+  display: inline-block;
+  text-aling: center;
+}
+
+.shapeTitle {
+  color: black;
+  font-weight: normal;
+  text-align: center;
+  margin: 2px;
+}
+
+.shapeVals {
+  width: 175px;
+  background: lightgreen;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  margin: 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+}
+
+.shapeVals:hover {
+  //background: rgba(255,255,255, 1);
+  color: black;
+  border-color: black;
+}
+
+.shapeUnit {
+  background: rgba(255,255,255,0.8);
+  border: 1px solid #333333;
+  border-radius: 4px;
+  margin: 0px 5px 0px 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  text-align: center;
+  color: #333333;
+  width: 175px;
+  height: 22px;
+}
+
+.shapeUnit:hover {
+  background: rgba(255,255,255,1);
+  color: black;
+  border-color: black;
+}
+
+#songsDiv {
+  position: absolute;
+  top: 85px;
+  left: 665px;
+  width: 100%;
+  max-width: 316px;
+  min-width: 316px;
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+  text-align: center;
+}
+
+#songs {
+  margin: 5px;
+}
+
+#birdPic {
+  border: 1px solid #333333;
+  margin: 5px;
+  border-radius: 4px;
+}
+
+#birdSong {
+  background: none;
+}
+
+#species {
+  font-style: italic;
+  font-weight: bold;
+}
+
+#infoDiv {
+  width: 50%;
+  height: 80%;
+  background: rgba(255,255,255,1);
+  border: 1px solid black;
   border-radius: 4px;
   font-size: 2em;
   align-self: center;
-  text-align: center;
+}
+
+.helpTitle {
+  text-align: left;
+  font-size: 24px;
+  padding: 5px 15px 0px 15px;
+  font-variant: small-caps;
+  color: white;
+  border-bottom: 1px solid gray;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  border-radius: 4px 4px 0px 0px;
 }
 
 .helpHeader {
@@ -70,16 +797,16 @@
 }
 
 .leaflet-top {
-    padding-top: 50px;
+    padding-top: 90px;
 }
 
 .leaflet-bar a, .leaflet-bar a:hover {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .leaflet-control-scale-line, .leaflet-control-scale-line:not(:first-child) {
-  background: rgba(255,255,0,0.6);
+  background: rgba(255,255,0,0.4);
   border-style: solid;
   border-width: 1px;
   border-radius: 4px;
@@ -87,93 +814,24 @@
   margin: 5px;
   margin-left: 0px;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.5em;
+  font-size: 12px;
   font-weight: bold;
   color: black;
   text-align: center;
 }
 
 .leaflet-control-scale-line:hover, .leaflet-control-scale-line:not(:first-child):hover {
-  background: rgba(255,255,0,1);
+  background: rgba(255,255,0,0.8);
 }
 
-
-#shapeDiv {
-  position: absolute;
-  width: 382px;
-  bottom: 0px;
-  left: 50%;
-  margin: 0px 0px 10px -191px;
-  z-index: 10000;
-  background: rgba(255,255,255,0.6);
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 4px;
-  border-color: black;
-  padding: 5px;
+.gradDown {
+  background: gray; /* For browsers that do not support gradients */
+  background: linear-gradient(lightgray, gray); /* Standard syntax */
+  background: -webkit-linear-gradient(lightgray, gray); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(lightgray, gray); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(lightgray, gray); /* For Firefox 3.6 to 15 */
 }
 
-.shape {
-  width: 185px;
-  float: left;
-}
-
-.shapeTitle {
-  color: black;
-  font-weight: bold;
-  text-align: center;
-  margin: 2px;
-}
-
-.shapeVals {
-  width: 175px;
-  background: rgba(255,153,0,0.6);
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 4px;
-  border-color: black;
-  margin: 5px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.5em;
-  font-weight: bold;
-  color: black;
-  text-align: center;
-}
-
-.shapeVals:hover {
-  background: rgba(255,153,0, 1);
-}
-
-.shapeUnit {
-  border-style: solid;
-  border-width: 2px;
-  border-radius: 4px;
-  border-color: black;
-  margin: 0px 5px 0px 5px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1em;
-  font-weight: bold;
-  text-align: center;
-  opacity: 0.7;
-  width: 175px;
-}
-
-.shapeUnit:hover {
-  opacity: 1;
-}
-
-#songs {
-  position: absolute;
-  background: white;
-  top: 100px;
-  left: 50%;
-  display: none;
-}
-
-#species {
-  font-style: italic;
-  font-weight: bold;
-}
 
 @media print {
   .leaflet-google-layer.leaflet-left.leaflet-top {

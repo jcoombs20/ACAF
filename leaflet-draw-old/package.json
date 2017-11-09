@@ -1,0 +1,81 @@
+{
+  "name": "leaflet-draw",
+  "version": "0.3.2",
+  "description": "Vector drawing plugin for Leaflet",
+  "devDependencies": {
+    "happen": "~0.1.3",
+    "jake": "~0.7.4",
+    "jshint": "~2.3.0",
+    "karma": "^0.12.19",
+    "karma-coverage": "~0.1.3",
+    "karma-mocha": "~0.1.0",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "phantomjs": "~2.1.3",
+    "leaflet": "~0.7.0",
+    "mocha": "~1.14.0",
+    "uglify-js": "~2.4.3"
+  },
+  "main": "dist/leaflet.draw.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "build": "jake",
+    "test": "jake test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leaflet/Leaflet.draw.git"
+  },
+  "keywords": [
+    "maps",
+    "leaflet",
+    "client",
+    "vector",
+    "drawing",
+    "draw"
+  ],
+  "author": {
+    "name": "Jacob Toye"
+  },
+  "contributors": [
+    {
+      "name": "Jon West",
+      "email": "ddproxy@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "gitHead": "39a256e8dcc28a98908cd3f81ea2827b3f9a9c3d",
+  "bugs": {
+    "url": "https://github.com/Leaflet/Leaflet.draw/issues"
+  },
+  "homepage": "https://github.com/Leaflet/Leaflet.draw#readme",
+  "_id": "leaflet-draw@0.3.2",
+  "_shasum": "717ee8fed4c2a9679c12162e1f922d2da503d109",
+  "_from": "leaflet-draw@latest",
+  "_npmVersion": "3.10.5",
+  "_nodeVersion": "6.3.1",
+  "_npmUser": {
+    "name": "ddproxy",
+    "email": "ddproxy@gmail.com"
+  },
+  "dist": {
+    "shasum": "717ee8fed4c2a9679c12162e1f922d2da503d109",
+    "tarball": "https://registry.npmjs.org/leaflet-draw/-/leaflet-draw-0.3.2.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "ddproxy",
+      "email": "ddproxy@gmail.com"
+    },
+    {
+      "name": "jacobtoye",
+      "email": "jacob.toye@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/leaflet-draw-0.3.2.tgz_1470330844545_0.2110917365644127"
+  },
+  "_resolved": "https://registry.npmjs.org/leaflet-draw/-/leaflet-draw-0.3.2.tgz"
+}

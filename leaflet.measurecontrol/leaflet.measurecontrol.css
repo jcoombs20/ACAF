@@ -1,0 +1,5 @@
+.leaflet-control-draw-measure {
+  background-image: url(docs/images/measure.png);
+  background-size: 21px 21px;
+  box-shadow: -2px -2px 3px rgba(0,0,0,0.4) inset;
+}
