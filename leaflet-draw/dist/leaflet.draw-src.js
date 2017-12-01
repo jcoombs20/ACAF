@@ -1,5 +1,5 @@
 /*
- Leaflet.draw 0.4.12, a plugin that adds drawing and editing tools to Leaflet powered maps.
+ Leaflet.draw 0.4.13, a plugin that adds drawing and editing tools to Leaflet powered maps.
  (c) 2012-2017, Jacob Toye, Jon West, Smartrak, Leaflet
 
  https://github.com/Leaflet/Leaflet.draw
@@ -8,7 +8,7 @@
 (function (window, document, undefined) {/**
  * Leaflet.draw assumes that you have already included the Leaflet library.
  */
-L.drawVersion = "0.4.12";
+L.drawVersion = "0.4.13";
 /**
  * @class L.Draw
  * @aka Draw
@@ -354,6 +354,19 @@ L.Draw.Event.DELETESTART = 'draw:deletestart';
  */
 L.Draw.Event.DELETESTOP = 'draw:deletestop';
 
+/**
+ * @event draw:toolbaropened: String
+ *
+ * Triggered when a toolbar is opened.
+ */
+L.Draw.Event.TOOLBAROPENED = 'draw:toolbaropened';
+
+/**
+ * @event draw:toolbarclosed: String
+ *
+ * Triggered when a toolbar is closed.
+ */
+L.Draw.Event.TOOLBARCLOSED = 'draw:toolbarclosed';
 
 
 L.Draw = L.Draw || {};
@@ -363,7 +376,6 @@ L.Draw = L.Draw || {};
  * @aka Draw.Feature
  */
 L.Draw.Feature = L.Handler.extend({
-	includes: L.Mixin.Events,
 
 	// @method initialize(): void
 	initialize: function (map, options) {
@@ -377,6 +389,14 @@ L.Draw.Feature = L.Handler.extend({
 			options.shapeOptions = L.Util.extend({}, this.options.shapeOptions, options.shapeOptions);
 		}
 		L.setOptions(this, options);
+
+        var version = L.version.split(".");
+        //If Version is >= 1.2.0
+        if(parseInt(version[0],10) === 1 && parseInt(version[1],10) >= 2 ) {
+            L.Draw.Feature.include(L.Evented.prototype);
+        } else {
+            L.Draw.Feature.include(L.Mixin.Events);
+        }
 	},
 
 	// @method enable(): void
@@ -497,8 +517,9 @@ L.Draw.Polyline = L.Draw.Feature.extend({
 		feet: true, // When not metric, to use feet instead of yards for display.
 		nautic: false, // When not metric, not feet use nautic mile for display
 		showLength: true, // Whether to display distance in the tooltip
-    zIndexOffset: 2000, // This should be > than the highest z-index any map layers
-    factor: 1 // To change distance calculation
+        zIndexOffset: 2000, // This should be > than the highest z-index any map layers
+        factor: 1, // To change distance calculation
+        maxPoints: 0 // Once this number of points are placed, finish shape
 	},
 
 	// @method initialize(): void
@@ -756,7 +777,10 @@ L.Draw.Polyline = L.Draw.Feature.extend({
 			var dragCheckDistance = L.point(clientX, clientY)
 				.distanceTo(this._mouseDownOrigin);
 			var lastPtDistance = this._calculateFinishDistance(e.latlng);
-			if (lastPtDistance < 10 && L.Browser.touch) {
+            if(this.options.maxPoints > 1 && this.options.maxPoints == this._markers.length+1) {
+                this.addVertex(e.latlng);
+                this._finishShape();
+            } else if (lastPtDistance < 10 && L.Browser.touch) {
 				this._finishShape();
 			} else if (Math.abs(dragCheckDistance) < 9 * (window.devicePixelRatio || 1)) {
 				this.addVertex(e.latlng);
@@ -957,7 +981,13 @@ L.Draw.Polyline = L.Draw.Feature.extend({
 			this._measurementRunningTotal = 0;
 		} else {
 			previousMarkerIndex = markersLength - (added ? 2 : 1);
-			distance = this._map.distance(latlng, this._markers[previousMarkerIndex].getLatLng()) * (this.options.factor || 1);
+
+			// Calculate the distance based on the version
+			if(L.GeometryUtil.isVersion07x()){
+				distance = latlng.distanceTo(this._markers[previousMarkerIndex].getLatLng()) * (this.options.factor || 1);
+			} else {
+				distance = this._map.distance(latlng, this._markers[previousMarkerIndex].getLatLng()) * (this.options.factor || 1);
+			}
 
 			this._measurementRunningTotal += distance * (added ? 1 : -1);
 		}
@@ -968,8 +998,12 @@ L.Draw.Polyline = L.Draw.Feature.extend({
 			previousLatLng = this._markers[this._markers.length - 1].getLatLng(),
 			distance;
 
-		// calculate the distance from the last fixed point to the mouse position
-		distance = previousLatLng && currentLatLng ? this._measurementRunningTotal + this._map.distance(currentLatLng, previousLatLng) * (this.options.factor || 1) : this._measurementRunningTotal || 0 ;
+		// Calculate the distance from the last fixed point to the mouse position based on the version
+		if(L.GeometryUtil.isVersion07x()){
+			distance = previousLatLng && currentLatLng && currentLatLng.distanceTo ? this._measurementRunningTotal + currentLatLng.distanceTo(previousLatLng) * (this.options.factor || 1) : this._measurementRunningTotal || 0 ;
+		} else {
+			distance = previousLatLng && currentLatLng ? this._measurementRunningTotal + this._map.distance(currentLatLng, previousLatLng) * (this.options.factor || 1) : this._measurementRunningTotal || 0 ;
+		}
 
 		return L.GeometryUtil.readableDistance(distance, this.options.metric, this.options.feet, this.options.nautic, this.options.precision);
 	},
@@ -1211,6 +1245,14 @@ L.Draw.SimpleShape = L.Draw.Feature.extend({
 				.on('mousemove', this._onMouseMove, this)
 				.on('touchstart', this._onMouseDown, this)
 				.on('touchmove', this._onMouseMove, this);
+
+			// we should prevent default, otherwise default behavior (scrolling) will fire,
+			// and that will cause document.touchend to fire and will stop the drawing
+			// (circle, rectangle) in touch mode.
+			// (update): we have to send passive now to prevent scroll, because by default it is {passive: true} now, which means,
+			// handler can't event.preventDefault 
+			// check the news https://developers.google.com/web/updates/2016/06/passive-event-listeners
+			document.addEventListener('touchstart', L.DomEvent.preventDefault, {passive: false});
 		}
 	},
 
@@ -1234,6 +1276,8 @@ L.Draw.SimpleShape = L.Draw.Feature.extend({
 
 			L.DomEvent.off(document, 'mouseup', this._onMouseUp, this);
 			L.DomEvent.off(document, 'touchend', this._onMouseUp, this);
+
+			document.removeEventListener('touchstart', L.DomEvent.preventDefault);
 
 			// If the box element doesn't exist they must not have moved the mouse, so don't need to destroy/return
 			if (this._shape) {
@@ -1594,7 +1638,13 @@ L.Draw.Circle = L.Draw.SimpleShape.extend({
 	},
 
 	_drawShape: function (latlng) {
-    var distance = this._map.distance(this._startLatLng, latlng);
+		// Calculate the distance based on the version
+		if(L.GeometryUtil.isVersion07x()){
+			var distance = this._startLatLng.distanceTo(latlng);
+		} else {
+			var distance = this._map.distance(this._startLatLng, latlng);
+		}
+
 		if (!this._shape) {
 			this._shape = new L.Circle(this._startLatLng, distance, this.options.shapeOptions);
 			this._map.addLayer(this._shape);
@@ -1731,10 +1781,8 @@ L.Edit = L.Edit || {};
  * @aka Edit.Poly
  */
 L.Edit.Poly = L.Handler.extend({
-	options: {},
-
 	// @method initialize(): void
-	initialize: function (poly, options) {
+	initialize: function (poly) {
 
 		this.latlngs = [poly._latlngs];
 		if (poly._holes) {
@@ -1742,7 +1790,6 @@ L.Edit.Poly = L.Handler.extend({
 		}
 
 		this._poly = poly;
-		L.setOptions(this, options);
 
 		this._poly.on('revert-edited', this._updateLatLngs, this);
 	},
@@ -1790,7 +1837,7 @@ L.Edit.Poly = L.Handler.extend({
 	_initHandlers: function () {
 		this._verticesHandlers = [];
 		for (var i = 0; i < this.latlngs.length; i++) {
-			this._verticesHandlers.push(new L.Edit.PolyVerticesEdit(this._poly, this.latlngs[i], this.options));
+			this._verticesHandlers.push(new L.Edit.PolyVerticesEdit(this._poly, this.latlngs[i], this._poly.options.poly));
 		}
 	},
 
@@ -1855,11 +1902,25 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 	// Add listener hooks to this handler.
 	addHooks: function () {
 		var poly = this._poly;
+		var path = poly._path;
 
 		if (!(poly instanceof L.Polygon)) {
 			poly.options.fill = false;
 			if (poly.options.editing) {
 				poly.options.editing.fill = false;
+			}
+		}
+
+		if (path) {
+			if (poly.options.editing.className) {
+				if (poly.options.original.className) {
+					poly.options.original.className.split(' ').forEach(function(className) {
+						L.DomUtil.removeClass(path, className);
+					});
+				}
+				poly.options.editing.className.split(' ').forEach(function(className) {
+					L.DomUtil.addClass(path, className);
+				});
 			}
 		}
 
@@ -1880,6 +1941,20 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 	// Remove listener hooks from this handler.
 	removeHooks: function () {
 		var poly = this._poly;
+		var path = poly._path;
+
+		if (path) {
+			if (poly.options.editing.className) {
+				poly.options.editing.className.split(' ').forEach(function(className) {
+					L.DomUtil.removeClass(path, className);
+				});
+				if (poly.options.original.className) {
+					poly.options.original.className.split(' ').forEach(function(className) {
+						L.DomUtil.addClass(path, className);
+					});
+				}
+			}
+		}
 
 		poly.setStyle(poly.options.original);
 
@@ -2194,7 +2269,7 @@ L.Polyline.addInitHook(function () {
 
 	if (L.Edit.Poly) {
 
-		this.editing = new L.Edit.Poly(this, this.options.poly);
+		this.editing = new L.Edit.Poly(this);
 
 		if (this.options.editable) {
 			this.editing.enable();
@@ -2656,10 +2731,14 @@ L.Edit.Circle = L.Edit.CircleMarker.extend({
 	},
 
 	_resize: function (latlng) {
-		var moveLatLng = this._moveMarker.getLatLng(),
-			radius = this._map.distance(moveLatLng, latlng);
+		var moveLatLng = this._moveMarker.getLatLng();
 
-		this._shape.setRadius(radius);
+		// Calculate the radius based on the version
+		if(L.GeometryUtil.isVersion07x()){
+			radius = moveLatLng.distanceTo(latlng);
+		} else {
+			radius = this._map.distance(moveLatLng, latlng);
+		}
 
 		this._map.fire(L.Draw.Event.EDITRESIZE, { layer: this._shape });
 	}
@@ -3148,7 +3227,15 @@ L.GeometryUtil = L.extend(L.GeometryUtil || {}, {
 			break;
 		}
 		return distanceStr;
-	}
+	},
+
+	// @method isVersion07x(): boolean
+	// Returns true if the Leaflet version is 0.7.x, false otherwise.
+	isVersion07x: function(){
+		var version = L.version.split(".");
+		//If Version is == 0.7.*
+		return parseInt(version[0], 10) === 0 && parseInt(version[1], 10) === 7;
+	},
 });
 
 })();
@@ -3491,8 +3578,6 @@ L.Map.addInitHook(function () {
  * ```
  */
 L.Toolbar = L.Class.extend({
-	includes: [L.Mixin.Events],
-
 	// @section Methods for modifying the toolbar
 
 	// @method initialize(options): void
@@ -3503,6 +3588,14 @@ L.Toolbar = L.Class.extend({
 		this._modes = {};
 		this._actionButtons = [];
 		this._activeMode = null;
+
+        var version = L.version.split(".");
+        //If Version is >= 1.2.0
+        if(parseInt(version[0],10) === 1 && parseInt(version[1],10) >= 2 ) {
+            L.Toolbar.include(L.Evented.prototype);
+        } else {
+            L.Toolbar.include(L.Mixin.Events);
+        }
 	},
 
 	// @method enabled(): boolean
@@ -3760,6 +3853,7 @@ L.Toolbar = L.Class.extend({
 		}
 
 		this._actionsContainer.style.display = 'block';
+		this._map.fire(L.Draw.Event.TOOLBAROPENED);
 	},
 
 	_hideActionsToolbar: function () {
@@ -3769,6 +3863,7 @@ L.Toolbar = L.Class.extend({
 		L.DomUtil.removeClass(this._toolbarContainer, 'leaflet-draw-toolbar-nobottom');
 		L.DomUtil.removeClass(this._actionsContainer, 'leaflet-draw-actions-top');
 		L.DomUtil.removeClass(this._actionsContainer, 'leaflet-draw-actions-bottom');
+		this._map.fire(L.Draw.Event.TOOLBARCLOSED);
 	}
 });
 
@@ -4214,8 +4309,6 @@ L.EditToolbar.Edit = L.Handler.extend({
 		TYPE: 'edit'
 	},
 
-	includes: L.Mixin.Events,
-
 	// @method intialize(): void
 	initialize: function (map, options) {
 		L.Handler.prototype.initialize.call(this, map);
@@ -4233,6 +4326,14 @@ L.EditToolbar.Edit = L.Handler.extend({
 
 		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
 		this.type = L.EditToolbar.Edit.TYPE;
+
+        var version = L.version.split(".");
+        //If Version is >= 1.2.0
+        if(parseInt(version[0],10) === 1 && parseInt(version[1],10) >= 2 ) {
+            L.EditToolbar.Edit.include(L.Evented.prototype);
+        } else {
+            L.EditToolbar.Edit.include(L.Mixin.Events);
+        }
 	},
 
 	// @method enable(): void
@@ -4501,8 +4602,6 @@ L.EditToolbar.Delete = L.Handler.extend({
 		TYPE: 'remove' // not delete as delete is reserved in js
 	},
 
-	includes: L.Mixin.Events,
-
 	// @method intialize(): void
 	initialize: function (map, options) {
 		L.Handler.prototype.initialize.call(this, map);
@@ -4518,6 +4617,15 @@ L.EditToolbar.Delete = L.Handler.extend({
 
 		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
 		this.type = L.EditToolbar.Delete.TYPE;
+
+		var version = L.version.split(".");
+        //If Version is >= 1.2.0
+        if(parseInt(version[0],10) === 1 && parseInt(version[1],10) >= 2 ) {
+            L.EditToolbar.Delete.include(L.Evented.prototype);
+        } else {
+            L.EditToolbar.Delete.include(L.Mixin.Events);
+        }
+
 	},
 
 	// @method enable(): void

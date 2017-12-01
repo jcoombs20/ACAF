@@ -1,16 +1,14 @@
-html, body {
+html, body, #map {
   width: 100%;
   height: 100%;
   min-width: 1280px;
-  min-height: 594px;
+  min-height: 600px;
 }
 
 #map {
   position: absolute;
   top: 0px;
   left: 0px;
-  height: 100%;
-  Width: 100%;
   background: white;
 }
 
@@ -38,7 +36,7 @@ a {
   cursor: pointer;
 }
 
-a:focus, select:focus {
+a:focus, select:focus, a:hover {
   text-decoration: none;
   outline: none;
 }
@@ -48,7 +46,7 @@ a:focus, select:focus {
 }
 
 .header {
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: 40px;
   padding: 3px 0px 3px 15px;
@@ -101,7 +99,7 @@ a:focus, select:focus {
   color: white;
 }
 
-#helpDiv {
+#helpDiv, #backgroundDiv {
   display: flex;
   justify-content: center;
 }
@@ -212,6 +210,8 @@ a:focus, select:focus {
 
 #birdListDropdown {
   width: 240px;
+  max-height: 526px;
+  overflow-y: auto;
 }
 
 #bingGeocoderInput {
@@ -235,6 +235,12 @@ a:focus, select:focus {
   top: 2px;
 }
 
+#bingGeocoderSubmit.glyphicon-remove {
+  background":"#ff0040;
+  background: linear-gradient(rgb(255, 0, 64), rgb(179, 0, 45));
+  color: rgb(153, 0, 0);
+}
+
 #bingGeocoderSubmit:hover {
   border-color: white;
 }
@@ -245,8 +251,8 @@ a:focus, select:focus {
 }
 
 #panelTools {
-  width: 664px;
-  height: 25px;
+  width: 589px;
+  height: 34px;
   display: inline-block;
   float: left;
 }
@@ -255,31 +261,49 @@ a:focus, select:focus {
   float: left;
   border-left: 1px solid #262c40;
   position: relative;
-  top: -5px;
+  top: -6px;
   height: 40px;
   padding: 8px 2px 5px 2px;
   cursor: pointer;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 
 .hcPanelDivs:hover {
   background: rgba(255,255,255,0.2);
 }
 
-.hcPanelDivs>span {
+.hcPanelDivs>span, .hcPanelDivs>a>span {
   font-size: 18px;
   opacity: 1;
   margin-left: 5px;
-  top: 0px;
+  top: 5px;
+  color: #b3d9ff;
 }
 
-.hcPanelDivs>p {
+.hcPanelDivs>p, .hcPanelDivs>a>p {
   display: inline-block;
   margin: 4px 5px 0px 5px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   position: relative;
-  top: -3px;
+  top: 1px;
+  color: #b3d9ff;
 }
+
+#hcResultsDiv {
+  border-right: 1px solid #262c40;
+}
+
+#wildOpen {
+  float: left;
+  margin: 4px 5px 0px 5px;
+  font-size: 18px;
+  font-weight: bold;
+  position: relative;
+  top: 2px;
+  color: #b3d9ff;
+}  
 
 #legendDiv {
   position: absolute;
@@ -337,23 +361,25 @@ a:focus, select:focus {
   visibility: hidden;
 }
 
-.legendImg {
-  border: 1px solid #333333;
-  display: block;
+.legImgDiv {
+  overflow: hidden;
   margin: auto;
+  border: 1px solid black;
   border-radius: 4px;
 }
 
-.helpTitle {
-  text-align: left;
-  font-size: 24px;
-  padding: 5px 15px 0px 15px;
-  font-variant: small-caps;
-  color: white;
-  border-bottom: 1px solid gray;
-  background: #4d5980;
-  background: linear-gradient(#56638f, #434d70);
-  border-radius: 4px 4px 0px 0px;
+.legendImg {
+  //border: 1px solid #333333;
+  display: block;
+  //margin: auto;
+  //border-radius: 4px;
+  position: relative;
+}
+
+.legendTitle {
+  margin: 20px 5px 5px 5px;
+  font-size: 18px;
+  white-space: nowrap;
 }
 
 .legendTrans {
@@ -368,6 +394,18 @@ a:focus, select:focus {
   font-weight: bold;
   display: inline-block;
   font-size: 1em;
+}
+
+.helpTitle {
+  text-align: left;
+  font-size: 24px;
+  padding: 5px 15px 0px 15px;
+  font-variant: small-caps;
+  color: white;
+  border-bottom: 1px solid gray;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  border-radius: 4px 4px 0px 0px;
 }
 
 input[type=range] {
@@ -494,9 +532,7 @@ input[type=range]:focus::-ms-fill-upper {
   position: absolute;
   top: 85px;
   right: 50px;
-  width: 100%;
-  max-width: 200px;
-  min-width: 200px;
+  width: 220px;
   margin: 0px;
   z-index: 1000;
   border-radius: 4px;
@@ -524,21 +560,21 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
-#dlButton {
+#dlButton, #exportFileButtonA {
   color: white;
   width: 100%;
   height: 100%;
   display: inline-block;
-  padding-top: 5px;
 }
 
-#dlButton:hover, #dlButton:visited, #dlButton:focus {
+#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA :hover, #exportFileButtonA :visited, #exportFileButtonA :focus {
   text-decoration: none;
 }
 
 .legendBtn {
-  margin: 5px 15px 10px 15px;
-  width: calc(100% - 30px);
+  margin: auto;
+  margin-bottom: 5px;
+  width: calc(100% - 100px);
   font-weight: bold;
   font-size: 15px;
   text-shadow: 0px 2px black;
@@ -547,7 +583,7 @@ input[type=range]:focus::-ms-fill-upper {
   background: linear-gradient(#56638f, #434d70);
   border-radius: 4px;
   border: solid 1px #333333;
-  height: 37px;
+  padding-bottom: 2px;
   text-align: center;
 }
 
@@ -563,10 +599,8 @@ input[type=range]:focus::-ms-fill-upper {
 #drawDiv {
   position: absolute;
   top: 85px;
-  left: 250px;
-  width: 100%;
-  max-width: 400px;
-  min-width: 400px;
+  left: 270px;
+  width: 300px;
   margin: 0px;
   z-index: 1000;
   border-radius: 4px;
@@ -576,8 +610,55 @@ input[type=range]:focus::-ms-fill-upper {
   border: 1px solid black;
 }
 
-#drawToolbar, #measureTool {
+#drawSourceDiv {
+  //height: 97px;
+  border-bottom: 1px solid #666666;
+}
+
+#drawSourceDiv .inactive {
+  opacity: 0.3;
+}
+
+#drawSourceDiv .disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+#drawSourceDiv>div {
   display: inline-block;
+  text-align: center;
+  width: 29%;
+  margin: 5px 40px;
+  border-radius: 4px;
+  border: 1px solid #666666;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+}
+
+#drawSourceDiv>div:hover {
+  border-color: aqua;
+}
+
+#drawSourceDiv span {
+  font-size: 36px;
+  margin: 5px 0 0 0;
+  opacity: 1;
+  color: black;
+}
+
+#drawSourceDiv p {
+  margin: 0px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#drawCreateDiv {
+  //height: 100px;
+  border-bottom: 1px solid #666666;
+}
+
+#drawToolbar, #measureTool {
+  display: block;
   margin: 5px;
   margin-bottom: 10px;
   padding: 5px;
@@ -585,21 +666,106 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #drawToolbar {
-  float: left;
+  background: rgba(0,0,102,0.3);
+  border-radius: 4px;
+  border: 1px solid black;
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
+  margin: 5px 10px;
+  //height: 92px;
+}
+
+#drawImport {
+  background: rgba(102,0,102,0.3);
+  border-radius: 4px;
+  border: 1px solid black;
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
+  margin: 5px 10px;
+  //height: 72px;
+  padding: 5px;
+  text-align: center;
+  display: none;
+}
+
+#drawImport label {
+  margin-top: 5px;
+}
+
+#drawImport input, #measureTool input, #exportActualDiv input {
+  position: relative;
+  top: 2px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+#importFile {
+  color: #333;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid;
+  border-radius: 0 4px 4px 0;
+  background: beige;
+  width: 100%;
+  cursor: text;
+}
+
+#importFileButton.inactive, #measureMetricDiv.inactive, .legendBtn.inactive, .hcPanelDivs.inactive {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#importFileButton, #exportFileButton {
+  margin: auto;
+  width: 50%;
+  color: white;
+  cursor: pointer;
+}
+
+#drawMeasureDiv {
+  //height: 100px;
+  border-bottom: 1px solid #666666;
 }
 
 #measureTool {
-  float: right;
+  background: rgba(255,153,0,0.5);
+  border-radius: 4px;
+  border: 1px solid black;
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
+  margin: 5px 10px;
+  padding: 5px;
+  text-align: center;
 }
 
-#drawToolDiv {
+#measureMetricDiv {
+  background: rgba(0,204,0,0.5);
+  border-radius: 4px;
+  border: 1px solid black;
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
+  margin: 0px 15px;
   padding: 5px;
+  text-align: center;
+}
+
+#measureMetricDiv .leaflet-draw {
+  margin-bottom: 0px;
+}
+
+#measureMetricDiv .leaflet-draw-actions {
+  display: none !important;
+}
+
+#openSourceMetrics input {
+  width: 100px;
+  border-radius: 4px;
+  border: 1px solid black;
+  margin-left: 5px;
+  text-align: center;
+  cursor: text;
 }
 
 .leaflet-draw {
   display: inline-block;
   margin-top: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .leaflet-draw-toolbar {
@@ -607,9 +773,19 @@ input[type=range]:focus::-ms-fill-upper {
   box-shadow: none;
 }
 
+.leaflet-draw-toolbar.leaflet-bar.leaflet-draw-toolbar-top {
+  margin-right: 40px;
+}
+
+#measureMetricDiv .leaflet-draw-toolbar.leaflet-bar.leaflet-draw-toolbar-top {
+  margin-right: 0px;
+}
+
+
 .leaflet-draw-toolbar.leaflet-bar a {
   display: inline-block;
-  margin-left: 2px;
+  margin-left: 3px;
+  margin-right: 3px;
   width: 27px !important;
   height: 27px!important;
   border-radius: 4px !important;
@@ -644,47 +820,29 @@ input[type=range]:focus::-ms-fill-upper {
   border-color: white !important;
 }
 
-#measureTool .leaflet-bar {
-  box-shadow: none;
-  display: inline-block;
-  margin-top: 5px;
-}
-
-#measureTool>.leaflet-bar>a {
-  width: 27px;
-  height: 27px;
-  border: 1px solid #333333;
-  background-color: #ff6666;
-}
-
-#measureTool>.leaflet-bar>a:hover {
-  border-color: aqua;
-}
-
 #shapeDiv {
-  width: calc(100% - 10px);
+  width: 100%;
   height: 100%;
-  //border: 1px solid black;
   border-radius: 4px;
   padding: 5px;
-  margin: 5px;
 }
 
 .shape {
   width: 50%;
   display: inline-block;
-  text-aling: center;
+  text-align: center;
 }
 
 .shapeTitle {
-  color: black;
-  font-weight: normal;
+  color: #333333;
+  font-weight: 700;
   text-align: center;
   margin: 2px;
+  font-size: 14px;
 }
 
 .shapeVals {
-  width: 175px;
+  width: 129px;
   background: lightgreen;
   border: 1px solid #333333;
   border-radius: 4px;
@@ -709,11 +867,12 @@ input[type=range]:focus::-ms-fill-upper {
   margin: 0px 5px 0px 5px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 12px;
-  font-weight: normal;
+  font-weight: 700;
   text-align: center;
   color: #333333;
-  width: 175px;
+  width: 129px;
   height: 22px;
+  cursor: pointer;
 }
 
 .shapeUnit:hover {
@@ -747,6 +906,8 @@ input[type=range]:focus::-ms-fill-upper {
   border: 1px solid #333333;
   margin: 5px;
   border-radius: 4px;
+  width: 294px;
+  height: 233.83px;
 }
 
 #birdSong {
@@ -754,8 +915,9 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #species {
-  font-style: italic;
+  //font-style: italic;
   font-weight: bold;
+  margin: 0;
 }
 
 #infoDiv {
@@ -764,9 +926,167 @@ input[type=range]:focus::-ms-fill-upper {
   background: rgba(255,255,255,1);
   border: 1px solid black;
   border-radius: 4px;
-  font-size: 2em;
+  font-size: 18px;
   align-self: center;
 }
+
+#infoDiv p {
+  //font-size: 18px;
+}
+
+#exportDiv {
+  position: absolute;
+  top: 85px;
+  left: 580px;
+  //right: 445px;
+  width: 100%;
+  width: 300px;
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+}
+
+#exportDefaultDiv {
+  padding: 5px;
+  background: white;
+  border-radius: 4px;
+}
+
+#exportActualDiv {
+  padding: 5px;
+  display: none;
+  text-align: center;
+  border-radius: 4px;
+}
+
+
+
+
+
+#resultsDiv {
+  position: absolute;
+  top: 85px;
+  //left: 678px;
+  right: 45px;
+  width: 100%;
+  max-width: 400px;
+  min-width: 400px;
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+}
+
+#resultsDefaultDiv {
+  padding: 5px;
+  background: white;
+  border-radius: 4px;
+}
+
+#resultsActualDiv {
+  padding: 5px;
+  background: white;
+  width: calc(100% - 10px);
+  margin: 0 5px 5px 5px;
+  display: none;
+  max-height: 500px;
+  overflow-y: auto;
+  text-align: center;
+}
+
+#resultsActualDiv th, #resultsActualDiv td {
+  text-align: center;
+}
+
+#resultsTable {
+  width: 100%;
+  font-size: 13px;
+}
+
+#resultsTable thead {
+  background: gray;
+  background: -webkit-linear-gradient(darkgray, gray);
+  border: 1px solid black;
+  font-weight: bold;
+  color: white;
+}
+
+#resultsTable thead tr {
+  position: relative;
+  display: block;
+}
+
+#resultsTable thead th {
+  border-right: 1px solid black;
+}
+
+#resultsTable thead th:last-child {
+  border-right: none;
+}
+
+#resultsTable tbody {
+  display: block;
+  overflow-y: auto;
+  height: 438px;
+  margin-left: 1px;
+}
+
+#resultsTable tbody tr {
+  //position: relative;
+  //display: block;
+}
+
+#resultsTable td {
+  border: 1px solid gray;
+  border-collapse: collapse;
+}
+
+#resultsTable th:nth-child(1), #resultsTable td:nth-child(1) {
+  width: 179px;
+}
+
+#resultsTable tbody tr:hover {
+  color: black;
+  background: lightblue;
+  cursor: pointer;
+}
+
+#resultsTable th:nth-child(2), #resultsTable td:nth-child(2), #resultsTable th:nth-child(3), #resultsTable td:nth-child(3) {
+  width: 89px;
+}
+
+  
+#outputDiv {
+  padding: 5px;
+  overflow-Y: auto;
+  height: calc(100% - 42px);
+}
+
+#outputDiv>p {
+  margin: 0px;
+}
+
+#alertDiv {
+  position: absolute;
+  top: calc(50% - 23px);
+  left: calc(50% - 152px);
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 1;
+  border: 1px solid black;
+  width: 302px;
+}
+
 
 .helpTitle {
   text-align: left;

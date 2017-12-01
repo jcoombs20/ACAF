@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Massachusetts Avian Community Assemblage Forecaster Tool</title>
+    <title>PACT: Predictor of Avian Communities Tool</title>
     <link rel="icon" type="image/png" href="images/bird-favicon.ico">
 
     <!--link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/-->
@@ -14,10 +14,8 @@
     <link rel="stylesheet" href="colorbrewer.css"/>
     <link rel="stylesheet" href="styles/Control.BingGeocoder.css"/>
     <link rel="stylesheet" href="styles/Control.maxExtent.css"/>
-    <link rel="stylesheet" href="leaflet-draw-old/dist/leaflet.draw.css"/>
-    <link rel="stylesheet" href="leaflet.measurecontrol/leaflet.measurecontrol.css"/>
+    <link rel="stylesheet" href="leaflet-draw/dist/leaflet.draw.css"/>
     <link rel="stylesheet" href="styles/Control.mousePosition.css"/>
-    <!--link rel="stylesheet" href="styles/Control.downLoadFile.css"/-->
     <link rel="stylesheet" href="styles/Control.print.css"/>
     <link rel="stylesheet" href="styles/birds.css"/>
 
@@ -34,12 +32,12 @@
     <script src="Google_tile.js"></script>
     <script src="Control.BingGeocoder.js"></script>
     <script src="Control.maxExtent.js"></script>
-    <script src="leaflet-draw-old/dist/leaflet.draw.js"></script>
-    <script src="leaflet.measurecontrol/leaflet.measurecontrol.js"></script>
+    <script src="leaflet-draw/dist/leaflet.draw.js"></script>
     <script src="Control.mousePosition.js"></script>
     <script src="Control.downLoadFile.js"></script>
     <script src="Control.print.js"></script>
-
+    <script src="http://ecosheds.org:3415/socket.io/socket.io.js"></script>
+    <script src="socket_emit.js"></script>
     <!--script src="http://d3js.org/d3.v3.min.js"></script-->
     <script src="d3.v3.min.js"></script>
     <!--script src="http://d3js.org/topojson.v1.min.js"></script-->
@@ -49,6 +47,7 @@
     <!--script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script-->
     <script src="queue.min.js"></script>
     <script src="crossfilter.min.js"></script>
+    <script src="shapefile.js"></script>
 
   </head>
 
@@ -56,6 +55,9 @@
     <div id="map"></div>
 
     <script type='text/javascript'>
+      //******Connect to postgresql database
+      socket_emit();
+
       //******Initialize bootstrap tooltip
       $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();   
@@ -66,7 +68,7 @@
 
       function resizePanels() {
         var bodyRect = document.body.getBoundingClientRect();
-        var tmpWindows = ["legendDiv", "drawDiv", "songsDiv", "downloadDiv"];
+        var tmpWindows = ["legendDiv", "drawDiv", "resultsDiv", "songsDiv", "downloadDiv"];
         
         tmpWindows.forEach(function(win) {
           var winRect = document.getElementById(win).getBoundingClientRect();
@@ -77,6 +79,9 @@
             d3.select("#" + win).style("left", bodyRect.width - winRect.width + "px");
           }
         });
+
+        //***Resize species dropdown list
+        d3.select("#birdListDropdown").style("max-height", window.innerHeight - 75 + "px");
       }
 
 
@@ -101,9 +106,12 @@
           position: 'topleft',
           polygon: {allowIntersection: false, drawError: {color: '#b00b00', timeout: 1500}, shapeOptions: {color: '#ff33cc'}, showArea: true},
           rectangle: {shapeOptions: {color: '#ff33cc'}, showArea: true},
-          circle: {shapeOptions: {color: '#ff33cc'}, showArea: true},
+          circle: false,
+          //circle: {shapeOptions: {color: '#ff33cc'}, showArea: true},
+          //polyline: {shapeOptions: {color: '#ff33cc'}},
           polyline: false,
-          marker: false
+          marker: false,
+          circlemarker: false
       	},
       	edit: {
           featureGroup: drawnItems,
@@ -113,13 +121,18 @@
       });
 
       map.on('draw:created', function (e) {
-        getShape(e.layerType, e.layer); 
-        e.layer.on("edit", updateShape);       
-      	drawnItems.addLayer(e.layer);
-        drawnItems._layers[L.stamp(e.layer)]["layerType"] = e.layerType;
-        tmpGeo = e.layer.toGeoJSON();
-        d3.select(".leaflet-draw-section").style("pointer-events", "none").style("opacity", "0.4");
-        //toolWindowToggle("draw");
+        if(d3.select("#drawToolbar").select(".leaflet-draw-actions").style("display") == "block") { 
+          getShape(e.layerType, e.layer); 
+          e.layer.on("edit", updateShape);       
+          drawnItems.addLayer(e.layer);
+          drawnItems._layers[L.stamp(e.layer)]["layerType"] = e.layerType;
+          d3.select(".leaflet-draw-section").style("pointer-events", "none").style("opacity", "0.4");
+          layerID = e.layer._leaflet_id;
+          d3.select("#exportDefaultDiv").style("display", "none");
+          d3.select("#exportActualDiv").style("display", "block");
+          d3.selectAll("#hcExportDiv,#hcZoomDiv,#hcRunDiv").classed("inactive", false);
+          d3.select("#enableImport").classed("disabled", true);
+        }
       });
 
       map.on('draw:deleted', function (e) {
@@ -127,7 +140,11 @@
         d3.select(".leaflet-draw-section").style("opacity", "1");
         d3.select("#edgeText").attr("value", "");
         d3.select("#areaText").attr("value", "");
-        //d3.select("#shapeDiv").style("display", "none");
+        d3.select("#exportDefaultDiv").style("display", "block");
+        d3.select("#exportActualDiv").style("display", "none");
+        d3.selectAll("#hcExportDiv,#hcZoomDiv,#hcRunDiv,#hcResultsDiv").classed("inactive", true);
+        ["export", "results"].forEach(function(d) { if(d3.select("#" + d + "Div").style("opacity") == "1") {toolWindowToggle(d);} });
+        d3.select("#enableImport").classed("disabled", false);
       });
 
       map.on('draw:editmove', function (e) {
@@ -139,7 +156,11 @@
       });
 
       map.on('draw:editvertex', function (e) {
-        getShape(e.layer.layerType, e.layer);        
+        //getShape(e.layer.layerType, e.layer);        
+      });
+
+      map.on('draw:editstop', function (e) {
+        getShape(drawnItems.getLayer(layerID).layerType, drawnItems.getLayer(layerID));        
       });
 
       function updateShape(e) {
@@ -185,6 +206,8 @@
         }
       });
 
+
+
       function getShape(type, layer) {
         switch (type) {
           case 'polygon':
@@ -207,47 +230,102 @@
             var area = L.GeometryUtil.geodesicArea(layer.getLatLngs());
             break;            
         }      
+
         changeUnits("Meters", d3.select("#edgeUnit").property("value"), length, "edge");
+        d3.select("#edgeText")
+          .attr("data-m", length);
+
         changeUnits("Square Meters", d3.select("#areaUnit").property("value"), area, "area");
+        d3.select("#areaText")
+          .attr("data-ha", area/10000)
+          .attr("data-sq_m", area);
+
+        //***Add geojson of drawn feature to export button
+        setTimeout(function() {
+          socket.emit("check_stats", {"geom": drawnItems.toGeoJSON().features[0].geometry});
+          setExport();
+        },500);
       }
+
+
+      //******Add shapefile or geojson format to download button
+      function setExport() {
+        if(document.querySelector('input[name=exportFormat]:checked').value == "geojson") {
+          d3.select("#exportFileButtonA")
+            .property("download", "opening.geojson")
+            .property("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(drawnItems.toGeoJSON())));
+        }
+        else { 
+          var shpwrite = require('shp-write');
+          
+          var options = {
+            folder: "opening",
+            types: {
+              point: "opening",
+              polygon: "opening",
+              line: "opening",
+              polyline: "opening"
+            }
+          }        
+
+          var byteString = shpwrite.zip(drawnItems.toGeoJSON(), options);
+          var byteCharacters = window.atob(byteString);
+          var byteNumbers = new Array(byteCharacters.length);
+          for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          var byteArray = new Uint8Array(byteNumbers);
+          var blob = new Blob([byteArray], {type: 'application/zip'});
+          var url = URL.createObjectURL(blob);
+          d3.select("#exportFileButtonA")
+            .property("download", "opening.zip")
+            .property("href", url);
+        } 
+      }
+
+
 
 
       //***Bing geocoder control
       var tmpPoint = new L.marker;
-      var bingGeocoder = new L.Control.BingGeocoder('At3gymJqaoGjGje-JJ-R5tJOuilUk-gd7SQ0DBZlTXTsRoMfVWU08ZWF1X7QKRRn', { callback: function (results) {
-        if(results.statusCode == 200) {
-          if(d3.select("#bingGeocoderSubmit").classed("glyphicon-search")) {
-            $(document).ready(function(){
-              $('[data-toggle="tooltip"]').tooltip();   
-            });
-            document.getElementById("bingGeocoderInput").blur();
-            var bbox = results.resourceSets[0].resources[0].bbox,
-              first = new L.LatLng(bbox[0], bbox[1]),
-              second = new L.LatLng(bbox[2], bbox[3]),
-              tmpBounds = new L.LatLngBounds([first, second]);
-            this._map.fitBounds(tmpBounds);
-            this._map.removeLayer(tmpPoint);
-            tmpPoint = new L.marker(results.resourceSets[0].resources[0].point.coordinates);  //.bindPopup(results.resourceSets[0].resources[0].address.formattedAddress);
-            this._map.addLayer(tmpPoint);
-            d3.select(".leaflet-marker-icon")
-              .attr("id","mapIcon")
-              .attr("data-toggle", "tooltip")
-              .attr("data-container", "body")
-              .attr("data-placement", "auto top")
-              .attr("data-html", "true")
-              .attr("title", '<p><b><center>' + results.resourceSets[0].resources[0].name + '</center></b></p>');
-            d3.select(tmpPoint)
-              .on("click", function() { clearSearch(); });
-            d3.select("#bingGeocoderSubmit")
-              .classed("glyphicon-search", false)
-              .classed("glyphicon-remove", true)
-              .style({"background":"#ff0040", "background":"linear-gradient(#ff0040, #b3002d)", "color":"#990000"})
-              .property("title", "Click to clear search results");
+      var bingGeocoder = new L.Control.BingGeocoder('At3gymJqaoGjGje-JJ-R5tJOuilUk-gd7SQ0DBZlTXTsRoMfVWU08ZWF1X7QKRRn', { callback: function (results)
+        {
+          if(results.statusCode == 200) {
+            if(d3.select("#bingGeocoderSubmit").classed("glyphicon-search")) {
+              $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();   
+              });
+              document.getElementById("bingGeocoderInput").blur();
+              var bbox = results.resourceSets[0].resources[0].bbox,
+                first = new L.LatLng(bbox[0], bbox[1]),
+                second = new L.LatLng(bbox[2], bbox[3]),
+                tmpBounds = new L.LatLngBounds([first, second]);
+              this._map.fitBounds(tmpBounds);
+              this._map.removeLayer(tmpPoint);
+              tmpPoint = new L.marker(results.resourceSets[0].resources[0].point.coordinates);  //.bindPopup(results.resourceSets[0].resources[0].address.formattedAddress);
+              this._map.addLayer(tmpPoint);
+              d3.select(".leaflet-marker-icon")
+                .attr("id","mapIcon")
+                .attr("value", results.resourceSets[0].resources[0].name)
+                .attr("data-toggle", "tooltip")
+                .attr("data-container", "body")
+                .attr("data-placement", "auto top")
+                .attr("data-html", "true")
+                .attr("title", '<p><b><center>' + results.resourceSets[0].resources[0].name + '</center></b></p>');
+              d3.select(tmpPoint)
+                .on("click", function() { clearSearch(); });
+              d3.select("#bingGeocoderSubmit")
+                .classed("glyphicon-search", false)
+                .classed("glyphicon-remove", true)
+                .property("title", "Click to clear search results");
+            }
+            else {
+              clearSearch();
+            }
           }
           else {
-            clearSearch();
+            d3.select("#bingGeocoderInput").property("value","No matching results");            
           }
-        }
         }
       });
 
@@ -301,65 +379,24 @@
         });
       var blank = new L.tileLayer('');
     
-      map.addLayer(googleHybrid);
+
 
       //******Add Geoserver Layers
-      var baww = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:baww_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
+      var birdTitles = ["Alder Flycatcher","American Goldfinch","American Woodcock","Black and White Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Carolina Wren","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","House Wren","Indigo Bunting","Lincoln's Sparrow","Magnolia Warbler","Mourning Warbler","Nashville Warbler","Northern Bobwhite","Northern Cardinal","Northern Mockingbird","Palm Warbler","Prairie Warbler","Ruby-throated Hummingbird","Ruffed Grouse","Rusty Blackbird","Song Sparrow","Swamp Sparrow","Tennessee Warbler","White-eyed Vireo","White-throated Sparrow","Willow Flycatcher","Wilson's Snipe","Wilson's Warbler","Yellow Warbler","Yellow-billed Cuckoo","Yellow-breasted Chat"];
+      var birdID = ["alfl","amgo","amwo","baww","bwwa","brth","cawa","cawr","cewa","cswa","coye","deju","eato","fisp","gwwa","grca","howr","inbu","lisp","mawa","mowa","nawa","nobo","noca","nomo","pawa","praw","rthu","rugr","rubl","sosp","swsp","tewa","wevi","wtsp","wifl","wisn","wiwa","yewa","ybcu","ybch"];
+      var birdLayers = [];
+      birdID.forEach(function(spp, i) {
+        birdLayers[i] = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+          layers: 'birds:' + spp + '_wgs84',
+          format: 'image/png',
+          transparent: true,
+          version: '1.1.0',
+          maxZoom: 20
+        });
       });
 
-      var coye = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:coye_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
-      });
 
-      var cswa = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:cswa_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
-      });
-
-      var eato = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:eato_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
-      });
-
-      var grca = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:grca_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
-      });
-
-      var inbu = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:inbu_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
-      });
-
-      var praw = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
-        layers: 'birds:praw_wgs84',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        maxZoom: 20
-      });
-
+/*
       var gsTowns = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/crossings/wms", {
         layers: 'crossings:deerfield_towns',
         format: 'image/png',
@@ -391,22 +428,13 @@
         version: '1.1.0',
         maxZoom: 20
       });
-
-      //******Make layer controller
-      var baseLayers = {"Google Hybrid": googleHybrid, "Google Satellite": googleSatellite, "Google Street": googleStreet, "Google Terrain": googleTerrain, "Bing Hybrid": bingHybrid, "Bing Satellite": bingSatellite, "Bing Street": bingStreet, "USGS Topo": usgsTopo, "None": blank};
-      var overlays = {"Black & White Warbler": baww, "Common Yellowthroat": coye, "Prairie Warbler": praw, "Counties": gsCounties, "Towns": gsTowns, "HUC 12 Watersheds": gsHUC12};
-      //L.control.layers(baseLayers, overlays).addTo(map);
-
-      d3.select(".leaflet-control-layers-base").property("title", "Click on radio button to change the baselayer option");
-      d3.select(".leaflet-control-layers-overlays").property("title", "Check the box to add layer to map (may be slight delay)");
+*/
 
       //******Add Download tool
       var downLoadFile = new L.Control.downLoadFile();
-      //map.addControl(downLoadFile);
 
       //******Add Print tool
       var printMap = new L.Control.print();
-      //map.addControl(printMap);
 
 
 
@@ -418,9 +446,6 @@
       layerNames.baseLayers.values = d3.values(layerNames.baseLayers);
 
       //***Bird layers
-      var birdTitles = ["Black and White Warbler", "Chestnut Sided Warbler", "Common Yellowthroat", "Eastern Towhee", "Gray Catbird", "Indigo Bunting", "Prairie Warbler"];
-      var birdLayers = [baww, cswa, coye, eato, grca, inbu, praw];
-      var birdID = ["baww", "cswa", "coye", "eato", "grca", "inbu", "praw"];
       layerNames.birds = {};
       birdTitles.forEach(function(tmpTitle,i) {
         layerNames.birds[tmpTitle] = birdLayers[i];
@@ -435,7 +460,7 @@
       d3.select("body")
         .append("div")
         .attr("class", "header")
-        .html('<span class="brand">ACAF: Avian Community Assemblage Forecaster</span> <div id="headerLinks"><a title="Click to display information on how to use this tool" href="#" data-toggle="modal" data-target="#helpDiv">About ACAF</a><a title="Click to go to the Ecosheds homepage" href="http://ecosheds.org" target="_blank">SHEDS Home</a></div><div id="printDownload" class="pull-right"><span id="downloadControl" class="glyphicon glyphicon-download-alt" title="Download spatial data" onclick="toolWindowToggle(&quot;download&quot;)"></span><span id="printControl" class="glyphicon glyphicon-print" title="Print current map" onclick="window.print()"></span></div>');
+        .html('<span class="brand">PACT: Predictor of Avian Communities Tool</span><div id="headerLinks"><a title="Click to display information on how to use this tool" href="#" data-toggle="modal" data-target="#helpDiv">About PACT</a><a title="Click to go to the Ecosheds homepage" href="http://ecosheds.org" target="_blank">SHEDS Home</a></div><div id="printDownload" class="pull-right"><span id="legendControl" class="glyphicon glyphicon-list" title="View legend window" onclick="toolWindowToggle(&quot;legend&quot;)"></span><span id="songControl" class="glyphicon glyphicon-music" title="View bird song window" onclick="toolWindowToggle(&quot;songs&quot;)"></span><span id="downloadControl" class="glyphicon glyphicon-download-alt" title="Download spatial data" onclick="toolWindowToggle(&quot;download&quot;)"></span><span id="printControl" class="glyphicon glyphicon-print" title="Print current map" onclick="window.print()"></span></div>');
 
 
 
@@ -479,11 +504,11 @@
           .on("click", function() { changeBaselayer(this); })
           .append("span")
           .attr("class", "glyphicon glyphicon-ok pull-right activeOverlay")
-          .style("visibility", function(d,i) { if(i == 0) {return "visible";} else {return "hidden";} });
+          .style("visibility", function(d,i) { if(i == 1) {return "visible";} else {return "hidden";} });
 
 
       //******Initialize baselayer
-      map.addLayer(googleTerrain);
+      map.addLayer(googleHybrid);
 
       //******Function to change baselayer on select change
       function changeBaselayer(tmpDiv) {
@@ -518,7 +543,7 @@
         .attr("class", "cl_select")
         .property("title", "Click to select bird occupancy layers to display on map")
         .html('<span id="birdListHeader">View Bird Occupancy Map Layers</span><span class="glyphicon glyphicon-triangle-bottom pull-right" style="position:relative;top:3px;"></span>')
-        .on("click", function() { if(d3.select("#birdListDropdown").style("display") == "none") {d3.select("#birdListDropdown").style("display", "inline-block");} else {d3.select("#birdListDropdown").style("display", "none");} });;
+        .on("click", function() { if(d3.select("#birdListDropdown").style("display") == "none") {d3.select("#birdListDropdown").style("display", "inline-block"); resizePanels();} else {d3.select("#birdListDropdown").style("display", "none");} });;
 
       d3.select("#birdSelect")
         .append("div")
@@ -539,10 +564,10 @@
           .on("click", function() { changeBird(this); })
           .append("span")
           .attr("class", "glyphicon glyphicon-ok pull-right activeBird")
-          .style("visibility", function(d) { if(d == "Deerfield Watershed") {return "visible";} else {return "hidden";} });
+          .style("visibility", "hidden");
 
-      //******Add Geoserver Deerfield HUC8 layer to map
-      //map.addLayer(gsHuc8);
+
+
 
       //******Function to add/remove bird layer
       function changeBird(tmpDiv) {
@@ -555,7 +580,7 @@
         else {
           d3.select(tmpDiv).select("span").style("visibility", "hidden");
           map.removeLayer(layerNames.birds.values[tmpDiv.value]);
-          remLegendImg(tmpDiv.name);
+          remLegendImg(tmpDiv.name + "_wgs84");
         }
       }
 
@@ -570,6 +595,32 @@
         //.attr("class", "layerList");
 
       document.getElementById('bingGeoLocate').appendChild(bingGeocoder.onAdd(map));
+      d3.select("#bingGeocoderInput")
+        .on("mouseup", function() { if(this.value == "No matching results") { this.value = ""; } else { $(this).select(); } })
+        .on("blur", function() { modifySearch(this, "blur"); })
+        .on("keyup", function() { modifySearch(this, "key"); }); // if(d3.event.keyCode == 13) { if(d3.select("#bingGeocoderSubmit").classed("glyphicon-remove") == true) { $("#bingGeocoderSubmit").click(); } } });
+
+
+
+      function modifySearch(tmpEl, tmpEvent) {
+        if(tmpEvent == "blur") {
+          if((tmpEl.value == "" || tmpEl.value == "No matching results") && document.getElementById("mapIcon")) { 
+            tmpEl.value = d3.select("#mapIcon").attr("value"); 
+            d3.select("#bingGeocoderSubmit").classed("glyphicon-remove", true).classed("glyphicon-search", false);
+          }
+          else if(tmpEl.value == "No matching results" && !document.getElementById("mapIcon")) {
+            tmpEl.value = "";
+          }
+        } 
+        else if(document.getElementById("mapIcon")) {
+          if(tmpEl.value != d3.select("#mapIcon").attr("value")) {
+            d3.select("#bingGeocoderSubmit").classed("glyphicon-remove", false).classed("glyphicon-search", true);
+          }
+          else {
+            d3.select("#bingGeocoderSubmit").classed("glyphicon-remove", true).classed("glyphicon-search", false);
+          }
+        }
+      }
 
 
 
@@ -579,20 +630,57 @@
       //Add panel icons
       d3.select("#headerControls")
         .append("div")
-        .attr("id", "panelTools");
+        .attr("id", "panelTools")
+        .html('<p id="wildOpen">Wildlife Opening:</p>');
 
-      var hcPanels = ["draw", "songs"];
-      var hcGlyphs = ["glyphicon-pencil", "glyphicon-music"];
-      var hcLabel = ["Draw & Measure", "Bird Songs & Photos"]
+      var hcPanels = ["draw", "export", "zoom", "run", "results"];
+      var hcGlyphs = ["glyphicon-pencil", "glyphicon-export", "glyphicon-zoom-in", "glyphicon-play", "glyphicon-list-alt"];
+      var hcLabel = ["Add", "Export", "Zoom", "Analyze", "Results"]
       d3.select("#panelTools").selectAll("divs")
         .data(hcPanels)
         .enter()
           .append("div")
           .attr("id", function(d) { return "hc" + d.charAt(0).toUpperCase() + d.slice(1) + "Div"; })
-          .attr("class", "hcPanelDivs layerList")
-          .property("title", function(d,i) { return "Click to show " + hcLabel[i] + " window"; })
+          .attr("class", function(d) { if(d == "draw") {return "hcPanelDivs layerList";} else {return "hcPanelDivs layerList inactive";} })
+          .attr("data-toggle", function(d) { if(d == "view") {return "modal";} })
+          .attr("data-target", function(d) { if(d == "view") {return "#backgroundDiv";} })
+          .property("title", function(d,i) {
+            if(d == "zoom") {
+              return "Click to zoom to wildlife opening";
+            }
+            else if(d == "run") {
+              return "Click to retrieve species' occupancy probabilities for the wildlife opening";
+            }
+            else {
+              return "Click to show " + hcLabel[i] + " window"; 
+            }
+          })
           .html(function(d,i) { return '<span class="glyphicon ' + hcGlyphs[i] + '"></span><p>' + hcLabel[i] + '</p>'; })
-          .on("click", function(d) { if(d != "attrSelect") { return toolWindowToggle(d);} });
+          .on("click", function(d) { 
+            switch (d) {
+              case "draw":
+                toolWindowToggle(d);
+                break;
+              case "export":
+                toolWindowToggle(d);               
+                break;
+              case "zoom":
+                var tmpCoords = drawnItems.getBounds();
+                map.fitBounds([[tmpCoords._northEast.lat, tmpCoords._northEast.lng],[tmpCoords._southWest.lat, tmpCoords._southWest.lng]]);
+                break;
+              case "run":
+                if((document.querySelector('input[name=sourcePop]:checked').value == "yes" && isNaN(parseInt(d3.select("#openSourceDist").property("value"))) == false) || document.querySelector('input[name=sourcePop]:checked').value == "no") {
+                  socket.emit("get_occ", {"geom": drawnItems.toGeoJSON().features[0].geometry, "birds": birdID, "queryType": queryType, "centGeom": queryCentroid, "rid": queryRID});
+                }
+                else {
+                  d3.select("#alertDiv").style("display", "block");
+                }
+                break;
+              case "results":
+                toolWindowToggle(d);
+                break;
+            }
+          });
 
 
 
@@ -600,7 +688,7 @@
 
 
       //******Function to toggle tool windows
-      var toggleWords = {"legend":"Layers", "draw":"Draw & Measure", "songs":"Bird Songs & Photos", "download":"Downloads"}
+      var toggleWords = {"legend":"Layers", "draw":"Add Wildlife Opening", "export":"Export Wildlife Opening", "songs":"Bird Songs & Photos", "download":"Downloads"}
 
       function toolWindowToggle(tmpDiv) {
         if (d3.select("#" + tmpDiv + "Div").style("opacity") == "1") {
@@ -622,7 +710,7 @@
 
       function setZ(tmpWin) {
         if (d3.select("#map").classed("introjs-showElement") == false) {
-          d3.selectAll("#legendDiv,#drawDiv,#songsDiv,#downloadDiv").style("z-index", function() { if(d3.select(this).style("opacity") == 1) {return 1001;} else {return 7500;} }); 
+          d3.selectAll("#legendDiv,#drawDiv,#exportDiv,#resultsDiv,#songsDiv,#downloadDiv").style("z-index", function() { if(d3.select(this).style("opacity") == 1) {return 1001;} else {return 7500;} }); 
           d3.select(tmpWin).style("z-index", 1002);
         }
       }
@@ -635,6 +723,8 @@
       var legendDivs = [];   //global array of active legends
 
       function addLegendImg(tmpName, tmpTitle, tmpLayer, tmpPath) {
+        tmpLayer.setOpacity(1);
+
         legendDivs.push(tmpName);
         d3.selectAll(".layerLegend").style("display", "none");
 
@@ -643,21 +733,37 @@
           .attr("id", tmpName + "Legend")
           .attr("value", tmpPath)
           .attr("class", "layerLegend")
-          .style("margin-top", "25px")
+          .style({"margin-top":"25px","opacity":"0"})
           .append("h3")
           .attr("class", "legendTitle")
           .text(tmpTitle);
 
         d3.select("#" + tmpName + "Legend")
+          .append("div")
+          .attr("id", tmpName + "LegImgDiv")
+          .attr("class","legImgDiv")
           .append("img")
+          .attr("id", tmpName + "LegendImg")
           .attr("class", "legendImg")
-          .attr("src", "http://felek.cns.umass.edu:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName)
+          //.attr("src", "http://felek.cns.umass.edu:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName)
           .property("title", tmpTitle);
+
+        //***Set div width and offset after the image has been loaded
+        $("#" + tmpName + "LegendImg").one("load", function() {
+          var tmpRect = document.getElementById(tmpName + "LegendImg").getBoundingClientRect();
+
+          d3.select("#" + tmpName + "LegImgDiv").style({"max-height":tmpRect.height - 67 + "px", "max-width": tmpRect.width + "px"});
+          d3.select("#" + tmpName + "LegendImg").style("top", "-69px");
+
+          d3.select("#" + tmpName + "Legend").style("opacity", "1"); 
+    
+          resizePanels();
+        }).attr("src", "http://felek.cns.umass.edu:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName);
 
         d3.select("#" + tmpName + "Legend")
           .append("input")
           .attr({type: "range", name: "layer", min: 0, max: 100, value: 100})
-          .attr("id", "legendSlider")
+          .attr("id", tmpName + "LegendSlider")
           .property("title", tmpTitle + " Layer Opacity: 100%")
           .on("input", function() { layerOpacity(this, tmpLayer); });
 
@@ -679,8 +785,6 @@
         if(d3.select("#legendDiv").style("opacity") == 0) {
           toolWindowToggle("legend");
         }
-
-        setTimeout(function() { resizePanels(); }, 300);
       }
 
 
@@ -699,6 +803,7 @@
         d3.select("#" + tmpName + "Legend").remove();
         legendDivs.splice(legendDivs.indexOf(tmpName),1);
 
+        //***If removing active legend display the first legend
         if(tmpBi == 1 && legendDivs.length > 0) {
           d3.select("#" + legendDivs[0] + "Legend").style("display", "block");
           var keys = d3.select("#" + legendDivs[0] + "Legend").attr("value").split(",");
@@ -710,19 +815,38 @@
           }
         }
 
+        //***Set div and arrow visibility based on number of legends left
         if(legendDivs.length == 0) {
           d3.select("#legendImgDiv").style("display", "none");
           d3.select("#legendDefault").style("display", "block");
         }
-        else if(tmpBi == 1) {
-          if(legendDivs.length == 1) {
-            d3.selectAll("#legendPrev,#legendNext").style("visibility", "hidden");
-          }
-          else {
+        else if(legendDivs.length == 1) {
+          d3.selectAll("#legendPrev,#legendNext").style("visibility", "hidden");
+        }
+        else if(legendDivs.length == 2) {
+          if(d3.select("#" + legendDivs[0] + "Legend").style("display") == "block") {
             d3.select("#legendPrev").style("visibility", "hidden");
             d3.select("#legendNext").style("visibility", "visible");
           }
+          else {
+            d3.select("#legendPrev").style("visibility", "visible");
+            d3.select("#legendNext").style("visibility", "hidden");
+          }
         }
+        else {
+          var tmpLegends = d3.selectAll(".layerLegend")[0];
+          if(d3.select(tmpLegends[0]).style("display") == "block") {
+            d3.select("#legendPrev").style("visibility", "hidden");
+            d3.select("#legendNext").style("visibility", "visible");
+          }
+          else if(d3.select(tmpLegends[tmpLegends.length - 1]).style("display") == "block") {
+            d3.select("#legendPrev").style("visibility", "visible");
+            d3.select("#legendNext").style("visibility", "hidden");
+          }
+          else {            
+            d3.selectAll("#legendPrev,#legendNext").style("visibility", "visible");
+          }
+        } 
       }
 
 
@@ -848,7 +972,7 @@
         .attr("class", "legTitle")
         .attr("id", "downloadTitle")
         .append("span")
-        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Downloads</center></b></u></p><p>Download zip files containing GeoTIFFs for Species Occupancy layers, or a shapefile or geoJSON file of the Wildlife Opening created.</p>"></span>');
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Data Download</center></b></u></p><p>Download zip files containing a GeoTIFF of a species regional occupancy probability developed by Jon Atwood and Mass Audubon.</p>"></span>');
  
       d3.select("#downloadTitle")
         .append("span")
@@ -862,21 +986,28 @@
         .append("select")
         .attr("id", "dlSelect")
         .attr("class", "shapeUnit")
-        .style("width", "calc(100% - 10px)")
+        .style({"width":"calc(100% - 10px)","font-style":"italic"})
         .property("title", "Select the format of the output file")
-        .append("option")
-        .property("value", "zip")
-        .text("Shapefile");
+        .on("mousedown", function() {  d3.select(this).style("font-style", "normal").select("option").style("display", "none"); })
+        .on("change", function() { d3.select(".legendBtn.inactive").classed("inactive", false); d3.select("#dlButton").property("href", "zips/" + this.options[this.selectedIndex].value + ".zip"); });
 
-      d3.select("#dlSelect")
-        .append("option")
-        .property("value", "json")
-        .text("GeoJSON");
+      var optData = birdID.slice(0);
+      optData.splice(0,0, "selectAttr");
+      var optTitles = birdTitles.slice(0);
+      optTitles.splice(0,0, "Select Layer...");
+
+      d3.select("#dlSelect").selectAll("option")
+        .data(optData)
+        .enter()
+          .append("option")
+          .attr("value", function(d) { return d; })
+          .property("disabled", function(d, i) { if(i==0) {return "disabled";} })
+          .text(function(d,i) { return optTitles[i]; });
 
       d3.select("#downloadDiv")
         .append("div")
-        .attr("class", "legendBtn")
-        .html('<a id="dlButton" href="#" title="Download the above layer to the specified format">Download</a>');
+        .attr("class", "legendBtn inactive")
+        .html('<a id="dlButton" href="#" title="Download the above layer to the specified format"><span class="glyphicon glyphicon-download-alt" style="color:lime;margin:0;margin-right:5px;opacity:1;"></span>Download</a>');
 
 
 
@@ -893,114 +1024,197 @@
 
       d3.select("#drawDiv")
         .append("h4")
-        .text("Draw & Measure")
+        .text("Add Wildlife Opening")
         .attr("class", "legTitle")
         .attr("id", "drawTitle")
         .append("span")
-        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Draw & Measure</center></b></u></p><p>Use the drawing tools to create, edit, and remove wildlife opening areas on the map.<br><br>Use the measuring tool to determine distances between wildlife openings and landscape features (e.g. power corridors, water bodies).</p>"></span>');
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Add Wildlife Opening</center></b></u></p><p>Use the drawing tools to create, edit, and remove wildlife opening areas on the map.<br><br>Use the measuring tool to determine distances between wildlife openings and landscape features (e.g. power corridors, water bodies).</p>"></span>');
  
       d3.select("#drawTitle")
         .append("span")
         .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
-        .property("title", "Click to hide Draw & Measure window")
+        .property("title", "Click to hide Add Wildlife Opening window")
         .on("click", function() { toolWindowToggle("draw"); });
 
-
-
-
-
-
-
-      //******Leaflet Draw toolbar
+      //***Add draw/import div
       d3.select("#drawDiv")
         .append("div")
-        .attr("id", "drawToolDiv")
+        .attr("id", "drawSourceDiv")
+        .append("div")
+        .attr("id", "enableDraw")
+        .property("title", "Add wildlife opening by drawing on the map")
+        .style("margin-right", "20px")
+        .on("click", function() { 
+          d3.select("#drawSourceDiv").selectAll("div").classed("inactive", true);
+          d3.select(this).classed("inactive", false);
+          d3.select("#drawImport").style("display", "none");
+          d3.select("#drawToolbar").style("display", "block");
+        })
+        .html('<span class="glyphicon glyphicon-pencil"></span><p>Draw</p>');
+
+      d3.select("#drawSourceDiv")
+        .append("div")
+        .attr("id", "enableImport")
+        .property("title", "Add wildlife opening by importing a shapefile or geojson feature")
+        .style("margin-left", "20px")
+        .classed("inactive", true)
+        .on("click", function() { 
+          d3.select("#drawSourceDiv").selectAll("div").classed("inactive", true);
+          d3.select(this).classed("inactive", false);
+          d3.select("#drawToolbar").style("display", "none");
+          d3.select("#drawImport").style("display", "block");
+        })
+        .html('<span class="glyphicon glyphicon-import"></span><p>Import</p>');
+      
+      //***Add Leaflet Draw toolbar
+      d3.select("#drawDiv")
+        .append("div")
+        .attr("id", "drawCreateDiv")
         .append("div")
         .attr("id", "drawToolbar")
-        .html('<h4 class="shapeTitle" title="Use the below tools to draw a wildlife opening on the map">Draw Wildlife Opening</h4>');
+        .html('<label style="margin-bottom:0;" title="Use the below tools to draw a wildlife opening on the map">Draw Wildlife Opening</label><br>');
 
       document.getElementById("drawToolbar").appendChild(drawControl.onAdd(map));
-
-
-
-
-
-      //******Leaflet Measure Tool
-      d3.select("#drawToolDiv")
+      
+      //***Add import file div
+      d3.select("#drawCreateDiv")
         .append("div")
-        .attr("id", "measureTool")
-        .html('<h4 class="shapeTitle" title="Use the below tool to measure distances on the map">Measure Distance</h4>');
+        .attr("id", "drawImport")
+        .html('<input type="file" id="importFile" name="opening" accept=".shp" onchange="checkImport(event)"></input>' 
+          + '<label style="margin-right:20px;">Format:</label><label><input type="radio" id="importFileShape" class="importRadio" name="importFileType" checked><span style="margin-right:20px;">Shapefile</span></label><label><input type="radio" id="importFileGeo" class="importRadio" name="importFileType"><span>GeoJSON</span></label>'
+          + '<div id="importFileButton" class="inactive legendBtn" onclick="importFile()" title="Click to import the geographic feature in the chosen file"><span class="glyphicon glyphicon-import" style="color:lime;margin:0;margin-right:5px;padding:3px;opacity:1;"></span>Import File</div>'
+        );
 
-      var measureTool = new L.Control.measureControl();
-      document.getElementById("measureTool").appendChild(measureTool.onAdd(map));
-
-      //******Disable measure feature if shape is selected
-      d3.select(".leaflet-draw-toolbar").selectAll("a")
-        .on("click", function(d) { 
-          if(d3.select(".leaflet-control-draw-measure").style("background-color") == "rgb(144, 238, 144)") {
-            measureTool.toggle();
+      //***Change file open extension filter
+      d3.selectAll("#importFileShape,#importFileGeo")
+        .on("click", function() { 
+          if(this.id == "importFileShape") {
+            d3.select("#importFile").attr("accept", ".shp");
           }
-          d3.select(this)
-            .style("border-color", "lightgreen")
-            .attr("value", "active");
+          else {
+            d3.select("#importFile").attr("accept", "");
+          }
+          d3.select("#importFile").property("value", "");
         });
 
-
-
-
-
-
-
-      //*****Make div for songs & photos
-      d3.select("body")
+      //***Add Leaflet Measure Tool
+      d3.select("#drawDiv")
         .append("div")
-        .attr("class", "legend gradDown")
-        .attr("id", "songsDiv");
-
-      $('#songsDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
-
-      d3.select("#songsDiv")
-        .append("h4")
-        .text("Bird Songs & Photos")
-        .attr("class", "legTitle")
-        .attr("id", "songsTitle")
-        .append("span")
-        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Bird Songs & Photos</center></b></u></p><p>Listen to calls and view images of bird species found in wildlife openings.</p>"></span>');
- 
-      d3.select("#songsTitle")
-        .append("span")
-        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
-        .property("title", "Click to hide Bird Songs & Photos window")
-        .on("click", function() { toolWindowToggle("songs"); });
-
-
-
-
-
-
-
-      //*******Make Help/information div
-      d3.select("body")
+        .attr("id", "drawMeasureDiv")
         .append("div")
-        .attr("class", "modal fade ui-draggable in")
-        .attr("id", "helpDiv")
-        .style("display", "none")
+        .attr("id", "measureTool")
+        .html('<label style="display:block;margin-bottom:0;">Large opening within 3 km<span class="glyphicon glyphicon-info-sign help-tooltip" style="margin-left:10px;" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="" data-original-title="<p><u><b><center>Source Opening</center></b></u></p><p style=&#34;text-align:left;&#34;>Presence of large patch of shrubland:</p><ul style=&#34;text-align:left;&#34;><li>Clearcuts > 5 ha</li><li>Powerline corridors > 50 m wide</li></ul><p style=&#34;text-align:left;&#34;>within 3 km of wildlife opening</p>"></span></label>'
+          + '<label title="There is a source opening within 3 kilometers of this wildlife opening"><input type="radio" id="sourcePopYes" class="importRadio" name="sourcePop" value="yes"><span style="margin-right:70px;">Yes</span></label><label title="There is not a source opening within 3 kilometers of this wildlife opening"><input type="radio" id="sourcePopNo" class="importRadio" name="sourcePop" value="no" checked><span>No</span></label>'
+          + '<div id="measureMetricDiv">'
+            + '<label style="display:block;margin-bottom:0;">Measure Large Opening</label>'
+          + '</div>'
+        );
+
+      //***Add click event to large opening question
+      d3.selectAll("#sourcePopYes,#sourcePopNo").on("click", function() { 
+        if(document.querySelector('input[name=sourcePop]:checked').id == "sourcePopYes") {
+          d3.select("#measureMetricDiv").classed("inactive", false);
+        }
+        else {
+          measureDrawControl._toolbars.draw.disable();
+          //measureDrawControl._toolbars.edit.disable();
+          d3.select("#measureMetricDiv").classed("inactive", true);
+        }
+      });
+
+      //var measureTool = new L.Control.measureControl();
+      //document.getElementById("measureTool").appendChild(measureTool.onAdd(map));
+
+      var measureItems = new L.FeatureGroup();
+      map.addLayer(measureItems);
+
+      var measureDrawControl = new L.Control.Draw({
+      	draw: {
+          position: 'topleft',
+          polygon: {allowIntersection: false, drawError: {color: '#b00b00', timeout: 1500}, shapeOptions: {color: '#0066ff'}, showArea: true},
+          rectangle: {shapeOptions: {color: '#0066ff'}, showArea: true},
+          circle: false,
+          //circle: {shapeOptions: {color: '#0066ff'}, showArea: true},
+          polyline: {shapeOptions: {color: '#0066ff'}},
+          marker: false,
+          circlemarker: false
+      	},
+      	edit: false
+        //{
+          //featureGroup: measureItems,
+          //edit: {selectedPathOptions: {maintainColor: true, opacity: 1, fillOpacity: 0.2}},
+          //poly: {allowIntersection: false, drawError: {color: '#b00b00', timout: 1500}}
+      	//}
+      });
+      document.getElementById("measureMetricDiv").appendChild(measureDrawControl.onAdd(map));
+
+      //***Add area and distance inputs
+      d3.select("#measureMetricDiv")
         .append("div")
-        .attr("class", "modal-dialog modal-lg")
-        .attr("id", "infoDiv")
-        .append("div")
-        .attr("class", "helpTitle")
-        .text("ACAF: Avian Community Assemblage Forecaster")
-        .property("title", "ACAF: Avian Community Assemblage Forecaster informational details")
-        .append("span")
-        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
-        .attr("data-toggle", "modal")
-        .attr("data-target", "#helpDiv")
-        .property("title", "Close help");
-        
-      d3.select("#infoDiv")
-        .append("div")
-        .text("Helpful information coming soon...");
+        .attr("id", "openSourceMetrics")
+        .html('<label title="The distance in meters (m) of the source opening located within 3 kilometers of your wildlife opening"><span>Distance (m)</span><input type="text" id="openSourceDist"></input>');
+
+      d3.select("#openSourceDist").on("focus", function() { d3.select("#alertDiv").style("display", "none"); });
+
+
+
+
+      //******Ensure a file was selected for import
+      function checkImport(event) {
+        var input = event.target;
+        if(input.files.length > 0) {
+          d3.select("#importFileButton").classed("inactive", false);
+        }
+        else {
+          d3.select("#importFileButton").classed("inactive", true);
+        }
+      }
+
+
+
+      //*****Import the file
+      function importFile() {
+        var file = d3.select("#importFile")[0][0].files[0];
+        var reader = new FileReader();
+        var tmpJSON;
+
+        if(document.querySelector('input[name=importFileType]:checked').id == "importFileGeo") {
+          reader.readAsText(file, 'UTF-8');
+          reader.onload = function(event) {
+            addOpening(JSON.parse(event.target.result), "geo");
+          }
+        }
+        else {
+          reader.addEventListener("loadend", function () {
+            shapefile.read(reader.result)
+              .then(
+                collection => addOpening(collection, "shape")
+              )
+              .catch(
+                error => console.error(error.stack)
+              );
+          });
+          reader.readAsArrayBuffer(file);
+        }
+      }
+
+
+
+
+
+      //******add imported opening to map as svg
+      function addOpening(tmpJSON, tmpType) {
+        var tmpOpening = L.geoJson(tmpJSON); 
+        tmpOpening.eachLayer(function(d) { drawnItems.addLayer(d); });
+        d3.select("#drawToolbar").select(".leaflet-draw-actions").style("display", "block");
+        map.fireEvent("draw:created", {layerType: "polygon", layer: drawnItems.getLayer(d3.keys(drawnItems._layers)[0])});
+        d3.select("#drawToolbar").select(".leaflet-draw-actions").style("display", "none");
+        $("#enableDraw").click();
+        var tmpCoords = drawnItems.getBounds();
+        map.fitBounds([[tmpCoords._northEast.lat, tmpCoords._northEast.lng],[tmpCoords._southWest.lat, tmpCoords._southWest.lng]]);
+      }
+
+
 
 
       //******Add in edge and area text boxes, and unit selector
@@ -1010,9 +1224,9 @@
         .append("div")
         .attr("id", "edgeDiv")
         .attr("class", "shape")
-        .append("h4")
+        .append("p")
         .attr("class", "shapeTitle")
-        .text("Edge Length")
+        .text("Opening Perimeter")
         .property("title", "Length of the wildlife opening perimeter");
 
 
@@ -1020,7 +1234,7 @@
         .append("div")
         .attr("id", "areaDiv")
         .attr("class", "shape")
-        .append("h4")
+        .append("p")
         .attr("class", "shapeTitle")
         .text("Opening Area")
         .property("title", "Area of the wildlife opening");
@@ -1030,6 +1244,7 @@
         .attr({type: "text"})
         .attr("id", "edgeText")
         .attr("class", "shapeVals")
+        .attr("disabled", true)
         .property("title", "Length of the wildlife opening perimeter");
 
       d3.select("#areaDiv")
@@ -1037,6 +1252,7 @@
         .attr({type: "text"})
         .attr("id", "areaText")
         .attr("class", "shapeVals")
+        .attr("disabled", true)
         .property("title", "Area of the wildlife opening");
 
       var selectEdge = d3.select("#edgeDiv")
@@ -1045,7 +1261,7 @@
         .attr("name", "Meters")
         .attr("class", "shapeUnit")
         .property("title", "Select units for edge value")
-        .on("change", function() { changeUnits(this.name, this.value, d3.select("#edgeText").property("value"), "edge") });
+        .on("change", function() { changeUnits("Meters", this.value, d3.select("#edgeText").attr("data-m"), "edge") });
 
       var tmpUnits = ["Meters", "Kilometers", "Feet", "Miles"];
       selectEdge.selectAll("option")
@@ -1063,7 +1279,7 @@
         .attr("name", "Square Meters")
         .attr("class", "shapeUnit")
         .property("title", "Select units for area value")
-        .on("change", function() { changeUnits(this.name, this.value, d3.select("#areaText").property("value"), "area") });
+        .on("change", function() { changeUnits("Square Meters", this.value, d3.select("#areaText").attr("data-sq_m"), "area") });
 
       var tmpUnits = ["Square Meters", "Hectares", "Square Kilometers", "Square Feet", "Acres", "Square Miles"];
       selectArea.selectAll("option")
@@ -1073,14 +1289,17 @@
             .attr("value", function(d) { return d; })
             .text(function(d) {return d; });
 
-      selectArea.property("selectedIndex", 2);
+      selectArea.property("selectedIndex", 1);
+
+
+
+
 
       //Format edge and area values by selected unit
       function changeUnits(oldUnit, unit, val, type) {
-        val = backChangeUnits(oldUnit, val);
         switch (unit) {
           case "Meters":
-            var newVal = val;
+            var newVal = (val/1);
             break;
           case "Kilometers":
             var newVal = (val/1000);
@@ -1092,7 +1311,7 @@
             var newVal = (val*0.00062137);
             break;
           case "Square Meters":
-            var newVal = val;
+            var newVal = (val/1);
             break;
           case "Hectares":
             var newVal = (val/10000);
@@ -1121,40 +1340,118 @@
         }
       }      
 
-      function backChangeUnits(unit, val) {
-        switch(unit) {
-          case "Meters":
-            return val;
-            break;
-          case "Kilometers":
-            return (val*1000);
-            break;
-          case "Feet":
-            return (val/3.2808);
-            break;
-          case "Miles":
-            return (val/0.00062137);
-            break;
-          case "Square Meters":
-            return val;
-            break;
-          case "Hectares":
-            return (val*10000);
-            break;
-          case "Square Kilometers":
-            return (val*1000000);
-            break;
-          case "Square Feet":
-            return (val/10.764);
-            break;
-          case "Acres":
-            return (val/0.00024711);
-            break;
-          case "Square Miles":
-            return (val/0.00000038610216);
-            break;
-        }
-      }
+
+
+
+
+      //*****Make div for exporting wildlife opening
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "exportDiv");
+
+      $('#exportDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#exportDiv")
+        .append("h4")
+        .text("Export Wildlife Opening")
+        .attr("class", "legTitle")
+        .attr("id", "exportTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Export Wildlife Opening</center></b></u></p><p>Export the current wildlife opening in either shapefile or geoJSON format.</p>"></span>');
+ 
+      d3.select("#exportTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Export window")
+        .on("click", function() { toolWindowToggle("export"); });
+
+      d3.select("#exportDiv")
+        .append("div")
+        .attr("id", "exportViewDiv")
+        .append("div")
+        .attr("id", "exportDefaultDiv")
+        .html('<p style="margin:0;"><i>Create a wildlife opening to enable its export to either a shapefile or geoJSON</i></p>');
+
+      d3.select("#exportViewDiv")
+        .append("div")
+        .attr("id", "exportActualDiv")
+        .html(''
+          + '<label>Select the format for the exported file</label>'
+          + '<label title="Export wildlife opening to a shapefile format"><input type="radio" id="exportShape" class="exportRadio" name="exportFormat" value="shapefile" checked><span style="margin-right:35px;">Shapefile</span></label><label title="Export wildlife opening to a geoJSON file"><input type="radio" id="exportGeo" class="exportRadio" name="exportFormat" value="geojson"><span style="margin-right:0px;">GeoJSON</span></label>'
+          + '<div id="exportFileButton" class="legendBtn" title="Click to export the wildlife opening to a file in the selected format"><a id="exportFileButtonA" href="#"><span class="glyphicon glyphicon-export" style="color:lime;margin:0;margin-right:5px;opacity:1;"></span>Export File</a></div>'
+        );
+
+      d3.selectAll("#exportShape,#exportGeo").on("change", function() { console.log(this.id); setExport(); });
+
+
+
+
+
+
+
+
+      //*****Make div for viewing results
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "resultsDiv");
+
+      $('#resultsDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#resultsDiv")
+        .append("h4")
+        .text("Analysis Results")
+        .attr("class", "legTitle")
+        .attr("id", "resultsTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Results</center></b></u></p><p>Reports occupancy probability for each species.<br><br>Regional occupancy reports the mean occupancy value of the current wildlife opening queried from species occupancy rasters developed by Jon Atwood and Mass Audubon.<br><br>Local occupancy uses the area of the wildlife opening and distance to large source opening to calculate occupancy probability using data from Roberts & King 2017 (Journal of Wildlife Management, 81:7 1298-1307).</p>"></span>');
+ 
+      d3.select("#resultsTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Results window")
+        .on("click", function() { toolWindowToggle("results"); });
+
+      d3.select("#resultsDiv")
+        .append("div")
+        .attr("id", "resultsViewDiv")
+        .append("div")
+        .attr("id", "resultsDefaultDiv")
+        .html('<p style="margin:0;"><i>Create a wildlife opening and click the analysis button to produce results</i></p>');
+
+      d3.select("#resultsViewDiv")
+        .append("div")
+        .attr("id", "resultsActualDiv")
+        .html('<table id="resultsTable"><thead><tr><th>Species</th><th>Regional Occupancy</th><th>Local Occupancy</th></tr></thead><tbody id="resultsTableBody"></tbody></table>');
+
+
+
+
+
+
+
+      //*****Make div for songs & photos
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "songsDiv");
+
+      $('#songsDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#songsDiv")
+        .append("h4")
+        .text("Bird Songs & Photos")
+        .attr("class", "legTitle")
+        .attr("id", "songsTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Bird Songs & Photos</center></b></u></p><p>Listen to calls and view images of bird species found in wildlife openings.<br><br>All photos are credited to <b><a href=&quot;http://www.audubon.org/bird-guide&quot; target=&quot;_blank&quot;>Audubon</a></b> (www.audubon.org).<br><br>All songs were acquired through <b><a href=&quot;http://www.xeno-canto.org/&quot; target=&quot;_blank&quot;>Xeno Canto</a></b> (www.xeno-canto.org).</p>"></span>');
+ 
+      d3.select("#songsTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Bird Songs & Photos window")
+        .on("click", function() { toolWindowToggle("songs"); });
 
       //******Add in bird song and pictures
       d3.select("#songsDiv")
@@ -1162,16 +1459,17 @@
         .attr("id", "songs")
         .append("h4")
         .attr("id", "species")
-        .text("Spinus tristis");
+        .html('<span id="sppCommon" title="Alder Flycatcher">Alder Flycatcher</span><br><span style="color:navy;">(<span id="sppLatin" style="font-style:italic;font-size:14px;" title="Empidonax alnorum">Empidonax alnorum</span>)</span>');
 
       d3.select("#songs")
         .append("img")
         .attr("id", "birdPic")
-        .attr("src", "bird_pics/american_goldfinch.jpg");
+        .property("title", "Alder Flycatcher")
+        .attr("src", "bird_pics/alder_flycatcher.jpg");
 
       d3.select("#songs")
         .append("audio")
-        .attr("src", "bird_songs/american_goldfinch.mp3")
+        .attr("src", "bird_songs/alder_flycatcher.mp3")
         .attr("controls", "controls")
         .attr("id", "birdSong");
 
@@ -1182,8 +1480,79 @@
       //d3.select("#birdSong")[0][0].pause();
       //d3.select("#birdSong")[0][0].load();
 
+
+
+
+
+
+
+
+      //******Add in missing distance div
+      d3.select("body")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "alertDiv");
+
+      //$('#alertDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+
+      d3.select("#alertDiv")
+        .append("h4")
+        .text("Missing Distance")
+        .attr("class", "legTitle")
+        .attr("id", "songsTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to close")
+        .on("click", function() { d3.select("#alertDiv").style("display", "none"); });
+
+      d3.select("#alertDiv")
+        .append("div")
+        .style({"padding":"5px","background":"white","border-radius":"0 0 4px 4px"})
+        .append("p")
+        .text("Please add a distance measure between your wildlife opening and the nearest large opening.");
+
+
+
+
+
+
+      //*******Make Help/information div
+      d3.select("body")
+        .append("div")
+        .attr("class", "modal fade ui-draggable in")
+        .attr("id", "helpDiv")
+        .style("display", "none")
+        .append("div")
+        .attr("class", "modal-dialog modal-lg")
+        .attr("id", "infoDiv")
+        .append("div")
+        .attr("class", "helpTitle")
+        .text("PACT: Predictor of Avian Communities Tool")
+        .property("title", "PACT: Predictor of Avian Communities Tool informational details")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .attr("data-toggle", "modal")
+        .attr("data-target", "#helpDiv")
+        .property("title", "Close help");
+        
+      d3.select("#infoDiv")
+        .append("div")
+        .style("padding", "5px")
+        .append("p")
+        .text("Helpful information coming soon...");
+
+
+
+
+
+
       //******Download external data files
       var birds = {}; //global birds variable
+      var queryType = "";  //global query type (stats or point)
+      var queryCentroid = [];  //global centroid point for point query if pixel count of opening is zero
+      var queryRID = [];    //global raster ID variable to speed occupancy queries
+      var layerID = "";   //global variable containing the id of the wildlife opening layer
+
       queue()
         .defer(d3.tsv, 'bird_media.tsv')
         .await(loadData);
@@ -1209,22 +1578,54 @@
           .append("select")
           .attr("id", "songSelect")
           .attr("class", "shapeUnit")
+          .style("width", "188px")
           .property("title", "Select species to hear its song and display a photo")
-          .on("change", function() {
-            d3.select("#species").text(birds.latin[this.value]);
-            d3.select("#birdPic").attr("src", "bird_pics/" + this.value + ".jpg");
-            d3.select("#birdSong").attr("src", "bird_songs/" + this.value + ".mp3");
-            d3.select("#birdSong")[0][0].play();
-          });
+          .on("change", function() { changeSpecies(this); });
 
         select.selectAll("option")
           .data(birds.media)
           .enter()
             .append("option")
               .attr("value", function(d) { return d.id; })
+              .attr("data-spp", function(d,i) { return birdID[i]; })
+              .property("title", function(d,i) { return d.common + " (" + birds.latin[d.id] + ")"; })
               .text(function(d) { return d.common; });
 
+        //***Add exclusivity with other leaflet draw variable
+        d3.select("#drawToolbar").select(".leaflet-draw").selectAll("a").on("click", function() {
+          measureDrawControl._toolbars.draw.disable();
+          /*measureDrawControl._toolbars.edit.disable();*/
+        });
+
+        var tmpTitles = ["Measure distance", "Measure area (polygon)", "Measure area (rectangle)"];
+        d3.select("#measureTool").select(".leaflet-draw").selectAll("a")
+          .property("title", function(d,i) { return tmpTitles[i]; })
+          .on("click", function() { drawControl._toolbars.draw.disable(); drawControl._toolbars.edit.disable(); });
+
+        d3.select("#measureMetricDiv").classed("inactive", true);
       }
+
+
+      //******Change the species picture and song
+      function changeSpecies(tmpSpp) {
+        d3.select("#sppCommon")
+          .text(d3.select("#songSelect").selectAll("option")[0][d3.select("#songSelect").property("selectedIndex")].text)
+          .property("title", d3.select("#songSelect").selectAll("option")[0][d3.select("#songSelect").property("selectedIndex")].text);
+        d3.select("#sppLatin")
+          .text(birds.latin[tmpSpp.value])
+          .property("title", birds.latin[tmpSpp.value]);
+        d3.select("#birdPic")
+          .attr("src", "bird_pics/" + tmpSpp.value + ".jpg")
+          .property("title", d3.select("#songSelect").selectAll("option")[0][d3.select("#songSelect").property("selectedIndex")].text);
+        d3.select("#birdSong").attr("src", "bird_songs/" + tmpSpp.value + ".mp3");
+        d3.select("#birdSong")[0][0].play();
+      }
+
+
+      //******Set z-indexes of moveable divs so that clicked one is always on top
+      d3.selectAll("#legendDiv,#drawDiv,#exportDiv,#resultsDiv,#songsDiv,#downloadDiv")
+        .on("mousedown", function() { setZ(this); });
+
     </script>
   </body>
 </html>

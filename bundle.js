@@ -156,14 +156,14 @@ module.exports = function structure(data, meta) {
 
     field_meta.forEach(function(f, i) {
         // field name
-        f.name.split('').slice(0, 8).forEach(function(c, x) {
+        f.name.split('').slice(0, 10).forEach(function(c, x) {
             view.setInt8(32 + i * 32 + x, c.charCodeAt(0));
         });
         // field type
         view.setInt8(32 + i * 32 + 11, f.type.charCodeAt(0));
         // field length
         view.setInt8(32 + i * 32 + 16, f.size);
-        if (f.type == 'N') view.setInt8(32 + i * 32 + 17, 0);
+        if (f.type == 'N') view.setInt8(32 + i * 32 + 17, 10);
     });
 
     offset = fieldDescLength + 32;
