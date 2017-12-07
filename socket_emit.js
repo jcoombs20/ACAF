@@ -30,8 +30,60 @@ function socket_emit() {
 
 
 
+
+  socket.on('get_bcr', function(bcrData) {
+    queryBCR = bcrData[0][0].bcr;
+    socket.emit("get_pif", {"bcr": queryBCR});
+  });
+
+
+
+
+
+  socket.on('get_pif', function(pifData) {
+    var tmpPIF = pifData[0].map(function(d) { return d.scientificname; });
+    queryPIF = [];
+    
+    for(spp in birds.latin) {
+      if(tmpPIF.indexOf(birds.latin[spp]) > -1) {
+        if(pifData[0][tmpPIF.indexOf(birds.latin[spp])].rcs_b != null) {
+          queryPIF.push(pifData[0][tmpPIF.indexOf(birds.latin[spp])].rcs_b);
+        }
+        else {
+          queryPIF.push("");
+        }
+      }
+      else {
+        queryPIF.push("");
+      }
+    }
+
+    socket.emit("get_occ", {"geom": drawnItems.toGeoJSON().features[0].geometry, "birds": birdID, "queryType": queryType, "centGeom": queryCentroid, "rid": queryRID});
+  });
+
+
+
+
+
+
   socket.on('get_occ', function(occData) {
     d3.select("#resultsTableBody").selectAll("tr").remove();
+
+    var conVal = 0;
+    var likelySpp = 0;
+
+    var tmpDate = new Date();
+    var tmpCSV = "PACT Management Opening Analysis: " + (parseInt(tmpDate.getMonth()) + 1) + "/" + tmpDate.getDate() + "/" + tmpDate.getFullYear() + " " + tmpDate.getHours() + ":" + tmpDate.getMinutes() + ":" + tmpDate.getSeconds() + "\n";
+    tmpCSV += "Opening Area (ha): " + parseFloat(d3.select("#areaText").attr("data-ha")).toFixed(3) + "\n";
+    tmpCSV += "Opening Perimeter (m): " + parseFloat(d3.select("#edgeText").attr("data-m")).toFixed(1) + "\n";
+    tmpCSV += "Large Opening within 3 KM: " + document.querySelector('input[name=sourcePop]:checked').value + "\n";
+    if(document.querySelector('input[name=sourcePop]:checked').value == "yes") {
+      tmpCSV += "Large Opening Distance (m): " + d3.select("#openSourceDist").property("value") + "\n";
+    }
+    var tmpBbox = drawnItems.getBounds();
+    tmpCSV += "Opening Bounding Box (degrees): [[" + tmpBbox._northEast.lat.toFixed(4) + ";" + tmpBbox._northEast.lng.toFixed(4) + "][" + tmpBbox._southWest.lat.toFixed(4) + ";" + tmpBbox._southWest.lng.toFixed(4) + "]]\n";
+    var tmpData = "Species,Regional Occupancy,Habitat Occupancy,Local Occupancy,PIF Score\n";
+
     d3.select("#resultsTableBody").selectAll("tr")
       .data(birdTitles)
       .enter()
@@ -45,41 +97,75 @@ function socket_emit() {
             var regOcc = occData[i][0].val.toFixed(3);
           }
 
-          if(d3.keys(locOccModels).indexOf(birdID[i]) > -1) {
+          if(d3.keys(habOccModels).indexOf(birdID[i]) > -1) {
             if(birdID[i] == "praw") {
               var prawSource = document.querySelector('input[name=sourcePop]:checked').value;
 
               if(prawSource == "yes") {
                 if(parseFloat(d3.select("#areaText").attr("data-ha")) <= 3) {
-                  var locOcc = Math.max(locOccModels.praw.connected(parseFloat(d3.select("#openSourceDist").property("value")), parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3), locOccModels.praw.isolated(parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3));
+                  var habOcc = Math.max(habOccModels.praw.connected(parseFloat(d3.select("#openSourceDist").property("value")), parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3), habOccModels.praw.isolated(parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3));
                 }
                 else {
-                  var locOcc = (1).toFixed(3);
+                  var habOcc = (1).toFixed(3);
                 }
               }
               else {
                 if(parseFloat(d3.select("#areaText").attr("data-ha")) <= 3) {
-                  var locOcc = locOccModels.praw.isolated(parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3);
+                  var habOcc = habOccModels.praw.isolated(parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3);
                 }
                 else {
-                  var locOcc = (1).toFixed(3);
+                  var habOcc = (1).toFixed(3);
                 }
               }
             }
             else {
-              var locOcc = locOccModels[birdID[i]](parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3);
+              if(habOccModels[birdID[i]] == praw_roberts && parseFloat(d3.select("#areaText").attr("data-ha")) > 3) {
+                var habOcc = (1).toFixed(3);
+              }
+              else {
+                var habOcc = habOccModels[birdID[i]](parseFloat(d3.select("#areaText").attr("data-ha"))).toFixed(3);
+              }
             }              
           }
           else {
+            var habOcc = "";
+          }
+
+          if(habOcc == "") {
             var locOcc = "";
           }
+          else {
+            var locOcc = (regOcc * habOcc).toFixed(3);
+          }
  
-          return '<td value="' + birdID[i] + '" title="' + d + '">' + d + '</td><td title="Regional Occupancy: ' + regOcc + '">' + regOcc  + '</td><td title="Local Occupancy: ' + locOcc + '">' + locOcc + '</td>';             
+          if(locOcc != "" && queryPIF[i] != "") {
+            conVal += (locOcc * queryPIF[i]);
+          }
+
+          if(locOcc >= 0.5) {
+            likelySpp += 1;
+          }
+
+          tmpData += d + "," + regOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
+          return '<td value="' + birdID[i] + '" title="' + d + '">' + d + '</td><td title="Regional Occupancy: ' + regOcc + '">' + regOcc  + '</td><td title="Habitat Occupancy: ' + habOcc + '">' + habOcc + '</td><td title="Local Occupancy: ' + locOcc + '">' + locOcc + '</td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td>';             
         });
+    
+    tmpCSV += "Bird Conservation Region: " + queryBCR + "\n";
+    tmpCSV += "Conservation Value: " + conVal.toFixed(2) + "\n";
+    tmpCSV += "Predicted Number of Species Present: " + likelySpp + "\n";
+    //tmpCSV += "Species,Regional Occupancy,Habitat Occupancy,Local Occupancy,PIF Score\n";
+    tmpCSV += tmpData;
+    d3.select("#conVal").property("value", conVal.toFixed(2));
+    d3.select("#likelySpp").property("value", likelySpp);
+    d3.select("#exportResultsA").attr("href", "data:attachment/csv," +   encodeURIComponent(tmpCSV));
     d3.select("#resultsDefaultDiv").style("display", "none");
     d3.select("#resultsActualDiv").style("display", "block");
     if(d3.select("#resultsDiv").style("opacity") == 0) { toolWindowToggle("results"); }
     d3.select("#hcResultsDiv").classed("inactive", false);
+    d3.select("#waitingDiv").style("display", "none");
+    setTimeout(function() {
+      resizePanels();
+    }, 300);
   });
 
 
@@ -94,7 +180,7 @@ function socket_emit() {
     console.log(err.error);
   });
 
-  locOccModels = {"baww": baww_roberts, "cswa": cswa_roberts, "coye": coye_roberts, "eato": eato_roberts, "grca": grca_roberts, "inbu": inbu_roberts, "praw": {"isolated": praw_roberts, "connected":praw_6_ha_roberts}};
+  habOccModels = {"alfl": praw_roberts, "amgo": praw_roberts, "baww": baww_roberts, "bwwa": coye_roberts, "brth": praw_roberts, "cawa": praw_roberts, "cewa": praw_roberts, "cswa": cswa_roberts, "coye": coye_roberts, "deju": grca_roberts, "eato": eato_roberts, "gwwa": praw_roberts, "grca": grca_roberts, "inbu": inbu_roberts, "mowa": coye_roberts, "nawa": coye_roberts, "praw": {"isolated": praw_roberts, "connected":praw_6_ha_roberts}, "sosp": praw_roberts, "wevi": praw_roberts, "wtsp": inbu_roberts, "ybcu": praw_roberts};
 }
 
 function viewSpecies(tmpSpp) {

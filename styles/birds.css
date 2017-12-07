@@ -2,7 +2,7 @@ html, body, #map {
   width: 100%;
   height: 100%;
   min-width: 1280px;
-  min-height: 600px;
+  min-height: 700px;
 }
 
 #map {
@@ -102,6 +102,7 @@ a:focus, select:focus, a:hover {
 #helpDiv, #backgroundDiv {
   display: flex;
   justify-content: center;
+  min-height: 700px;
 }
 
 #headerLinks {
@@ -196,20 +197,20 @@ a:focus, select:focus, a:hover {
 }
 
 #baselayerList {
-  width: 186px;
+  width: 155px;
   margin-left: 0px;
 }
 
 #baselayerListDropdown {
-  width: 186px;
+  width: 155px;
 }
 
 #birdList {
-  width: 240px;
+  width: 235px;
 }
 
 #birdListDropdown {
-  width: 240px;
+  width: 235px;
   max-height: 526px;
   overflow-y: auto;
 }
@@ -251,7 +252,7 @@ a:focus, select:focus, a:hover {
 }
 
 #panelTools {
-  width: 589px;
+  width: 613px;
   height: 34px;
   display: inline-block;
   float: left;
@@ -528,6 +529,77 @@ input[type=range]:focus::-ms-fill-upper {
   background: lightgray;
 }
 
+.msgBackgroundDiv {
+  width: 100%;
+  min-width: 1262px;
+  min-height: 750px;
+  height: 100%;
+  z-index: 99999;
+  position: absolute;
+  display: none;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+}
+
+#splashScreenDiv {
+  align-self: center;
+  background: white;
+  border: 1px solid black;
+  border-radius: 4px;
+  font-size: 13px;
+  color: black;
+  width: 1100px;
+  height: 680px;
+  //min-width: 1200px;
+  padding: 15px;
+}  
+
+#splashWelcome {
+  font-size: 33px;
+  font-weight: bold;
+  border-bottom: 1px solid gray;
+  margin: -15px -15px 0px;
+  padding: 0px 15px;
+  border-radius: 4px 4px 0px 0px;
+  border-bottom: 1px solid gray;
+  color: white;
+  background: #4d5980;
+  background: linear-gradient(#56638f, #434d70);
+  text-align: center;
+}
+
+#splashGIF {
+  margin: 0px 20px 0px 25px;
+  width: 680px;
+  overflow: hidden;
+  border: 1px solid;
+  box-shadow: 9px 9px 8px 2px rgba(0,0,0,0.2);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+#splashButton {
+  width: 300px;
+  margin-left: 15px;
+  position: relative;
+  top: -300px;
+  height: 50px;
+  font-size: 25px;
+  border-color: darkgray;
+  box-shadow: 9px 9px 8px 2px rgba(0,0,0,0.2);
+  background: lightgray;
+  background: linear-gradient(lightgray, darkgray);
+  text-shadow: 0px 2px white;
+}
+
+#splashButton:hover {
+  border-color: #262626;
+}
+
+#splashButton:active {
+  background: silver;
+}
+
 #downloadDiv {
   position: absolute;
   top: 85px;
@@ -560,14 +632,14 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
-#dlButton, #exportFileButtonA {
+#dlButton, #exportFileButtonA, #exportResultsA {
   color: white;
   width: 100%;
   height: 100%;
   display: inline-block;
 }
 
-#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA :hover, #exportFileButtonA :visited, #exportFileButtonA :focus {
+#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA:hover, #exportFileButtonA:visited, #exportFileButtonA:focus, #exportResultsA:hover, #exportResultsA:visited, #exportResultsA:focus {
   text-decoration: none;
 }
 
@@ -713,7 +785,7 @@ input[type=range]:focus::-ms-fill-upper {
   pointer-events: none;
 }
 
-#importFileButton, #exportFileButton {
+#importFileButton, #exportFileButton, #exportResults {
   margin: auto;
   width: 50%;
   color: white;
@@ -883,8 +955,8 @@ input[type=range]:focus::-ms-fill-upper {
 
 #songsDiv {
   position: absolute;
-  top: 85px;
-  left: 665px;
+  top: 215px;
+  left: 580px;
   width: 100%;
   max-width: 316px;
   min-width: 316px;
@@ -928,10 +1000,53 @@ input[type=range]:focus::-ms-fill-upper {
   border-radius: 4px;
   font-size: 18px;
   align-self: center;
+  min-height: 540px;
 }
 
-#infoDiv p {
+#infoDivContent {
+  overflow-y: auto;
+  text-align: center;
+  max-height: calc(100% - 42px);
+}
+
+#infoDivContent p {
   //font-size: 18px;
+}
+
+#infoDivContent img {
+  width: 850px;
+  border: 1px solid black;
+  border-radius: 4px;
+  margin: 5px 0 2px 0;
+}
+
+#waitingDiv {
+  background: rgba(0,255,0,0.9);
+  width: 208px;
+  height: 225px;
+  padding: 30px;
+  border: 2px solid white;
+  border-radius: 4px;
+  margin: auto;
+  position: absolute;
+  left: calc(50% - 104px);
+  top: calc(50% - 118px);
+  display: none;
+  z-index: 1003;
+}
+
+#waitingDiv img {
+  border-radius: 4px;
+  border: 1px solid #333;
+}
+
+#waitingDiv h3 {
+  text-align:center;
+  color:white;
+  font-size: 27px;
+  font-weight:bold;
+  text-shadow:0 2px black;
+  margin-top: 10px;
 }
 
 #exportDiv {
@@ -940,7 +1055,7 @@ input[type=range]:focus::-ms-fill-upper {
   left: 580px;
   //right: 445px;
   width: 100%;
-  width: 300px;
+  width: 320px;
   margin: 0px;
   z-index: 1000;
   border-radius: 4px;
@@ -963,18 +1078,12 @@ input[type=range]:focus::-ms-fill-upper {
   border-radius: 4px;
 }
 
-
-
-
-
 #resultsDiv {
   position: absolute;
   top: 85px;
   //left: 678px;
   right: 45px;
-  width: 100%;
-  max-width: 400px;
-  min-width: 400px;
+  width: 461px;
   margin: 0px;
   z-index: 1000;
   border-radius: 4px;
@@ -997,12 +1106,28 @@ input[type=range]:focus::-ms-fill-upper {
   margin: 0 5px 5px 5px;
   display: none;
   max-height: 500px;
-  overflow-y: auto;
+  //overflow-y: auto;
   text-align: center;
+  border-radius: 4px;
+  border: 1px solid;
 }
 
 #resultsActualDiv th, #resultsActualDiv td {
   text-align: center;
+}
+
+#conValDiv {
+  padding: 5px;
+}
+
+#conVal, #likelySpp {
+  width: 70px;
+  border-radius: 4px;
+  border: 1px solid black;
+  text-align: center;
+  cursor: text;
+  background: white;
+  margin-left: 10px;
 }
 
 #resultsTable {
@@ -1013,6 +1138,7 @@ input[type=range]:focus::-ms-fill-upper {
 #resultsTable thead {
   background: gray;
   background: -webkit-linear-gradient(darkgray, gray);
+  background: linear-gradient(#56638f, #434d70);
   border: 1px solid black;
   font-weight: bold;
   color: white;
@@ -1021,6 +1147,7 @@ input[type=range]:focus::-ms-fill-upper {
 #resultsTable thead tr {
   position: relative;
   display: block;
+  width: 100%;
 }
 
 #resultsTable thead th {
@@ -1034,8 +1161,8 @@ input[type=range]:focus::-ms-fill-upper {
 #resultsTable tbody {
   display: block;
   overflow-y: auto;
-  height: 438px;
-  margin-left: 1px;
+  height: 400px;
+  //margin-left: 1px;
 }
 
 #resultsTable tbody tr {
@@ -1049,7 +1176,15 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #resultsTable th:nth-child(1), #resultsTable td:nth-child(1) {
-  width: 179px;
+  width: 150px;
+}
+
+#resultsTable th, #resultsTable td {
+  width: 78px;
+}
+
+#resultsTable th:nth-child(5), #resultsTable td:nth-child(5) {
+  width: 50px;
 }
 
 #resultsTable tbody tr:hover {
@@ -1058,10 +1193,9 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
-#resultsTable th:nth-child(2), #resultsTable td:nth-child(2), #resultsTable th:nth-child(3), #resultsTable td:nth-child(3) {
-  width: 89px;
+#exportResults {
+  width: 35%;
 }
-
   
 #outputDiv {
   padding: 5px;
@@ -1073,7 +1207,7 @@ input[type=range]:focus::-ms-fill-upper {
   margin: 0px;
 }
 
-#alertDiv {
+#alertDiv, #importErrorDiv {
   position: absolute;
   top: calc(50% - 23px);
   left: calc(50% - 152px);
@@ -1154,39 +1288,12 @@ input[type=range]:focus::-ms-fill-upper {
 
 
 @media print {
-  .leaflet-google-layer.leaflet-left.leaflet-top {
-    display: block !important;
-  }
-
-  .leaflet-left.leaflet-top {
-    display: none !important;
-  }
-
-  .leaflet-control-scale-line, .leaflet-control-scale-line:not(:first-child) {
-    background: rgba(255,255,0,0.6) !important;
-  }
-
-  .leaflet-control-mouseposition.leaflet-control {
-    background: rgba(255,255,255,0.7) !important;
-  }
-
-  .shapeVals {
-    background: rgba(255,153,0,0.6) !important;
-  }
-
-  .shapeUnit {
-    background: rgba(255,255,255,0.7) !important;
-  }
-
-  .header {
-    background: rgba(40, 40, 40, 0.5) !important;
-  }
-
-  .header a, .brand, .pull-right {
-    color: white !important;
+  #headerControls, #printDownload {
+    display: none;
   }
 
   a[href]:after {
-    content: "";
+    content: none;
   }
+}
 }
