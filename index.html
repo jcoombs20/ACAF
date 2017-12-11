@@ -986,13 +986,13 @@
 
       d3.select("#splashScreenDiv")
         .append("p")
-        .html('This tool returns occupancy probabilities for 22 shrubland bird species based on the geographic location and area of added management openings.')
-        .style({"font-size":"29px","margin":"10px 20px 0px"}); 
+        .html('This tool returns occupancy probabilities and Partners in Flight scores for 21 species of shrubland birds based on the location and area of added management openings. Additionally, a conservation value is calculated for each management opening enabling direct comparison between multiple opening design scenarios.')
+        .style({"font-size":"20px","margin":"10px 0px"}); 
 
       d3.select("#splashScreenDiv")
         .append("p")
         .html('To begin, add a management opening to your area of interest!')
-        .style({"font-size":"22px","margin":"0px 10px 20px 20px","text-align":"center","color":"#434d70"});
+        .style({"font-size":"22px","margin":"0px 10px 10px 20px","text-align":"center","color":"#434d70"});
 
       d3.select("#splashScreenDiv")
         .append("div")
@@ -1093,7 +1093,7 @@
         .attr("class", "legend gradDown")
         .attr("id", "drawDiv");
 
-      $('#drawDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option"});
+      $('#drawDiv').draggable({containment: "html", cancel: "input,label,textarea,button,select,option,#enableDraw,#enableImport"});
 
       d3.select("#drawDiv")
         .append("h4")
@@ -1681,8 +1681,169 @@
         .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
         .attr("data-toggle", "modal")
         .attr("data-target", "#helpDiv")
-        .property("title", "Close help");
+        .property("title", "Close window");
         
+      d3.select("#infoDiv")
+        .append("div")
+        .attr("id", "helpMenu")
+        .html('<ul class="nav nav-pills nav-stacked"><li class="active" id="overview" title="Project Overview" onclick="changePill(this)"><a href="#">Project Overview</a></li><li id="usage" title="Performance and Design" onclick="changePill(this)"><a href="#">Performance and Design</a></li><li id="videos" title="Instructional Videos" onclick="changePill(this)"><a href="#">Instructional Videos</a></li><li id="sources" title="Data & Calculations" onclick="changePill(this)"><a href="#">Data & Calculations</a></li></ul>');
+
+      d3.select("#infoDiv")
+        .append("div")
+        .attr("id", "helpContent")
+        .append("div")
+        .attr("class", "helpDivs")
+        .attr("id", "help-overview")
+        .style("display", "inline-block") 
+        .html('<h3 style="margin-top:5px;">Background</h3>'
+           + '<p>As a result of changes in natural and anthropogenic disturbance regimes, the extent of early-successional forest across much of eastern North American is near historic lows and continues to decline. This has caused many managers and researchers to identify the conservation of early-successional species as a high priority. Early-successional "shrubland" bird species require conditions and resources present in recently disturbed sites. Historical disturbance regimes such as windthrow, fire, and flooding have been altered or suppressed in eastern forests through human activity such as conversion of forests to younger aged stands more resistant to wind, fire suppression and mesophication of fire-adapted communities, and suppression of beaver activity and flooding. Furthermore, anthropogenic disturbance has shifted over much of the region to types of land use that provide less shrubland habitat of lower quality than historic levels.</p>'
+           + '<h3>Objectives</h3>'
+           + '<p>PACT was developed to allow managers and individuals to:</p>'
+           + '<ul>'
+             + '<li><p>Specify their geographic locality and management footprint</p></li>'
+             + '<li><p>Visualize the outputs of habitat management practices</p></li>'
+             + '<li><p>Compare different management scenarios in terms of shrubland bird occupancy probability and species composition</p></li>'
+           + '</ul>'
+           + '<p>PACT has the intended objectives of enabling users to:</p>'
+           + '<ul>'
+             + '<li><p>Identify practices that are most likely to achieve target goals</p></li>'
+             + '<li><p>Identify optimal sites on which to manage for shrubland birds</p></li>'
+           + '</ul>'
+           + '<h3>Tool Development Team</h3>'
+           + '<p><u>US Forest Service, Northern Research Unit</u></p>'
+           + '<ul>'
+             + '<li><p>Dave King</p></li>'
+             + '<li><p>Keith Nislow</p></li>'
+           + '</ul>'
+      + '<p><u>University of Massachusetts, Amherst</u></p>'
+           + '<ul>'
+             + '<li><p>Jason Coombs</p></li>'
+             + '<li><p>Mike Akresh</p></li>'
+           + '</ul>'
+           + '<p>Questions or comments should be directed to Jason Coombs at <a href="mailto:jcoombs@cns.umass.edu">jcoombs@cns.umass.edu</a>.</p>'
+         );
+
+      d3.select("#helpContent")
+        .append("div")
+        .attr("class", "helpDivs")
+        .attr("id", "help-usage")
+        .html('<h3 style="margin-top:5px;">Overview</h3>'
+           + '<p>PACT presents users with a means to quickly and easily assess predicted shrubland avian communities for designed management openings of varying size and differing locations through an intuitive map-based interface.</p>'
+           + '<h3>Optimal Performance Requirements</h3>'
+           + '<p>PACT is currently supported on the latest versions of all major web browsers, however <a target="_blank" href="https://www.google.com/chrome/">Google Chrome</a> and <a target="_blank href="https://www.mozilla.org/">Mozilla Firefox</a> are highly recommended for the best user experience. PACT is not presently developed for use with mobile devices.</p>'
+           + '<h3>Design and Implementation</h3>'
+           + '<p>PACT was designed using the following open-source software packages:</p>'
+           + '<ul>'
+             + '<li><p><b><a href="https://nodejs.org/en/" target="_blank">Node</a>:</b> Web server runtime environment</p></li>'
+             + '<li><p><b><a href="https://expressjs.com/" target="_blank">Express</a>:</b> Web server framework and API</p></li>'
+             + '<li><p><b><a href="http://leafletjs.com/" target="_blank">Leaflet</a>:</b> Interactive map framework</p></li>'
+             + '<li><p><b><a href="http://geoserver.org/" target="_blank">GeoServer</a>:</b> Server for sharing geospatial data</p></li>'
+             + '<li><p><b><a href="https://www.postgresql.org/" target="_blank">PostgreSQL</a>:</b> Relational database</p></li>'
+             + '<li><p><b><a href="http://postgis.net/" target="_blank">PostGIS</a>:</b> Spatial database extension for PostgreSQL</p></li>'
+             + '<li><p><b><a href="https://www.npmjs.com/package/pg" target="_blank">Node-postgres</a>:</b> Javascript PostgreSQL client for node</p></li>'
+             + '<li><p><b><a href="https://d3js.org/" target="_blank">D3</a>:</b> Data visualization, mapping and interaction</p></li>'
+             //+ '<li><p><b><a href="https://github.com/topojson/topojson" target="_blank">Topojson</a>:</b> Geospatial data format</p></li>'
+             //+ '<li><p><b><a href="https://square.github.io/crossfilter/" target="_blank">Crossfilter.js</a>:</b> Analytics engine</p></li>'
+             + '<li><p><b><a href="https://github.com/d3/d3-queue" target="_blank">Queue</a>:</b> Asynchronous dataset and file retrieval</p></li>'
+             + '<li><p><b><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a>:</b> Front-end framework and styling</p></li>'
+             //+ '<li><p><b><a href="http://colorbrewer2.org/" target="_blank">ColorBrewer</a>:</b> Pre-defined color palettes</p></li>'
+           + '</ul>'
+           + '<h3>Future Work and Contact Info</h3>'
+           + '<p>Development of PACT is currently ongoing and future updates will include the ability to interact with results graphically through manipulations of management opening size, silvicultural treatment type, and successional time. If you have any questions, encounter any errors, or are interested in applying PACT to your region, please contact Jason Coombs at <a href="mailto:jcoombs@cns.umass.edu">jcoombs@cns.umass.edu</a>.</p>'
+           + '<h3>Tool Version</h3>'
+           + '<p>v1.0.0 - 12-12-2017</p>'
+           + '<ul><li><p>Initial release</p></li></ul>'
+         );
+
+      d3.select("#helpContent")
+        .append("div")
+        .attr("class", "helpDivs")
+        .attr("id", "help-videos")
+        .html('<h3 style="margin-top:5px;"><i>Coming soon...</i></h3>'
+           //+ '<h3>Tool Overview</h3>'
+           //+ '<video id="video1" class="video-js vjs-default-skin" controls preload="auto" poster="images/sce_overview.jpg" data-setup="{}"><source src="video/sce_overview.mp4" type="video/mp4"><p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>'
+           //+ '<h3>Filters and Spatial Joins</h3>'
+           //+ '<video id="video2" class="video-js vjs-default-skin" controls preload="auto" poster="images/sce_filtering.jpg" data-setup="{}"><source src="video/sce_filtering.mp4" type="video/mp4"><p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>'
+           //+ '<h3>Case Study Example</h3>'
+           //+ '<video id="video3" class="video-js vjs-default-skin" controls preload="auto" poster="images/sce_scenario.jpg" data-setup="{}"><source src="video/sce_scenario.mp4" type="video/mp4"><p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>'
+         );       
+
+      d3.select("#helpContent")
+        .append("div")
+        .attr("class", "helpDivs")
+        .attr("id", "help-sources")
+        .html('<h3 style="margin-top:5px;">Regional Occupancy</h3>'
+          + '<p>Probabilities are acquired from species specific rasters developed by Jon Atwood and <a href="https://www.massaudubon.org/" target="_blank" title="www.massaudubon.org">Mass Audubon</a>. Values are calculated as the mean value of all pixels that intersect the management opening.</p>'
+          + '<h3>Habitat Occupancy</h3>'
+          + '<p>Probabilities for 7 species (Black-and-white Warbler, Chestnut-sided Warbler, Common Yellowthroat, Eastern Towhee, Gray Catbird, Indigo Bunting, and Prairie Warbler) are calculated using equations derived from data on empirical abundance-patch area relationships in <a href="http://onlinelibrary.wiley.com/doi/10.1002/jwmg.21286/abstract" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Joural of Wildlife Management, 81(7):1298-1307.">Roberts and King (2017)</a> (Figure 2).'
+            + '<img src="images/roberts_king_fig_2.jpg">'
+            + 'For Prairie warblers, if a large opening (clearcut \> 5 ha or powerline corridor \> 50 m wide) is specified to be present within 3 km of the management opening, occupancy probability is also calculated using another equation derived from data reported in <a href="http://onlinelibrary.wiley.com/doi/10.1002/jwmg.21286/abstract" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Joural of Wildlife Management, 81(7):1298-1307.">Roberts and King (2017)</a> (Figure 3).<br>For these scenarios PACT reports the greater of the two calculated occupancy values, which is dependent on the size of the management opening and the distance from the large opening.'
+            + '<img src="images/roberts_king_fig_3.jpg">'
+          + 'The remaining 14 species were classified into area-sensitivity groups based on data from the published literature and professional judgement, and assigned an occupancy probability function from the most similar species in <a href="http://onlinelibrary.wiley.com/doi/10.1002/jwmg.21286/abstract" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Joural of Wildlife Management, 81(7):1298-1307.">Roberts and King (2017)</a> (Figure 2).'
+          + '<ul>'
+            + '<li>Nine species were area-sensitive and assigned the function for Prairie Warblers, the most area-sensitive species.</li>'
+            + '<ul>' 
+              + '<li>Alder Flycatcher, American Goldfinch, Canada Warbler, Cedar Waxwing, Song Sparrow, and White-eyed Vireo (<a href="https://wmc.ar.nrcs.usda.gov/Internet/FSE_DOCUMENTS/nrcs143_013252.pdf" target="_blank" title="Schlossberg, S.R., King, D.I. (2007) Ecology and management of scrub-shrub birds in New England: A comprehensive review. Report submitted to Natural Resources Conservation Service, Resource Inventory and Assessment Division, Beltsville, Maryland, USA.">Schlossberg and King (2007)</a>).</li>'
+              + '<li>Golden-winged Warbler and Yellow-billed Cuckoo (<a href="https://doi.org/10.1007/978-1-4757-9912-5_1" target="_blank" title="Askins R.A. (1993) Population Trends in Grassland, Shrubland, and Forest Birds in Eastern North America. In: Power D.M. (eds) Current Ornithology. Current Ornithology, vol 11. Springer, Boston, MA">Askins (1993)</a>).</li>'
+              + '<li>Brown Thrasher (professional judgement (King)).</li>'
+            + '</ul>'
+            + '<li>Three species showed higher affinities for clearcuts compared to group cuts, however each species exhibited a different level of association (<a href="https://wmc.ar.nrcs.usda.gov/Internet/FSE_DOCUMENTS/nrcs143_013252.pdf" target="_blank" title="Schlossberg, S.R., King, D.I. (2007) Ecology and management of scrub-shrub birds in New England: A comprehensive review. Report submitted to Natural Resources Conservation Service, Resource Inventory and Assessment Division, Beltsville, Maryland, USA.">Schlossberg and King (2007)</a>):</li>'
+            + '<ul>'
+              + '<li>White-throated Sparrow were 19X greater in clearcuts and were assigned the Indigo Bunting function.</li>'
+              + '<li>Dark-eyed Junco were 8.5X greater in clearcuts and were assigned the Gray Catbird function.</li>'
+              + '<li>Mourning Warbler were 2X greater in clearcuts and were assigned the Common Yellowthroat function.</li>'
+            + '</ul>'
+            + '<li>Two species were not area-sensitive and assigned the function for Common Yellowthroat, the least area-sensitive species.</li>'
+            + '<ul>'
+              + '<li>Blue-winged Warbler (<a href="https://doi.org/10.1016/j.foreco.2007.05.009" target="_blank" title="Askins, R.A., Zuckerberg, B., and Novak, L. (2007) Do the size and landscape context of forest openings influence the abundance and breeding success of shrubland songbirds in southern New England?, Forest Ecology and Management, 250(3):137-147.">Askins et al. (2007)</a>)</li>'
+              + '<li>Nashville Warbler (professional judgement (King))</li>'
+            + '</ul>'
+          + '</ul>'
+          + '<h3>Local Occupancy</h3>'
+          + '<p>Calculated as the product of regional occupancy and habitat occupancy.</p>'
+          + '<h3>Partners In Flight Score</h3>'
+          + '<p>The Regional Concern Score (breeding season) (RCS-b) value from the Partners In Flight <a href="http://pif.birdconservancy.org/ACAD/Database.aspx" target="_blank" title="pif.birdconservancy.org/ACAD/Database.aspx">database</a> is retreived for each species. Values are dependent on the <a href="http://nabci-us.org/resources/bird-conservation-regions-map/" target="_blank" title="nabci-us.org/resources/bird-conservation-regions-map">Bird Conservation Region</a> (BCR) in which the management opening occurs. For openings overlapping multiple regions, values are taken from the region covering the greatest proportion of the opening. An empty cell indicates that there is no RCS-b score for that species in that BCR.</p>'
+          + '<h3>Conservation Value</h3>'
+          + '<p>The product of the local occupancy and Partners In Flight score for each species summed over all species. The formula is based on a modification to equation 1 in <a href="https://doi.org/10.1642/0004-8038(2003)120[0541:ACVOBC]2.0.CO;2" target="_blank" title="Nuttle, T., Leidolf, A., and Burger Jr., L.W. (2003) Assessing conservation value of bird communities with Partners In Flight-based ranks. The Auk 120(2):541-549.">Nuttle et al, 2003</a> in which species occupancy probability is substituted for abundance (<i>a<sub>i</sub></i>)</p>'
+          + '<div style="text-align:center;"><img src="images/nuttle_equ_1.PNG" style="width:initial;"></div>'
+          + '<h3>Likely Number of Species</h3>'
+          + '<p>The total number of species present in the management opening that have a local occupancy probability equal to or greater than 0.5.</p>'
+        );       
+
+
+      d3.select("#infoDiv")
+        .append("div")
+        .attr("id", "helpFunding")
+        .html(''
+          + '<div id="fundingLeftImg">'
+            + '<a href="https://www.massaudubon.org/" target="_blank">'
+              + '<img id="massAudubon" src="images/mass_audubon.png" title="Mass Audubon">'
+            + '</a>'
+            + '<a href="http://www.nfwf.org/" target="_blank">'
+              + '<img id="nfwf" src="images/nfwf.png" title="National Fish and Wildlife Foundation">'
+            + '</a>'
+          + '</div>'
+          + '<div id="fundingRightImg">'
+            + '<a href="https://www.fs.fed.us/" target="_blank">'
+              + '<img id="usfs" src="images/shield_color.png" title="U.S. Forest Service"></a><a href="http://www.umass.edu/" target="_blank">'
+            + '</a>'
+            + '<a href="http://www.umass.edu/" target="_blank">'
+              + '<img id="umass" src="images/umass_amherst.png" title="University of Massachusetts, Amherst">'
+            + '</a>'
+          + '</div>'
+          + '<p class="fundersP">This project was funded by <a href="https://www.massaudubon.org/" target="_blank" title="https://www.massaudubon.org/" target="_blank">Mass Audubon</a>,<br>and the <a href="http://www.nfwf.org" target="_blank" title="http://www.nfwf.org" target="_blank">National Fish and Wildlife Foundation</a>.</p><p class="fundersP">Additional support was provided by the <a href="https://www.fs.fed.us/" title="https://www.fs.fed.us/" target="_blank">U.S. Forest Service</a>,<br>and the <a href="http://www.umass.edu/" title="http://www.umass.edu/" target="_blank">University of Massachusetts, Amherst</a>.</p>'
+        );
+
+
+      function changePill(tmpID) {
+        d3.select("#helpMenu").selectAll("li").classed("active", false);
+        d3.select(tmpID).classed("active", true);
+        d3.selectAll(".helpDivs").style("display", "none");
+        d3.select("#help-" + tmpID.id).style("display", "inline-block");
+      }
+
+
+/*
       d3.select("#infoDiv")
         .append("div")
         .attr("id", "infoDivContent")
@@ -1692,7 +1853,7 @@
           + '<img src="images/roberts_king_fig_2.jpg">'
           + '<img src="images/roberts_king_fig_3.jpg">'
         );
-
+*/
 
 
 

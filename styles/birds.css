@@ -12,6 +12,14 @@ html, body, #map {
   background: white;
 }
 
+body.modal-open {
+  overflow-y: auto;
+}
+
+.modal {
+  position: absolute;
+}
+
 .glyphicon-triangle-top, .glyphicon-triangle-bottom {
   color: black;
 }
@@ -532,7 +540,7 @@ input[type=range]:focus::-ms-fill-upper {
 .msgBackgroundDiv {
   width: 100%;
   min-width: 1262px;
-  min-height: 750px;
+  min-height: 700px;
   height: 100%;
   z-index: 99999;
   position: absolute;
@@ -549,7 +557,7 @@ input[type=range]:focus::-ms-fill-upper {
   font-size: 13px;
   color: black;
   width: 1100px;
-  height: 680px;
+  height: 660px;
   //min-width: 1200px;
   padding: 15px;
 }  
@@ -569,8 +577,8 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #splashGIF {
-  margin: 0px 20px 0px 25px;
-  width: 680px;
+  margin: 0px 20px 0px 60px;
+  width: 623px;
   overflow: hidden;
   border: 1px solid;
   box-shadow: 9px 9px 8px 2px rgba(0,0,0,0.2);
@@ -994,23 +1002,105 @@ input[type=range]:focus::-ms-fill-upper {
 
 #infoDiv {
   width: 50%;
-  height: 80%;
+  height: 95%;
   background: rgba(255,255,255,1);
   border: 1px solid black;
   border-radius: 4px;
   font-size: 18px;
   align-self: center;
   min-height: 540px;
+  min-width: 1000px;
+  margin: auto;
 }
 
-#infoDivContent {
-  overflow-y: auto;
+#helpMenu {
+  width: 150px;
+  display: inline-block;
+  float: left;
+  margin: 10px;
   text-align: center;
-  max-height: calc(100% - 42px);
+  font-size: 20px;
 }
 
-#infoDivContent p {
-  //font-size: 18px;
+#helpMenu li {
+  background: lightgray;
+  border-radius: 4px;
+}
+
+#helpContent {
+  padding: 5px;
+  display: inline-block;
+  float: left;
+  width: calc(100% - 175px);
+  height: calc(100% - 172px);
+}
+
+#helpContent h3 {
+  margin-top: 40px;
+}
+
+.helpDivs {
+  display: none;
+  max-height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  padding-right: 5px;
+  padding-bottom: 5px;
+}
+
+#help-sources img {
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+#helpFunding {
+  border: solid black 1px;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+  display: inline-block;
+  float: left;
+  width: calc(100% - 10px);
+  position: relative;
+  bottom: 10px;
+  left: 0px;
+  background: beige;
+}
+
+#fundingLeftImg {
+  float: left;
+  text-align: center;
+  padding-left: 5px;
+}
+
+#fundingRightImg {
+  float: right;
+  text-align: center;
+  padding-right: 5px;
+}
+
+#usfs {
+  height: 115px;
+  //margin-top: 5px;
+}
+
+#umass {
+  height: 115px;
+  //margin-top: 5px;
+  margin-left: 10px;
+}
+
+#massAudubon {
+  height: 115px;
+  margin-right: 10px;
+}
+
+#nfwf {
+  height: 115px;
+}
+
+.fundersP {
+  text-align: center;
 }
 
 #infoDivContent img {
