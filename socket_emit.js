@@ -149,6 +149,24 @@ function socket_emit() {
           tmpData += d + "," + regOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
           return '<td value="' + birdID[i] + '" title="' + d + '">' + d + '</td><td title="Regional Occupancy: ' + regOcc + '">' + regOcc  + '</td><td title="Habitat Occupancy: ' + habOcc + '">' + habOcc + '</td><td title="Local Occupancy: ' + locOcc + '">' + locOcc + '</td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td>';             
         });
+
+    d3.select("#resultsTableBody").selectAll("tr")
+      .classed("likely", function() {
+        var tmpResponse;
+        d3.select(this).selectAll("td")[0].some(function(d,i) {
+          if(i == 3) {
+            if(parseFloat(d3.select(d).text()) >= 0.5) {
+              tmpResponse = true;
+            }
+            else {
+              tmpResponse = false;
+            }
+          }
+          return i == 3;
+        });
+        return tmpResponse;
+      });
+
     
     tmpCSV += "Bird Conservation Region: " + queryBCR + "\n";
     tmpCSV += "Conservation Value: " + conVal.toFixed(2) + "\n";

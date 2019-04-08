@@ -49,6 +49,15 @@
     <script src="crossfilter.min.js"></script>
     <script src="shapefile.js"></script>
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130578747-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-130578747-1');
+    </script>
   </head>
 
   <body>
@@ -242,7 +251,7 @@
 
         //***Add geojson of drawn feature to export button
         setTimeout(function() {
-          socket.emit("check_stats", {"geom": drawnItems.toGeoJSON().features[0].geometry});
+          socket.emit("check_stats", {"geom": drawnItems.toGeoJSON().features[0].geometry, "version": "alfl"});
           setExport();
         },500);
       }
@@ -590,7 +599,7 @@
         else {
           d3.select(tmpDiv).select("span").style("visibility", "hidden");
           map.removeLayer(layerNames.birds.values[tmpDiv.value]);
-          remLegendImg(tmpDiv.name + "_wgs84");
+          remLegendImg(tmpDiv.name);
         }
       }
 

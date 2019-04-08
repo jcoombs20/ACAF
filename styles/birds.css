@@ -1234,6 +1234,14 @@ input[type=range]:focus::-ms-fill-upper {
   color: white;
 }
 
+#resultsTable .likely {
+  background: rgba(0,255,0,0.3);
+}
+
+#resultsTable .likely:hover {
+  background: rgba(0,102,0,0.5);
+}
+
 #resultsTable thead tr {
   position: relative;
   display: block;
