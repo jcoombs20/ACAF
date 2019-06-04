@@ -76,15 +76,17 @@ function socket_emit() {
 
     var tmpDate = new Date();
     var tmpCSV = "PACT Management Opening Analysis: " + (parseInt(tmpDate.getMonth()) + 1) + "/" + tmpDate.getDate() + "/" + tmpDate.getFullYear() + " " + tmpDate.getHours() + ":" + tmpDate.getMinutes() + ":" + tmpDate.getSeconds() + "\n";
-    tmpCSV += "Opening Area (ha): " + parseFloat(d3.select("#areaText").attr("data-ha")).toFixed(3) + "\n";
-    tmpCSV += "Opening Perimeter (m): " + parseFloat(d3.select("#edgeText").attr("data-m")).toFixed(1) + "\n";
+    tmpCSV += "Opening Area (" + document.getElementById("areaUnit").value + "): " + d3.select("#areaText").property("value") + "\n";  //attr("data-ha")).toFixed(3) + "\n";
+    tmpCSV += "Opening Perimeter (" + document.getElementById("edgeUnit").value + "): " + d3.select("#edgeText").property("value") + "\n";  //attr("data-m")).toFixed(1) + "\n";
     tmpCSV += "Large Opening within 3 KM: " + document.querySelector('input[name=sourcePop]:checked').value + "\n";
     if(document.querySelector('input[name=sourcePop]:checked').value == "yes") {
       tmpCSV += "Large Opening Distance (m): " + d3.select("#openSourceDist").property("value") + "\n";
     }
+    tmpCSV += "Basal Area (" + document.getElementById("basalAreaUnits").value + "): " + d3.select("#basalArea").property("value") + "\n";
+    tmpCSV += "Time Since Treatment (Years): " + d3.select("#tstTime").property("value") + "\n";
     var tmpBbox = drawnItems.getBounds();
     tmpCSV += "Opening Bounding Box (degrees): [[" + tmpBbox._northEast.lat.toFixed(4) + ";" + tmpBbox._northEast.lng.toFixed(4) + "][" + tmpBbox._southWest.lat.toFixed(4) + ";" + tmpBbox._southWest.lng.toFixed(4) + "]]\n";
-    var tmpData = "Species,Regional Occupancy,Habitat Occupancy,Local Occupancy,PIF Score\n";
+    var tmpData = "Species,Regional Occupancy,Opening Area Occupancy,Basal Area Occupancy,Time Since Treatment Occupancy,Habitat Occupancy,Local Occupancy,PIF Score\n";
 
     tmpBirdID = [];
     birdID.forEach(function(spp) { tmpBirdID.push(spp.slice(0,4)); });
@@ -109,11 +111,14 @@ function socket_emit() {
     else {
       var tmpBasalTrue = parseFloat(d3.select("#basalArea").property("value"));
     }
+
+    var tmpTST = parseFloat(d3.select("#tstTime").property("value"));
   
     //***Add in slider reset values
     d3.select("#areaReset").property("value", tmpAreaTrue); 
     d3.select("#basalReset").property("value", tmpBasalTrue);
-    d3.select("#timeReset").property("value", 6);
+    //d3.select("#timeReset").property("value", 6);
+    d3.select("#timeReset").property("value", tmpTST);
 
     //***Adjust area slider labels, title, and min and max values 
     d3.select("#areaSliderLabels").html(function() { return getAreaLabels(); });
@@ -128,7 +133,8 @@ function socket_emit() {
     //***Set area slider and basal slider to specified level, and time slider to 6
     d3.select("#areaSlider").property("name", document.getElementById("areaUnit").value).property("value", tmpAreaTrue);
     d3.select("#basalSlider").property("name", document.getElementById("basalAreaUnits").value).property("value", tmpBasalTrue);
-    d3.select("#timeSlider").property("value", 6);
+    //d3.select("#timeSlider").property("value", 6);
+    d3.select("#timeSlider").property("value", tmpTST);
 
     prawSource = document.querySelector('input[name=sourcePop]:checked').value;
     tmpHA = parseFloat(d3.select("#areaText").attr("data-ha"));
@@ -158,7 +164,8 @@ function socket_emit() {
           var baOcc = basalArea(tmpBasal, tmpBirdID[i]);
 
           //***Get time since treatment occupancy
-          var tstOcc = succession(6, tmpBirdID[i]);
+          //var tstOcc = succession(6, tmpBirdID[i]);
+          var tstOcc = succession(tmpTST, tmpBirdID[i]);
 
           //***Add occ values to birds objects
           birds.occ[tmpBirdID[i]].area =  areaOcc;
@@ -187,7 +194,7 @@ function socket_emit() {
             likelySpp += 1;
           }
 
-          tmpData += d + "," + regOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
+          tmpData += d + "," + regOcc + "," + areaOcc + "," + baOcc + "," + tstOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
           return '<td value="' + birdID[i] + '" title="' + d + ' (' + birds.latin[birdTitles[i].replace(" ","_").toLowerCase()] + '), click to see and hear" onclick="viewSpecies(&#34;' + birdID[i] + '&#34;)">' + d +'</td><td title="Regional Occupancy: ' + regOcc.toFixed(2) + '">' + regOcc.toFixed(2)  + '</td><td title="Habitat Occupancy: ' + habOcc.toFixed(2) + '">' + habOcc.toFixed(2) + '<span></span></td><td title="Local Occupancy: ' + locOcc.toFixed(2) + '">' + locOcc.toFixed(2) + '<span></span></td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td><td><span class="glyphicon glyphicon-stats" title="Click to view occupancy distribution models" value="' + birdID[i].slice(0,4) + '" data-i="' + i + '" onclick="chkSppGraphs(this)"></span></td>';             
         });
 
@@ -242,7 +249,7 @@ function socket_emit() {
   });
 
   //habOccModels = {"alfl": praw_roberts, "amgo": praw_roberts, "baww": baww_roberts, "bwwa": coye_roberts, "brth": praw_roberts, "cawa": praw_roberts, "cewa": praw_roberts, "cswa": cswa_roberts, "coye": coye_roberts, "deju": grca_roberts, "eato": eato_roberts, "fisp": praw_roberts, "gwwa": praw_roberts, "grca": grca_roberts, "inbu": inbu_roberts, "mowa": coye_roberts, "nawa": coye_roberts, "praw": {"isolated": praw_roberts, "connected":praw_6_ha_roberts}, "sosp": praw_roberts, "wevi": praw_roberts, "wtsp": inbu_roberts, "ybcu": praw_roberts};
-  habOccModels = {"alfl": praw_roberts, "amgo": area_occ_null, "baww": baww_roberts, "bwwa": area_occ_null, "brth": praw_roberts, "cawa": area_occ_null, "cewa": area_occ_null, "cswa": cswa_roberts, "coye": coye_roberts, "deju": grca_roberts, "eato": eato_roberts, "fisp": praw_roberts, "gwwa": praw_roberts, "grca": grca_roberts, "inbu": inbu_roberts, "mowa": coye_roberts, "nawa": area_occ_null, "praw": {"isolated": praw_roberts, "connected":praw_6_ha_roberts}, "sosp": area_occ_null, "wevi": praw_roberts, "wtsp": inbu_roberts, "ybcu": praw_roberts};
+  habOccModels = {"alfl": praw_roberts, "amgo": area_occ_null, "baww": baww_roberts, "bwwa": area_occ_null, "brth": praw_roberts, "cawa": area_occ_null, "cewa": coye_roberts, "cswa": cswa_roberts, "coye": coye_roberts, "deju": grca_roberts, "eato": eato_roberts, "fisp": praw_roberts, "gwwa": praw_roberts, "grca": grca_roberts, "inbu": inbu_roberts, "mowa": coye_roberts, "nawa": area_occ_null, "praw": {"isolated": praw_roberts, "connected":praw_6_ha_roberts}, "sosp": area_occ_null, "wevi": praw_roberts, "wtsp": inbu_roberts, "ybcu": area_occ_null};
 
 }
 
@@ -592,10 +599,10 @@ function succession(tst, spp) {
 function loadSuccessionParams() {
   //For linear models: a = slope, b = intercept; For quadratic models: a = quadratic, b = slope, c = intercept
   birds.succession.alfl = {"model": "quadratic", "a": -0.02761, "b": 0.46532, "c": -2.91871, "t6": 0.24587219275425412, max: 0.277245947};
-  birds.succession.amgo = {"model": "null", "a": 1};
+  birds.succession.amgo = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};  //***Using CSWA coefficients
   birds.succession.baww = {"model": "linear", "a": 0.26188, "b": -2.68389, "t6": 0.24738462414802126, max: 0.927822361};
-  birds.succession.bwwa = {"model": "null", "a": 1};
-  birds.succession.brth = {"model": "null", "a": 1};  
+  birds.succession.bwwa = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};  //***Using CSWA coefficients
+  birds.succession.brth = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};  //***Using CSWA coefficients  
   birds.succession.cawa = {"model": "quadratic", "a": -0.03882, "b": 0.81713, "c": -4.50385, "t6": 0.2692187344964851, max: 0.449209164};
   birds.succession.cewa = {"model": "linear", "a": -0.19424, "b": 0.48724, "t6": 0.33666316227726084, max: 0.619456032};
   birds.succession.cswa = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};

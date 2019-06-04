@@ -689,7 +689,7 @@ input[type=range]:focus::-ms-fill-upper {
 
 #drawDiv {
   position: absolute;
-  top: 85px;
+  top: 75px;
   left: 270px;
   width: 300px;
   margin: 0px;
@@ -700,6 +700,10 @@ input[type=range]:focus::-ms-fill-upper {
   opacity: 0;
   border: 1px solid black;
 }
+
+#drawDiv input:hover {
+  border-color: aqua;
+}  
 
 #drawSourceDiv {
   //height: 97px;
@@ -746,14 +750,14 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #drawSourceDiv span {
-  font-size: 36px;
-  margin: 5px 0 0 0;
+  font-size: 28px;
+  margin: 2px 0 0 0;
   opacity: 1;
   color: white;
 }
 
 #drawSourceDiv p {
-  margin: 0px;
+  margin: -2px;
   font-size: 20px;
   font-weight: bold;
   color: white;
@@ -768,27 +772,29 @@ input[type=range]:focus::-ms-fill-upper {
   display: block;
   margin: 5px;
   margin-bottom: 10px;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
 }
 
 #drawToolbar {
-  background: rgba(102,0,102,0.3);
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(102,0,102,0.3);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 5px 10px;
-  //height: 92px;
+  height: 91px;
 }
 
 #drawImport {
-  background: rgba(102,0,102,0.3);
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(102,0,102,0.3);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 5px 10px;
   //height: 72px;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
   display: none;
 }
@@ -827,36 +833,46 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
-#drawMeasureDiv, #drawBasalDiv, #shapeDiv {
+#drawMeasureDiv, #drawBasalDiv, #drawTSTDiv, #shapeDiv {
   //height: 100px;
   border-bottom: 1px solid #666666;
 }
 
-#measureTool, #basalTool {
-  background: rgba(255,153,0,0.5);
+#measureTool, #basalTool, #tstTool {
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(255,153,0,0.5);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 5px 10px;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
 }
 
 #basalTool {
-  background: rgba(70, 130, 180,0.5);
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(70, 130, 180,0.5);
+  //padding: 0px;
 }
+
+#tstTool {
+  background: rgba(255, 255, 0,0.5);
+  //padding: 0px;
+}
+
 
 #basalAreaUnits {
   width: auto;
 }
 
 #measureMetricDiv {
+  //background: rgba(255, 255, 0,0.5);
   background: rgba(0,204,0,0.5);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 0px 15px;
-  padding: 5px;
+  //padding: 5px;
   text-align: center;
 }
 
@@ -868,7 +884,7 @@ input[type=range]:focus::-ms-fill-upper {
   display: none !important;
 }
 
-#openSourceMetrics input, #basalTool input {
+#openSourceMetrics input, #basalTool input, #tstTool input {
   width: 100px;
   border-radius: 4px;
   border: 1px solid black;
@@ -938,6 +954,7 @@ input[type=range]:focus::-ms-fill-upper {
   width: 100%;
   height: 100%;
   padding: 5px;
+  background: lightgray;
 }
 
 .shape {
@@ -950,7 +967,7 @@ input[type=range]:focus::-ms-fill-upper {
   color: #333333;
   font-weight: 700;
   text-align: center;
-  margin: 2px;
+  margin: -2px;
   font-size: 14px;
 }
 
@@ -1280,24 +1297,38 @@ input[type=range]:focus::-ms-fill-upper {
   padding-right: 5px;
 }
 
+.a_flex {
+  display: inline-flex;
+}
+
 #usfs {
-  height: 115px;
-  //margin-top: 5px;
+  height: 80px;
 }
 
 #umass {
-  height: 115px;
-  //margin-top: 5px;
-  margin-left: 10px;
-}
-
-#massAudubon {
-  height: 115px;
-  margin-right: 10px;
+  height: 80px;
+  margin-top: 9px;
+  margin-left: 5px;
 }
 
 #nfwf {
-  height: 115px;
+  height: 80px;
+  //margin-left: -10px;
+}
+
+#nrcs {
+  height: 80px;
+  margin-right: -20px;
+}
+
+#massAudubon {
+  height: 80px;
+  margin-top: 9px;
+  margin-right: -20px;
+}
+
+#antioch {
+  height: 80px;
 }
 
 .fundersP {
@@ -1506,6 +1537,29 @@ input[type=range]:focus::-ms-fill-upper {
   color: black;
   background: lightblue;
   //cursor: pointer;
+}
+
+#baTable {
+  text-align: center;
+  width: 100%;
+}
+
+#baTable th {
+  text-align: center;
+}
+
+#baTable thead {
+  background-color: #337ab7;
+  color: white;
+}
+
+#baTable td, #baTable th {
+  border: 1px solid gray;
+  border-collapse: collapse;
+}
+
+#baTable a {
+  font-style: italic;
 }
 
 #exportResults {
