@@ -3,6 +3,7 @@
   <head>
     <title>PACT: Predictor of Avian Communities Tool</title>
     <link rel="icon" type="image/png" href="images/bird-favicon.ico">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <!--link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/-->
     <link rel="stylesheet" href="styles/bootstrap.min.css"/>
@@ -26,7 +27,8 @@
     <script src="jquery-ui.min.js"></script>
     <!--script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script-->
     <script src="bootstrap.min.js"></script>
-    <script src="http://maps.google.com/maps/api/js?v=3"></script>
+    <!--script src="https://maps.google.com/maps/api/js?v=3"></script-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBk-pRMxjeu0G6yIfxqnZMPQE5LgLLB6P8"></script>
     <script src="bundle.js"></script>
     <script src="Bing_tile.js"></script>
     <script src="Google_tile.js"></script>
@@ -36,7 +38,7 @@
     <script src="Control.mousePosition.js"></script>
     <script src="Control.downLoadFile.js"></script>
     <script src="Control.print.js"></script>
-    <script src="http://ecosheds.org:3415/socket.io/socket.io.js"></script>
+    <script src="https://pact.ecosheds.org/socket.io/socket.io.js"></script>
     <script src="socket_emit.js"></script>
     <!--script src="http://d3js.org/d3.v3.min.js"></script-->
     <script src="d3.v3.min.js"></script>
@@ -379,14 +381,14 @@
             zIndex: 0,
             attribution: '<a href="http://www.doi.gov">U.S. Department of the Interior</a> | <a href="http://www.usgs.gov">U.S. Geological Survey</a> | <a href="http://www.usgs.gov/laws/policies_notices.html">Policies</a>'
             });
-      var states = new L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+      var states = new L.tileLayer.wms("https://ecosheds.org/geoserver/birds/wms", {
           layers: 'us_states',
           format: 'image/png',
           transparent: true,
           version: '1.1.0',
           maxZoom: 20,
         });
-      var bcr = new L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+      var bcr = new L.tileLayer.wms("https://ecosheds.org/geoserver/birds/wms", {
           layers: 'bcr_regions_states',
           format: 'image/png',
           transparent: true,
@@ -405,7 +407,7 @@
       //var birdID = ["alfl","amgo","amwo","baww","bwwa","brth","cawa","cawr","cewa","cswa","coye","deju","eato","fisp","gwwa","grca","howr","inbu","lisp","mawa","mowa","nawa","nobo","noca","nomo","pawa","praw","rthu","rugr","rubl","sosp","swsp","tewa","wevi","wtsp","wifl","wisn","wiwa","yewa","ybcu","ybch"];
       var birdLayers = [];
       birdID.forEach(function(spp, i) {
-        birdLayers[i] = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/birds/wms", {
+        birdLayers[i] = L.tileLayer.wms("https://ecosheds.org/geoserver/birds/wms", {
           layers: 'birds:' + spp + '_wgs84',
           format: 'image/png',
           transparent: true,
@@ -416,7 +418,7 @@
 
 
 /*
-      var gsTowns = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/crossings/wms", {
+      var gsTowns = L.tileLayer.wms("https://ecosheds.org/geoserver/crossings/wms", {
         layers: 'crossings:deerfield_towns',
         format: 'image/png',
         transparent: true,
@@ -424,7 +426,7 @@
         maxZoom: 20
       });
 
-      var gsCounties = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/crossings/wms", {
+      var gsCounties = L.tileLayer.wms("https://ecosheds.org/geoserver/crossings/wms", {
         layers: 'crossings:deerfield_counties',
         format: 'image/png',
         transparent: true,
@@ -432,7 +434,7 @@
         maxZoom: 20
       });
 
-      var gsDOTDistricts = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/crossings/wms", {
+      var gsDOTDistricts = L.tileLayer.wms("https://ecosheds.org/geoserver/crossings/wms", {
         layers: 'crossings:deerfield_dot_districts',
         format: 'image/png',
         transparent: true,
@@ -440,7 +442,7 @@
         maxZoom: 20
       });
 
-      var gsHUC12 = L.tileLayer.wms("http://felek.cns.umass.edu:8080/geoserver/crossings/wms", {
+      var gsHUC12 = L.tileLayer.wms("https://ecosheds.org/geoserver/crossings/wms", {
         layers: 'crossings:deerfield_huc12',
         format: 'image/png',
         transparent: true,
@@ -766,7 +768,7 @@
           .append("img")
           .attr("id", tmpName + "LegendImg")
           .attr("class", "legendImg")
-          //.attr("src", "http://felek.cns.umass.edu:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName)
+          //.attr("src", "https://ecosheds.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName)
           .property("title", tmpTitle);
 
         //***Set div width and offset after the image has been loaded
@@ -779,7 +781,7 @@
           d3.select("#" + tmpName + "Legend").style("opacity", "1"); 
     
           resizePanels();
-        }).attr("src", "http://felek.cns.umass.edu:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName);
+        }).attr("src", "https://ecosheds.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=birds:" + tmpName);
 
         d3.select("#" + tmpName + "Legend")
           .append("input")

@@ -1,6 +1,10 @@
 function socket_emit() {
-  socket = io.connect('http://ecosheds.org:3415');
+  socket = io.connect();
+  //socket = io.connect('https://ecosheds.org:3415');
 
+  socket.on('connect', function () {
+    console.log('connected!');
+  });
 
 
   socket.on('check_stats', function(occData) {
@@ -184,13 +188,6 @@ function socket_emit() {
     setTimeout(function() {
       resizePanels();
     }, 300);
-  });
-
-
-
-  socket.on('disconnect', function(err) {
-    console.log(err);
-    console.log('Socket has been disconnected');
   });
 
 

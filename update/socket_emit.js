@@ -1,5 +1,6 @@
 function socket_emit() {
-  socket = io.connect('http://ecosheds.org:3415');
+  socket = io.connect();
+  //socket = io.connect('http://ecosheds.org:3415');
 
 
 
