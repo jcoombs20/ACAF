@@ -7,8 +7,7 @@
 
     <!--link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/-->
     <link rel="stylesheet" href="styles/bootstrap.min.css"/>
-    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.4.0/introjs.min.css"/-->
-    <link rel="stylesheet" href="introjs.min.css"/>
+    <link rel="stylesheet" href="styles/introjs.2.9.3.min.css"/>
     <!--link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/-->
     <link rel="stylesheet" href="leaflet.css"/>
     <!--link rel="stylesheet" href="http://colorbrewer2.org/export/colorbrewer.css"/-->
@@ -38,6 +37,7 @@
     <script src="Control.mousePosition.js"></script>
     <script src="Control.downLoadFile.js"></script>
     <script src="Control.print.js"></script>
+    <script src="introjs.2.9.3.min.js"></script>
     <script src="https://pact.ecosheds.org/socket.io/socket.io.js"></script>
     <script src="socket_emit.js"></script>
     <!--script src="http://d3js.org/d3.v3.min.js"></script-->
@@ -100,6 +100,7 @@
       //******Add Map
       //var map = new L.Map('map', {center: new L.LatLng(42.2, -72.03), zoomControl: false, zoom: 9, minZoom: 7, maxZoom: 20, inertiaDeceleration: 1000, maxBounds: new L.LatLngBounds(new L.LatLng(40.6,-82.3), new L.LatLng(48.3,-61.3))});
       var map = new L.Map('map', {center: new L.LatLng(42.2, -72.03), zoomControl: false, zoom: 9, minZoom: 2, maxZoom: 20, inertiaDeceleration: 1000});
+      map.fitBounds([[41.3,-74.6],[42.9,-69.4]]);
 
       //geoJSON holding variable
       var tmpGeo;
@@ -411,10 +412,12 @@
 
 
       //******Add Geoserver Layers
-      var birdTitles = ["Alder Flycatcher","American Goldfinch","Black-and-white Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","Indigo Bunting","Mourning Warbler","Nashville Warbler","Prairie Warbler","Song Sparrow","White-eyed Vireo","White-throated Sparrow","Yellow-billed Cuckoo"];
-      var birdID = ["alfl_OH","amgo_OH","baww_OH","bwwa_OH","brth_OH","cawa_OH","cewa_OH","cswa_OH","coye_OH","deju_OH","eato_OH","fisp_OH","gwwa_OH","grca_OH","inbu_OH","mowa_OH","nawa_OH","praw_OH","sosp_OH","wevi_OH","wtsp_OH","ybcu_OH"];
-      //var birdTitles = ["Alder Flycatcher","American Goldfinch","American Woodcock","Black and White Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Carolina Wren","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","House Wren","Indigo Bunting","Lincoln's Sparrow","Magnolia Warbler","Mourning Warbler","Nashville Warbler","Northern Bobwhite","Northern Cardinal","Northern Mockingbird","Palm Warbler","Prairie Warbler","Ruby-throated Hummingbird","Ruffed Grouse","Rusty Blackbird","Song Sparrow","Swamp Sparrow","Tennessee Warbler","White-eyed Vireo","White-throated Sparrow","Willow Flycatcher","Wilson's Snipe","Wilson's Warbler","Yellow Warbler","Yellow-billed Cuckoo","Yellow-breasted Chat"];
-      //var birdID = ["alfl","amgo","amwo","baww","bwwa","brth","cawa","cawr","cewa","cswa","coye","deju","eato","fisp","gwwa","grca","howr","inbu","lisp","mawa","mowa","nawa","nobo","noca","nomo","pawa","praw","rthu","rugr","rubl","sosp","swsp","tewa","wevi","wtsp","wifl","wisn","wiwa","yewa","ybcu","ybch"];
+      var birdTitles = ["Alder Flycatcher","American Goldfinch","Black-and-white Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","Indigo Bunting","Mourning Warbler","Nashville Warbler","Prairie Warbler","Song Sparrow","White-eyed Vireo","White-throated Sparrow","Yellow-billed Cuckoo","Acadian Flycatcher","American Redstart","Blackburnian Warbler","Black-throated Blue Warbler","Black-throated Blue Warbler","Blue-gray Gnatcatcher","Blue-headed Vireo","Brown Creeper","Cerulean Warbler","Eastern Wood Pewee","Hermit Thrush","Hooded Warbler","Kentucky Warbler","Least Flycatcher","Ovenbird","Red-breasted Nuthatch","Red-eyed Vireo","Rose-breasted Grosbeak","Scarlet Tanager","Veery","Wood Thrush","Worm-eating Warbler","Yellow-bellied Sapsucker","Yellow-rumped Warbler"];
+      var birdID = ["alfl_OH","amgo_OH","baww_OH","bwwa_OH","brth_OH","cawa_OH","cewa_OH","cswa_OH","coye_OH","deju_OH","eato_OH","fisp_OH","gwwa_OH","grca_OH","inbu_OH","mowa_OH","nawa_OH","praw_OH","sosp_OH","wevi_OH","wtsp_OH","ybcu_OH","acfl_OH","amre_OH","blbw_OH","btbw_OH","btgw_OH","bggn_OH","bhvi_OH","brcr_OH","cerw_OH","eawp_OH","heth_OH","howa_OH","kewa_OH","lefl_OH","oven_OH","rbnu_OH","revi_OH","rbgr_OH","scta_OH","veer_OH","woth_OH","wewa_OH","ybsa_OH","yrwa_OH"];
+      var birdGroup = ["shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature"];
+      //var birdTitles = ["Alder Flycatcher","American Goldfinch","Black-and-white Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","Indigo Bunting","Mourning Warbler","Nashville Warbler","Prairie Warbler","Song Sparrow","White-eyed Vireo","White-throated Sparrow","Yellow-billed Cuckoo"];
+      //var birdID = ["alfl_OH","amgo_OH","baww_OH","bwwa_OH","brth_OH","cawa_OH","cewa_OH","cswa_OH","coye_OH","deju_OH","eato_OH","fisp_OH","gwwa_OH","grca_OH","inbu_OH","mowa_OH","nawa_OH","praw_OH","sosp_OH","wevi_OH","wtsp_OH","ybcu_OH"];
+      //var birdGroup = ["shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland"];
       var birdLayers = [];
       birdID.forEach(function(spp, i) {
         birdLayers[i] = L.tileLayer.wms("https://ecosheds.org/geoserver/birds/wms", {
@@ -484,14 +487,22 @@
       layerNames.birds.keys = d3.keys(layerNames.birds);
       layerNames.birds.values = d3.values(layerNames.birds);
 
-
+/*
+      //***Mature forest Bird layers
+      layerNames.matBirds = {};
+      matBirdTitles.forEach(function(tmpTitle,i) {
+        layerNames.matBirds[tmpTitle] = matBirdLayers[i];
+      });
+      layerNames.matBirds.keys = d3.keys(layerNames.matBirds);
+      layerNames.matBirds.values = d3.values(layerNames.matBirds);
+*/
 
 
       //******Make header div
       d3.select("body")
         .append("div")
         .attr("class", "header")
-        .html('<span class="brand">PACT: Predictor of Avian Communities Tool</span><div id="headerLinks"><a id="showWelcome" href="#" title="Click to show the welcome screen" onclick="d3.select(&quot;#splashScreen&quot;).style(&quot;display&quot;,&quot;flex&quot;)">Welcome</a><a title="Click to display information on how to use this tool" href="#" data-toggle="modal" data-target="#helpDiv">About PACT</a><a title="Click to go to the Ecosheds homepage" href="http://ecosheds.org" target="_blank">SHEDS Home</a></div><div id="printDownload" class="pull-right"><span id="legendControl" class="glyphicon glyphicon-list" title="View legend window" onclick="toolWindowToggle(&quot;legend&quot;)"></span><span id="songControl" class="glyphicon glyphicon-music" title="View bird song window" onclick="toolWindowToggle(&quot;songs&quot;)"></span><span id="downloadControl" class="glyphicon glyphicon-download-alt" title="Download spatial data" onclick="toolWindowToggle(&quot;download&quot;)"></span><span id="printControl" class="glyphicon glyphicon-print" title="Print current map" onclick="window.print()"></span></div>');
+        .html('<span class="brand">PACT: Predictor of Avian Communities Tool</span><div id="headerLinks"><a id="showWelcome" href="#" title="Click to show the welcome screen" onclick="d3.select(&quot;#splashScreen&quot;).style(&quot;display&quot;,&quot;flex&quot;)">Welcome</a><a id="launchIntro" title="Click to begin tutorial on the tool\'s features and usage" href="#"  onclick="startIntro()">Tutorial</a><a title="Click to details and background information on this tool" href="#" data-toggle="modal" data-target="#helpDiv">About PACT</a><a title="Click to go to the Ecosheds homepage" href="http://ecosheds.org" target="_blank">SHEDS Home</a></div><div id="printDownload" class="pull-right"><span id="legendControl" class="glyphicon glyphicon-list" title="View legend window" onclick="toolWindowToggle(&quot;legend&quot;)"></span><span id="songControl" class="glyphicon glyphicon-music" title="View bird song window" onclick="toolWindowToggle(&quot;songs&quot;)"></span><span id="silvControl" class="glyphicon glyphicon-tree-deciduous" title="View silvicultural treatment types" onclick="d3.select(&quot;#silvDiv&quot;).style(&quot;display&quot;,&quot;block&quot;)"></span><span id="downloadControl" class="glyphicon glyphicon-download-alt" title="Download spatial data" onclick="toolWindowToggle(&quot;download&quot;)"></span><span id="printControl" class="glyphicon glyphicon-print" title="Print current map" onclick="window.print()"></span></div>');
 
 
 
@@ -580,13 +591,22 @@
         .append("div")
         .attr("id", "birdListDropdown")
         .attr("class", "layerListDropdown")
-        .on("mouseleave", function() { d3.select(this).style("display", "none") });
+        .on("mouseleave", function() { d3.select(this).style("display", "none") })
+        .html(''
+          + '<div id="shrubland" class="legTitle occHeader" title="Click to list shrubland bird species" data-toggle="collapse" data-target="#shrublandSpp">Shrubland Species<span id="shrublandIcon" class="glyphicon glyphicon-triangle-bottom pull-right headerIcon"></span></div>'
+          + '<div class="toggleDiv collapse" id="shrublandSpp"></div>'
+          + '<div id="mature" class="legTitle occHeader" title="Click to list mature forest bird species" data-toggle="collapse" data-target="#matureSpp">Mature Forest Species<span id="matureIcon" class="glyphicon glyphicon-triangle-bottom pull-right headerIcon"></span></div>'
+          + '<div class="toggleDiv collapse" id="matureSpp"></div>'
+        );
 
-      //******Add bird options
-      d3.select("#birdListDropdown").selectAll("div")
-        .data(layerNames.birds.keys)
+      //******Add shrubland bird options
+      var tmpShrub = layerNames.birds.keys.filter(function(bird,i) { return birdGroup[i] == "shrubland"; });
+      d3.select("#shrublandSpp").selectAll("div")
+        .data(tmpShrub)
+        //.data(layerNames.birds.keys)
         .enter()
           .append("div")
+          .attr("id", function(d,i) { return "layerToggleDiv" + i; })
           .attr("class", "layerName")
           .text(function(d) { return d; })
           .property("value", function(d,i) { return i; })
@@ -597,6 +617,23 @@
           .attr("class", "glyphicon glyphicon-ok pull-right activeBird")
           .style("visibility", "hidden");
 
+
+      //******Add mature forest bird options
+      var tmpMature = layerNames.birds.keys.filter(function(bird,i) { return birdGroup[i] == "mature"; });
+      d3.select("#matureSpp").selectAll("div")
+        .data(tmpMature)
+        .enter()
+          .append("div")
+          .attr("id", function(d,i) { return "layerToggleDiv" + layerNames.birds.keys.indexOf(d); })
+          .attr("class", "layerName")
+          .text(function(d) { return d; })
+          .property("value", function(d,i) { return layerNames.birds.keys.indexOf(d); })
+          .property("title", function(d) { return d; })
+          .property("name", function(d,i) { return birdID[layerNames.birds.keys.indexOf(d)]; })
+          .on("click", function() { changeBird(this); })
+          .append("span")
+          .attr("class", "glyphicon glyphicon-ok pull-right activeBird")
+          .style("visibility", "hidden");
 
 
 
@@ -1021,48 +1058,32 @@
         .attr("id", "splashScreenDiv")
         .append("p")
         .attr("id", "splashWelcome")
-        .html('Welcome to the <span style="font-variant:small-caps;color:#b3d9ff;font-size:41px;text-shadow:1px 2px black;">Predictor of Avian Communites Tool</span>');
+        .html('Welcome to the <span style="font-variant:small-caps;color:#b3d9ff;text-shadow:1px 2px black;">Predictor of Avian Communites Tool</span><span id="hideWelcome" class="glyphicon glyphicon-remove pull-right" title="Click to close welcome"></span>');
 
       d3.select("#splashScreenDiv")
         .append("p")
-        .html('This tool returns occupancy probabilities and Partners in Flight scores for 21 species of shrubland birds based on the location and area of added management openings. Additionally, a conservation value is calculated for each management opening enabling direct comparison between multiple opening design scenarios.')
-        .style({"font-size":"20px","margin":"10px 0px"}); 
+        .html('<p><b>Introduction</b></p><p>As a result of the continued loss of early-successional forest habitat across North America, many native shrubland bird populations are in decline. Forest management can promote the maintenance of robust shrubland bird populations and is a key element in preserving overall avian diversity in New England. The Predictor of Avian Communities Tool, or PACT, illustrates the effects of patch area, basal area retention and time since treatment on shrubland birds for any given geographical location in Massachusetts. Visit the "About PACT" tab to learn more about the tool and shrubland bird conservation.</p>'
+          //+ '<br>'
+          + '<p><b>Getting Started with <span style="font-size:24px;font-variant:small-caps;color:#b3d9ff;text-shadow:1px 2px black;">PACT</span></b></p><p><ol><li>Locate your project site by address, latitude/longitude, or zip code using the "Search Map" feature</li><li>Draw treatment area or upload a shape file, and note if there are any other large openings nearby</li><li>Specify residual basal area</li><li>Click "Analyze" to see what the overall conservation score is for the project, the overall number of species likely to occur in the project area, and which specific species are likely to be present in the project area</li></ol></p>'
+          + '<p>Experiment with the "Opening Area", "Basal Area" and "Time" sliders at the bottom of the "Analysis Results" window to explore how different scenarios compare in terms of their effects on shrubland birds. For additional information, check out the "About PACT" drop-down or the <span class="welcomeLaunch" onclick="startIntro()">tutorial</span>. At any point, hover your mouse over the <span class="glyphicon glyphicon-info-sign welcomeLaunch" data-toggle="tooltip" data-container="body" data-placement="auto top" data-html="true" title="<p>Hover over icons and items to display a tooltip with more information</p>"></span> icons located throughout the tool for additional information about specific features.</p>'
+          + '<p>If you would like to launch the interactive walk-through tutorial of PACT\'s various functions, please click <span class="welcomeLaunch" onclick="startIntro()">here</span> to initiate.</p>'
+          + '<p><b>Game Birds</b></p>'
+          + '<p>Although upland game birds also benefit from forest management, this tool does not include these species since their habitat requirements encompass multiple habitat types. If you are interested in accessing information on best management practices for game birds, please click on the links below:<ul id="welcomeSpp"><li><a href="https://www.nwtf.org/conservation/category/landowners-tool-box" target="_blank">Wild Turkey</a></li><li><a href="https://www.fs.fed.us/database/feis/animals/bird/scmi/all.html" target="_blank">American Woodcock</a></li><li><a href="https://www.fs.fed.us/database/feis/animals/bird/boum/all.html#PreferredHabitat" target="_blank">Ruffed Grouse</a></li></ul></p>'
+        )
+        .style({"font-size":"16px","margin":"10px 0px"}); 
 
-      d3.select("#splashScreenDiv")
-        .append("p")
-        .html('To begin, add a management opening to your area of interest!')
-        .style({"font-size":"22px","margin":"0px 10px 10px 20px","text-align":"center","color":"#434d70"});
-
-      d3.select("#splashScreenDiv")
-        .append("div")
-        .attr("id", "splashGIF")
-        .property("title", "Animation showing management opening creation")
-        .html('<img src="images/pact_demo.gif" style="position:relative;left:-11px;width:104%">');
-
-      d3.select("#splashScreenDiv")
-        .append("button")
-        .attr("id", "splashButton")
-        .attr("class", "btn legendBtn")
-        .property("title", "Click to continue to tool")
-        .text("Continue...")
+      d3.select("#hideWelcome")
         .on("click", function() { 
           d3.select("#splashScreen").style("display", "none");
           localStorage.setItem('disableSplash', d3.select("#disableSplash").property("checked"));
-          //if(localStorage.getItem('doneTour') != "yeah!" && disableTutorialSession != true) {
-          //  startIntro();
-          //}
-          //else {
-          //  $('#attrSelectModal').modal('show');
-          //}
         });
-          
 
       d3.select("#splashScreenDiv")
         .append("div")
-        .style({"float":"right","position":"relative","top":"-50px","left":"-10px"})
+        .style({"text-align":"center", "margin-top":"30px"})
         .append("label")
-        .property("title", "Check box to prevent this screen from displaying on future website visits")
-        .html('<input type="checkbox" id="disableSplash" style="transform:scale(1.3);margin-right:5px;position:relative;top:2px;">Check to prevent this screen from displaying again</input>');
+        .property("title", "Check box to prevent this screen from displaying on future visits")
+        .html('<input type="checkbox" id="disableSplash" style="transform:scale(1.3);margin-right:5px;position:relative;top:2px;">Check to prevent this screen from displaying on future visits</input>');
 
 
 
@@ -1362,7 +1383,7 @@
         .attr("id", "drawBasalDiv")
         .append("div")
         .attr("id", "basalTool")
-        .html('<label style="display:block;margin-bottom:0;">Basal area within opening<span class="glyphicon glyphicon-info-sign help-tooltip" style="margin-left:10px;" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="" data-original-title="<p><u><b><center>Basal Area</center></b></u></p><p style=&#34;text-align:left;&#34;>The average amount of an area occupied by tree stems. It is defined as the total cross-sectional area of all stems in a stand measured at breast height. Basal Area is expressed as either per unit of land area:</p><ul style=&#34;text-align:left;&#34;><li>Square meters per hectare (M^2/HA)</li><li>Square feet per acre (FT^2/AC)</li></ul><p style=&#34;text-align:left;&#34;>or as a percentage:</p><ul style=&#34;text-align:left;&#34;><li>Percent forest retained &nbsp; (% Forest)</li></ul>"></span></label>'
+        .html('<label style="display:block;margin-bottom:0;">Basal area within opening<span class="glyphicon glyphicon-info-sign help-tooltip" style="margin-left:10px;" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="" data-original-title="<p><u><b><center>Basal Area</center></b></u></p><p style=&#34;text-align:left;&#34;>The average amount of an area occupied by tree stems. It is defined as the total cross-sectional area of all stems in a stand measured at breast height. Basal Area is expressed as either per unit of land area:</p><ul style=&#34;text-align:left;&#34;><li>Square meters per hectare (M^2/HA)</li><li>Square feet per acre (FT^2/AC)</li></ul><p style=&#34;text-align:left;&#34;>or as a percentage:</p><ul style=&#34;text-align:left;&#34;><li>Percent forest retained &nbsp; (% Retained)</li></ul>"></span></label>'
             + '<label title="The basal area of your management opening in the units selected"><span></span><input type="text" id="basalArea" value=0.000></input><select id="basalAreaUnits" class="shapeUnit"></select></label>'
           + '</div>'
         );
@@ -1370,14 +1391,14 @@
       var basalUnits = d3.select("#basalAreaUnits")
         .attr("name", "M^2/HA")
         .property("title", "Square meters per hectare")
-        .on("change", function() { changeUnits("% Forest", this.value, d3.select("#basalArea").attr("data-msph"), "basal"); d3.select(this).property("title", tmpTitle[this.selectedIndex]); });
+        .on("change", function() { changeUnits("% Retained", this.value, d3.select("#basalArea").attr("data-msph"), "basal"); d3.select(this).property("title", tmpTitle[this.selectedIndex]); });
 
       d3.select("#basalArea")
         .attr("data-msph", basalArea2percForRet(0))
         .on("blur", function() { checkBasal(this.value); });
 
-      var tmpUnits = ["M^2/HA", "FT^2/AC", "% Forest"];
-      var tmpTitle = ["Square meters per hectare", "Square feet per acre"];
+      var tmpUnits = ["M^2/HA", "FT^2/AC", "% Retained"];
+      var tmpTitle = ["Square meters per hectare", "Square feet per acre", "Percent Forest Retained"];
       basalUnits.selectAll("option")
         .data(tmpUnits)
         .enter()
@@ -1570,7 +1591,7 @@
           case "FT^2/AC":
             var newVal = percForRet2basalArea(val)*4.356;
             break;
-          case "% Forest":
+          case "% Retained":
             var newVal = (val*100);
             break;
         }
@@ -1584,7 +1605,7 @@
           d3.select("#areaUnit").attr("name", unit);
         }
         else if(type == "basal") {
-          if(unit == "% Forest" && newVal > 100) {
+          if(unit == "% Retained" && newVal > 100) {
             d3.select("#basalArea").property("value", "100.000");
           }
           else {
@@ -1602,6 +1623,8 @@
         .html('<span class="glyphicon glyphicon-play"></span><p>Analyze</p>')
         .on("click", function() { 
           if((document.querySelector('input[name=sourcePop]:checked').value == "yes" && isNaN(parseInt(d3.select("#openSourceDist").property("value"))) == false) || document.querySelector('input[name=sourcePop]:checked').value == "no") {
+            d3.selectAll(".sort").classed("active", false);
+            d3.select("#defaultSortSpan").classed("glyphicon-sort-by-attributes", false).classed("glyphicon-sort-by-attributes-alt", true).classed("active", true);
             d3.select("#waitingDiv").style("display", "block");
             d3.select("#graphs").selectAll("div").remove();
             socket.emit("get_bcr", {"geom": drawnItems.toGeoJSON().features[0].geometry});
@@ -1657,7 +1680,7 @@
           + '<div id="exportFileButton" class="legendBtn" title="Click to export the management opening to a file in the selected format"><a id="exportFileButtonA" href="#"><span class="glyphicon glyphicon-export" style="color:lime;margin:0;margin-right:5px;opacity:1;"></span>Export File</a></div>'
         );
 
-      d3.selectAll("#exportShape,#exportGeo").on("change", function() { console.log(this.id); setExport(); });
+      d3.selectAll("#exportShape,#exportGeo").on("change", function() { setExport(); });
 
 
 
@@ -1680,7 +1703,7 @@
         .attr("class", "legTitle")
         .attr("id", "resultsTitle")
         .append("span")
-        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Results</center></b></u></p><p>Reports occupancy probability for each species.<br><br>Regional occupancy reports the mean occupancy value of the current management opening queried from species occupancy rasters developed by either Jon Atwood and Mass Audubon (alder flycatcher & chestnut-sided warbler) or Steve Matthews (all other species).<br><br>Habitat occupancy is calculated for each species by multiplying the probabilites for the size of the management opening, the basal area of remaining trees in the opening, and the time since the opening was created.<br><br>Local occupancy is the product of Regional and Habitat occupancies.<br><br>PIF Score is the Partners in Flight regional concern score for breeding birds (RCS-b) available at pif.birdconservancy.org/ ACAD/Database.aspx.</p>"></span>');
+        .html('<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Results</center></b></u></p><p>Reports occupancy probability for each species.<br><br>Regional occupancy reports the mean occupancy value of the current management opening queried from species occupancy rasters developed by either Jon Atwood and Mass Audubon (alder flycatcher & chestnut-sided warbler) or Steve Matthews (all other species).<br><br>Habitat occupancy is calculated for each species by multiplying the probabilites for the size of the management opening, the basal area of remaining trees in the opening, and the time since the opening was created.<br><br>Final occupancy is the product of Regional and Habitat occupancies.<br><br>PIF Score is the Partners in Flight regional concern score for breeding birds (RCS-b) available at pif.birdconservancy.org/ ACAD/Database.aspx.</p>"></span>');
  
       d3.select("#resultsTitle")
         .append("span")
@@ -1690,18 +1713,8 @@
 
       d3.select("#resultsDiv")
         .append("div")
-        .attr("id", "conValDiv")
-        .html(''
-          + '<label style="margin-left:5px;" title="Conservation value of management opening">Conservation Value of management opening'
-            + '<span class="glyphicon glyphicon-info-sign help-tooltip" style="margin-left:5px;position:relative;top:3px;" data-toggle="tooltip" data-container="body" data-placement="auto top" data-html="true" title="<p><u><b><center>Conservation Value</center></b></u></p><p>Sum of local occupancy times PIF score over all species as described by Equation 1 in Nuttle et al, 2003 (The Auk, 120:1 541-549).</p>"></span>'
-            + '<div id="conVal"><p></p><span></span></div>'
-          + '</label><br>'
-          + '<label style="margin-left:5px;" title="Number of species predicted to inhabit the management opening using a local occupancy probability threshold value of 0.5 or greater">Likely number of species present in opening'
-            + '<span class="glyphicon glyphicon-info-sign help-tooltip" style="margin-left:5px;position:relative;top:3px;" data-toggle="tooltip" data-container="body" data-placement="auto top" data-html="true" title="<p><u><b><center>Species Present</center></b></u></p><p>The likely number of species predicted to inhabit the management opening assuming a local occupancy probability threshold of 0.5 or greater.</p>"></span>'
-            + '<div id="likelySpp"><p></p><span></span></input>'
-          + '</label>'
-
-        );
+        .style({"margin-left":"5px"})
+        .html('<h5 style="font-weight:bold;margin-top:5px;margin-bottom:5px;">Species likely to occur in project area (in descending order of occurrence)</h5>');
 
 
       d3.select("#resultsDiv")
@@ -1715,13 +1728,20 @@
       d3.select("#resultsViewDiv")
         .append("div")
         .attr("id", "resultsActualDiv")
-        .html('<table id="resultsTable"><thead><tr><th title="Common name of bird species">Species</th><th title="Species occupancy probability derived from broad-scale models">Regional Occupancy</th><th title="Species occupancy probability derived from models based on characteristics of the management opening (size, basal area, time since treatment)">Habitat Occupancy</th><th title="The product of the Regional and Habitat occupancy probabilities, and the value used to determine species presence in the management opening">Local Occupancy</th><th title="The Regional Concern Score (breeding season) (RCS-b) value from the Partners In Flight database for the Bird Conservation Region (BCR) in which the opening is located">PIF Score</th><th title="Click to view a species occupancy model distribution graphs">Graphs</th></tr></thead><tbody id="resultsTableBody"></tbody></table>');
+        .html('<table id="resultsTable"><thead><tr><th onclick="startSort(this)" title="Common name of bird species"><span class="sortTitle">Species</span><span class="sort glyphicon glyphicon-sort-by-attributes" data-sort="0" title="Click to sort column in ascending order"></span></th><th onclick="startSort(this)" title="Species occupancy probability derived from broad-scale models"><span class="sortTitle">Regional Occupancy</span><span class="sort glyphicon glyphicon-sort-by-attributes" data-sort="1" title="Click to sort column in ascending order"></span></th><th title="Species occupancy probability derived from models based on characteristics of the management opening (size, basal area, time since treatment)">Habitat Occupancy</th><th onclick="startSort(this)" title="The product of the Regional and Habitat occupancy probabilities, and the value used to determine species presence in the management opening"><span class="sortTitle">Final Occupancy</span><span id="defaultSortSpan" class="sort glyphicon glyphicon-sort-by-attributes-alt active" data-sort="3" title="Click to sort column in ascending order"></span></th><th onclick="startSort(this)" title="The Regional Concern Score (breeding season) (RCS-b) value from the Partners In Flight database for the Bird Conservation Region (BCR) in which the opening is located"><span class="sortTitle">PIF<br>Score</span><span class="sort glyphicon glyphicon-sort-by-attributes" data-sort="4" title="Click to sort column in ascending order"></span></th><th title="Click to view a species occupancy model distribution graphs">Graphs</th></tr></thead><tbody id="resultsTableBody"></tbody></table>');
 
       d3.select("#resultsDiv")
         .append("div")
         .style("padding", "0 5px 5px 5px")
-        .html('<div id="adjustResults"><div id="adjustArea" class="adjustDiv"><p class="sliderHeading" title="The size of the managment opening">Opening Area</p><span id="areaReset" class="glyphicon glyphicon-refresh sliderReset" title="Reset opening area slider to initial value"></span></div><div id="adjustBasal" class="adjustDiv"><p class="sliderHeading" title="The amount of basal area left in the management opening at the time of its creation">Basal Area</p><span id="basalReset" class="glyphicon glyphicon-refresh sliderReset" title="Reset basal slider to initial value"></span></div><div id="adjustTime" class="adjustDiv"><p  class="sliderHeading" title="The time in years since the management opening was created">Time</p><span id="timeReset" class="glyphicon glyphicon-refresh sliderReset" title="Reset time since treatment slider to initial value"></span></div></div>'
-          + '<div id="exportResults" class="legendBtn" title="Click do download analysis results to a CSV file"><a id="exportResultsA" href="#" download="PACT_results.csv"><span class="glyphicon glyphicon-download-alt" style="color:white;margin-right:5px;margin-left:0;opacity:1;"></span>Download Results</a></div>');
+        .html('<div id="adjustResults"><h4 style="margin:2px;color:black;font-weight:bold;">Adjusters<span class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p>The sliders below calculate how Final Occupancy values change with adjustments in the opening area, residual basal area, or time since treatment settings.<br><br>An increase in predicted occupancy is indicated by a green positive value next to the original value, while a decrease in predicted occupancy is indicated by a red negative value.<br><br>Note: The Opening Area effects level off above 2 ha (5 acres).</p>"></span></h4><div id="adjustArea" class="adjustDiv"><p class="sliderHeading" title="The size of the managment opening">Opening Area</p><span id="areaReset" class="glyphicon glyphicon-refresh sliderReset" title="Reset opening area slider to initial value"></span></div><div id="adjustBasal" class="adjustDiv"><p class="sliderHeading" title="The amount of basal area left in the management opening at the time of its creation">Basal Area</p><span id="basalReset" class="glyphicon glyphicon-refresh sliderReset" title="Reset basal slider to initial value"></span></div><div id="adjustTime" class="adjustDiv"><p  class="sliderHeading" title="The time in years since the management opening was created">Time</p><span id="timeReset" class="glyphicon glyphicon-refresh sliderReset" title="Reset time since treatment slider to initial value"></span></div></div>'
+          + '<div id="conValDiv">'
+            + '<label style="margin-left:5px;margin-bottom:0;" title="Conservation value of management opening">Conservation Value of management opening'
+            + '<span class="glyphicon glyphicon-info-sign help-tooltip" style="margin-left:5px;position:relative;top:3px;" data-toggle="tooltip" data-container="body" data-placement="auto top" data-html="true" title="<p><u><b><center>Conservation Value</center></b></u></p><p>Sum of final occupancy multiplied by PIF score over all species as described by Equation 1 in Nuttle et al, 2003 (The Auk, 120:1 541-549).</p>"></span>'
+            + '<div id="conVal"><p></p><span></span></div>'
+            + '</label>'
+          + '</div>'
+
+          + '<div style="margin-top:5px;height:50px;"><div id="silvDefsDiv" class="legendBtn" title="Click to view information and photographs of silvicultural treatment types"><a id="silvDefsA" href="#" onclick="showSilvDiv()"><span class="glyphicon glyphicon-picture btnGlyph"></span> Info & images of silvicultural treatments</a></div><div id="exportResults" class="legendBtn" title="Click do download analysis results to a CSV file"><a id="exportResultsA" href="#" download="PACT_results.csv"><span class="glyphicon glyphicon-download-alt btnGlyph"></span>Download Results</a></div>');
 
       d3.select("#basalReset").on("click", function() { d3.select("#basalSlider").property("value", this.value).property("title", this.value); update_occupancy(d3.select("#basalSlider")[0][0]); });
       d3.select("#timeReset").on("click", function() { d3.select("#timeSlider").property("value", this.value).property("title", this.value); update_occupancy(d3.select("#timeSlider")[0][0]); });
@@ -1894,7 +1914,7 @@
             //return '<li>' + Math.round(percForRet2basalArea(0)*4.356) + '</li><li>' + Math.round(percForRet2basalArea(0.25)*4.356) + '</li><li>' + Math.round(percForRet2basalArea(0.5)*4.356) + '</li><li>' + Math.round(percForRet2basalArea(0.75)*4.356) + '</li><li>' + Math.round(percForRet2basalArea(1)*4.356) + '</li>';
             return '<li class="first_li">' + Math.round(percForRet2basalArea(0)*4.356) + '</li><li>' + Math.round(percForRet2basalArea(0.5)*4.356) + '</li><li class="last_li">' + Math.round(percForRet2basalArea(1)*4.356) + '</li>';
             break;
-          case "% Forest":
+          case "% Retained":
             //return '<li>0</li><li>25</li><li>50</li><li>75</li><li>100</li>';
             return '<li class="first_li">0</li><li>50</li><li class="last_li">100</li>';
             break;
@@ -1914,7 +1934,7 @@
             d3.select("#basalSliderTitle").property("title", "Square Feet per Acre");
             return document.getElementById("basalAreaUnits").value;
             break;
-          case "% Forest":
+          case "% Retained":
             //return "% Forest Retained";
             d3.select("#basalSliderTitle").property("title", "% Forest Retained");
             return document.getElementById("basalAreaUnits").value;
@@ -1941,7 +1961,7 @@
               return percForRet2basalArea(1) * 4.356;
             }
             break;
-          case "% Forest":
+          case "% Retained":
             if(tmpEnd == "min") {
               return 0;
             }
@@ -1961,10 +1981,67 @@
           case "FT^2/AC":
             return 0.001;
             break;
-          case "% Forest":
+          case "% Retained":
             return 0.001;
             break;
         }
+      }
+
+
+
+
+
+
+
+
+      //******Make div for viewing silvicultural treatments
+      d3.select("body")
+        .append("div")
+        .attr("id", "silvDiv")
+        .append("div")
+        .attr("class", "legend gradDown")
+        .attr("id", "silvTitleDiv")
+        .append("h4")
+        .text("Silvicultural Treatments")
+        .attr("class", "legTitle")
+        .attr("id", "silvTitle")
+        .append("span")
+        .html('<span class="glyphicon glyphicon-info-sign" style="font-size:19px;" help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" data-html="true" title="<p><u><b><center>Silvicultural Treatments</center></b></u></p><p>Read information and view images of silvicultural treatments used to make management openings.</p>"></span>');
+ 
+      d3.select("#silvTitle")
+        .append("span")
+        .attr("class", "glyphicon glyphicon-remove pull-right minimize-button")
+        .property("title", "Click to hide Silvicultural Treatments window")
+        .on("click", function() { d3.select("#silvDiv").style("display", "none"); });
+
+      d3.select("#silvDiv")
+        .append("div")
+        .attr("id", "treatDiv")
+        .html('<p>The practice of forestry employs a variety of "silvicultural treatments" in order to achieve different objectives. The treatments described below are commonly-used practices that illustrate variation in opening area, basal area retained, and tine since treatment, settings that can be manipulated in PACT to visualize their respective effects on shrubland bird communities. More information can be found in <a class="mockA" target="_blank" href="data/leak_et_al_2014.pdf" title="Leak, W.B., Yamasaki, M., and Holleran, R. (2014) Silvicultural guide for northern hardwoods in the northeast. General Technical Report NRS-132. Newtown Square, PA, U.S. Department of Agriculture, Forest Service, Northern Research Station, 46 pp.">Leak et al 2014</a>.</p>'
+          + '<br>'
+          + '<h3><b>Small Opening</b></h3>'
+          + '<img class="silvImg" src="images/small_opening.jpg"></img>'
+          + '<p>A forester might recommend creating a 1/2 acre opening like this to encourage a mix of sun-loving and shade loving tree species in a stand. An opening of this size supports some shrubland bird species, such as the chestnut-sided warbler, however some shrubland bird species, like the prairie warbler, are rarely encountered in patches this small (<a class="mockA" href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Journal of Wildlife Management, 81(7):1298-1307.">Roberts and King 2017</a>).</p>'
+          + '<br>'
+          + '<h3><b>Large Opening</b></h3>'
+          + '<img class="silvImg" src="images/large_opening.jpg"></img>'
+          + '<p>A forester might recommend a 5-acre opening like this to encourage sun-loving tree species, or to start over again in a stand degraded by disease or mismanagement. An opening of this size is large enough for even a prairie warbler, one of our fussiest shrubland birds (<a class="mockA" href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Journal of Wildlife Management, 81(7):1298-1307.">Roberts and King 2017</a>), so a forester might also recommend this practice for its benefits to wildlife.</p>'
+          + '<br>'
+          + '<h3><b>Light Selection Harvest with Low Basal Area</b></h3>'
+          + '<img class="silvImg" src="images/light_selection_low_basal.jpg"></img>'
+          + '<p>Single-tree selection harvests achieve certain silvicultural objectives; however, the closed canopy conditions inhibit the development of a dense shrub layer, and as a result, selection harvests support few shrubland birds.</p>'
+          + '<br>'
+          + '<h3><b>Shelterwood</b></h3>'
+          + '<img class="silvImg" src="images/shelterwood.jpg"></img>'
+          + '<p>Shelterwood harvests are an even-aged management option that is completed in two stages, with some mature trees left temporarily to aid in regeneration. Shelterwood harvests support most shrubland bird species, however typically at lower densities than treatments that remove most or all of the forest canopy (e.g. clearcuts or seed-tree systems; <a class="mockA" href="data/schlossberg_and_king_2007.pdf" target="_blank" title="Schlossberg, S.R., and King, D.I. (2007) Ecology and management of scrub-shrub birds in New England: A comprehensive review. Report submitted to Natural Resources Conservation Service, Resource Inventory and Assessment Division, Beltsville, Maryland, USA.">Schlossberg and King 2007</a>).</p>'
+          + '<br>'
+          + '<div id="silvAddDiv"><p>For additional information on how Massachusetts land owners and foresters can create and maintain habitat for forest and shrubland birds, please visit <a class="mockA mockA_dark" href="http://www.masswoodlands.org/media/1230/a-guide-to-habitat-assessment-and-silvicultural-practices.pdf" title="http://www.masswoodlands.org/media/1230/a-guide-to-habitat-assessment-and-silvicultural-practices.pdf">Managing Forests for Trees and Birds in Massachusetts</a>.  For information regarding additional silvicultural treatment options for Northern hardwood stands in New England, please visit <a class="mockA mockA_dark" href="https://www.fs.fed.us/nrs/pubs/gtr/gtr_nrs132.pdf" title="https://www.fs.fed.us/nrs/pubs/gtr/gtr_nrs132.pdf">Silvicultural Guide for Northern Hardwoods in the Northeast</a>.</p></div>'
+        );
+
+
+      
+      function showSilvDiv() {
+        d3.select("#silvDiv").style("display", "block");
       }
 
 
@@ -2000,7 +2077,7 @@
         .attr("id", "songs")
         .append("h4")
         .attr("id", "species")
-        .html('<span id="sppCommon" title="Alder Flycatcher">Alder Flycatcher</span><br><span style="color:navy;">(<span id="sppLatin" style="font-style:italic;font-size:14px;" title="Empidonax alnorum">Empidonax alnorum</span>)</span>');
+        .html('<span id="sppCommon" title="Alder Flycatcher">Alder Flycatcher</span><span id="sppInfo" class="glyphicon glyphicon-info-sign help-tooltip" data-toggle="tooltip" data-container="body" data-placement="auto right" title="Found in dense, wet stands of shrubs and saplings with minimal to no tree canopy. In addition to occurring in regenerating clearcuts, they are also regularly encountered in wetlands and along the margins of streams and lakes."></span><br><span style="color:navy;">(<span id="sppLatin" style="font-style:italic;font-size:14px;" title="Empidonax alnorum">Empidonax alnorum</span>)</span>');
 
       d3.select("#songs")
         .append("img")
@@ -2013,6 +2090,27 @@
         .attr("src", "bird_songs/alder_flycatcher.mp3")
         .attr("controls", "controls")
         .attr("id", "birdSong");
+
+      d3.select("#songs")
+        .append("div")
+        .html(''
+          + '<input type="radio" id="shrubRad" class="radio" name="habGroup" value="shrubland" title="List of shrubland bird species" checked><label class="radioLabel" for="shrubRad" title="List of shrubland bird species">Shrubland</label>'
+          + '<input type="radio" id="matureRad" class="radio" name="habGroup" value="mature" title="List of mature forest bird species"><label class="radioLabel" for="matureRad" title="List of mature forest bird species">Mature Forest</label>'
+        );
+
+      d3.selectAll(".radio")
+        .on("change", function() { 
+          if(this.id == "shrubRad") { 
+            d3.select("#matureSongSelect").style("display", "none"); 
+            d3.select("#shrublandSongSelect").style("display", "inline-block");
+            changeSpecies(d3.select("#shrublandSongSelect")[0][0], "shrubland", 0);
+          }
+          else {
+            d3.select("#shrublandSongSelect").style("display", "none"); 
+            d3.select("#matureSongSelect").style("display", "inline-block");
+            changeSpecies(d3.select("#matureSongSelect")[0][0], "mature", 0);          }
+        });
+
 
       //***Control Volume
       //d3.select("#birdSong").property("volume", 0.5);
@@ -2463,7 +2561,7 @@
           + '</ul>'
           + '<p>For the meta-analysis, we quantified the relationship between basal area and perenctage forest retained:</p>'
           + '<p style="text-align:center;"><img src="images/BA_PFR_plot.jpg" style="width:350px;margin:0;margin-left:-100px"></p>'
-          + '<p>In PACT, basal area may be entered as square meters/hectare (M^2/HA), square feet/acre (FT^2/AC), or percent forest (% Forest). Changing the measurement unit in PACT automatically converts the existing value to the new selection. Based on the above relationship, basal area measurements greater than or equal to 26.239 M^2/HA or 114.297 FT^2/AC will be converted to 100% forest.</p>'
+          + '<p>In PACT, basal area may be entered as square meters/hectare (M^2/HA), square feet/acre (FT^2/AC), or percent forest retained (% Retained). Changing the measurement unit in PACT automatically converts the existing value to the new selection. Based on the above relationship, basal area measurements greater than or equal to 26.239 M^2/HA or 114.297 FT^2/AC will be converted to 100% forest retained.</p>'
           + '<p>If managers want to specifically harvest stands with shelterwood or selective logging, the below table contains the recommended residual basal area values for those treatments for a given forest type. <b>NOTE</b>: Recommendations are in <u>square feet/acre</u></p>'
           + '<table id="baTable">'
             + '<thead>'
@@ -2534,15 +2632,15 @@
               + '<li>Are deemed not sensitive to time since treatment (<a href="https://www.sciencedirect.com/science/article/pii/S0378112717314810" target="_blank" title="Perry, R.W., Jenkins, J.M.A., Thill, R.E., and Thompson III, F.R. (2018) Long-term effects of different forest regeneration methods on mature forest birds. Forest Ecology and Management, 408:183-194.">Perry et al 2018</a>), and are assigned an occupancy probability of 1</li>'
             + '</ul>'
           + '</ul>'
-          + '<h3>Local Occupancy</h3>'
+          + '<h3>Final Occupancy</h3>'
           + '<p>Calculated as the product of regional occupancy and habitat occupancy probabilities.</p>'
           + '<h3>Partners In Flight Score</h3>'
           + '<p>The Regional Concern Score (breeding season) (RCS-b) value from the Partners In Flight <a href="http://pif.birdconservancy.org/ACAD/Database.aspx" target="_blank" title="pif.birdconservancy.org/ACAD/Database.aspx">database</a> is retreived for each species. Values are dependent on the <a href="http://nabci-us.org/resources/bird-conservation-regions-map/" target="_blank" title="nabci-us.org/resources/bird-conservation-regions-map">Bird Conservation Region</a> (BCR) in which the management opening occurs. For openings overlapping multiple regions, values are taken from the region covering the greatest proportion of the opening. An empty cell indicates that there is no RCS-b score for that species in that BCR.</p>'
           + '<h3>Conservation Value</h3>'
-          + '<p>The product of the local occupancy and Partners In Flight score for each species summed over all species. The formula is based on a modification to equation 1 in <a href="https://academic.oup.com/auk/article/120/2/541/5147889" target="_blank" title="Nuttle, T., Leidolf, A., and Burger Jr., L.W. (2003) Assessing conservation value of bird communities with Partners In Flight-based ranks. The Auk 120(2):541-549.">Nuttle et al (2003)</a> in which species occupancy probability is substituted for abundance (<i>a<sub>i</sub></i>)</p>'
+          + '<p>The product of the final occupancy and Partners In Flight score for each species summed over all species. The formula is based on a modification to equation 1 in <a href="https://academic.oup.com/auk/article/120/2/541/5147889" target="_blank" title="Nuttle, T., Leidolf, A., and Burger Jr., L.W. (2003) Assessing conservation value of bird communities with Partners In Flight-based ranks. The Auk 120(2):541-549.">Nuttle et al (2003)</a> in which species occupancy probability is substituted for abundance (<i>a<sub>i</sub></i>)</p>'
           + '<div style="text-align:center;"><img src="images/nuttle_equ_1.PNG" style="width:initial;"></div>'
           + '<h3>Likely Number of Species</h3>'
-          + '<p>The total number of species present in the management opening that have a local occupancy probability equal to or greater than 0.5.</p>'
+          + '<p>The total number of species present in the management opening that have a final occupancy probability equal to or greater than 0.5.</p>'
         );       
 
 
@@ -2590,7 +2688,7 @@
         .attr("id", "infoDivContent")
         .style("padding", "5px")
         .append("p")
-        .html('Local occupancy probabilities were calculated using model results from <a href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank">Roberts & King, 2017</a> (Figures 2 & 3 below)'
+        .html('Final occupancy probabilities were calculated using model results from <a href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank">Roberts & King, 2017</a> (Figures 2 & 3 below)'
           + '<img src="images/roberts_king_fig_2.jpg">'
           + '<img src="images/roberts_king_fig_3.jpg">'
         );
@@ -2643,6 +2741,7 @@
       function loadData(error, mediaData) {
         birds.keys = d3.keys(mediaData[0]);
         birds.latin = {};
+        birds.info = {};
         
         birds.media = mediaData.map(function(d) {
           var tmpJSON = {};
@@ -2655,25 +2754,49 @@
 
         birds.media = birds.media.filter(function(d) { return birdTitles.indexOf(d.common) > -1; });
 
-        birds.media.forEach(function(d) { birds.latin[d.id] = d.latin; });
+        birds.media.forEach(function(d) { birds.latin[d.id] = d.latin; birds.info[d.id] = d.info; });
+
+        var tmpShrub = birds.media.filter(function(d) { return d.group == "shrubland"; });
+        var tmpMature = birds.media.filter(function(d) { return d.group == "mature"; });
 
         //******Add selection to change bird media
         var select = d3.select("#songs")
           .append("select")
-          .attr("id", "songSelect")
+          .attr("id", "shrublandSongSelect")
           .attr("class", "shapeUnit")
           .style("width", "188px")
           .property("title", "Select species to hear its song and display a photo")
-          .on("change", function() { changeSpecies(this); });
+          .on("change", function() { changeSpecies(this, "shrubland", 1); });
 
         select.selectAll("option")
-          .data(birds.media)
+          .data(tmpShrub)
           .enter()
             .append("option")
               .attr("value", function(d) { return d.id; })
               .attr("data-spp", function(d,i) { return birdID[i]; })
+              .attr("data-group", function(d,i) { return d.group; })
               .property("title", function(d,i) { return d.common + " (" + birds.latin[d.id] + ")"; })
               .text(function(d) { return d.common; });
+
+        //******Add selection to change bird media
+        var select = d3.select("#songs")
+          .append("select")
+          .attr("id", "matureSongSelect")
+          .attr("class", "shapeUnit")
+          .style("width", "188px")
+          .property("title", "Select species to hear its song and display a photo")
+          .on("change", function() { changeSpecies(this, "mature", 1); });
+
+        select.selectAll("option")
+          .data(tmpMature)
+          .enter()
+            .append("option")
+              .attr("value", function(d) { return d.id; })
+              .attr("data-spp", function(d,i) { return birdID[i]; })
+              .attr("data-group", function(d,i) { return d.group; })
+              .property("title", function(d,i) { return d.common + " (" + birds.latin[d.id] + ")"; })
+              .text(function(d) { return d.common; });
+
 
         //***Add exclusivity with other leaflet draw variable
         d3.select("#drawToolbar").select(".leaflet-draw").selectAll("a").on("click", function() {
@@ -2702,24 +2825,135 @@
 
 
       //******Change the species picture and song
-      function changeSpecies(tmpSpp) {
+      function changeSpecies(tmpSpp, tmpGroup, tmpBi) {
         d3.select("#sppCommon")
-          .text(d3.select("#songSelect").selectAll("option")[0][d3.select("#songSelect").property("selectedIndex")].text)
-          .property("title", d3.select("#songSelect").selectAll("option")[0][d3.select("#songSelect").property("selectedIndex")].text);
+          .text(d3.select("#" + tmpGroup + "SongSelect").selectAll("option")[0][d3.select("#" + tmpGroup + "SongSelect").property("selectedIndex")].text)
+          .property("title", d3.select("#" + tmpGroup + "SongSelect").selectAll("option")[0][d3.select("#" + tmpGroup + "SongSelect").property("selectedIndex")].text);
+        d3.select("#sppInfo")
+          .attr("data-original-title", birds.info[tmpSpp.value]);
         d3.select("#sppLatin")
           .text(birds.latin[tmpSpp.value])
           .property("title", birds.latin[tmpSpp.value]);
         d3.select("#birdPic")
           .attr("src", "bird_pics/" + tmpSpp.value + ".jpg")
-          .property("title", d3.select("#songSelect").selectAll("option")[0][d3.select("#songSelect").property("selectedIndex")].text);
+          .property("title", d3.select("#" + tmpGroup + "SongSelect").selectAll("option")[0][d3.select("#" + tmpGroup + "SongSelect").property("selectedIndex")].text);
         d3.select("#birdSong").attr("src", "bird_songs/" + tmpSpp.value + ".mp3");
-        d3.select("#birdSong")[0][0].play();
+        if(tmpBi == 1) { d3.select("#birdSong")[0][0].play(); }
       }
 
 
       //******Set z-indexes of moveable divs so that clicked one is always on top
       d3.selectAll("#legendDiv,#drawDiv,#exportDiv,#resultsDiv,#songsDiv,#downloadDiv,#graphsDiv")
         .on("mousedown", function() { setZ(this); });
+
+
+      //******Tutorial
+      function startIntro() {
+        var intro = introJs();
+        intro.setOptions({
+          steps: [
+            //0
+            { intro: '<p style="text-align:center;"><b>Welcome to the<br><span style="font-variant:small-caps;color:#b3d9ff;text-shadow:1px 2px black;font-size:21px;">Predictor of Avian Communities Tool</span></b></p><img src="images/bird-silhouette.png" style="height:50px;display:block;margin:auto;"></img>This app is designed to predict occurrence for 22 species of shrubland birds based on the location and size of management openings drawn on a map.' },
+            //1
+            { element: document.querySelector("#launchIntro"), intro: "To access this guide at any time simply click on the 'Tutorial' link." },
+            //2
+            { element: document.querySelector("#baselayerSelect"), intro: "Use this dropdown menu  to change the basemap displayed on the map." },
+            //3
+            { element: document.querySelector("#birdSelect"), intro: "Use this dropdown menu to add species regional occupancy raster layers to the map. Here the blue-winged warbler layer has been added." },
+            //4
+            { element: document.querySelector("#legendDiv"), intro: "The Legend window displays the legend for the top-most layer and enables the user to control it's transparancy" },
+            //5
+            { element: document.querySelector("#panelTools"), intro: 'These icons are used to show/hide tool windows and zoom the map to the managment opening:<ul><li><span class="fa fa-th-list intro-fa"></span> Show/hide map legend window</li><li><span class="fa fa-info intro-fa"></span> Show/hide feature identification window</li><li><span class="fa fa-pencil-square intro-fa"></span> Show/hide Catchment Updater window</li><li><span class="fa fa-search intro-fa"></span> Show/hide map location search window</li><li><span class="fa fa-globe intro-fa"></span> Zoom to full-extent of the map</li></ul>' },
+          ],
+
+          tooltipPosition: 'auto',
+          positionPrecedence: ['left', 'right', 'bottom', 'top'],
+          showStepNumbers: false,
+          hidePrev: true,
+          hideNext: true,
+          scrollToElement: true,
+          disableInteraction: true,
+        });
+
+
+        intro.onchange(function() { 
+          switch (this._currentStep) {
+            case 0:
+              revertIntro();
+              break;
+            case 1:
+              revertIntro();
+              d3.select("#launchIntro").style("color","navy");
+              break;
+            case 2:
+              revertIntro();
+              d3.select("#baselayerListDropdown").style("display", "inline-block");
+              break;
+            case 3:
+              revertIntro();
+              $("#layerToggleDiv3").click();
+              d3.select("#birdListDropdown").style("display", "inline-block");
+              break;
+            case 4:
+              revertIntro();
+              $("#layerToggleDiv3").click();
+            case 5:
+              revertIntro();
+              d3.select("#panelTools").selectAll("p").style("color", "navy");
+              d3.select("#panelTools").selectAll("span").style("color", "navy");
+              break;
+          }
+        });
+
+        intro.onbeforechange(function() { 
+          switch (this._currentStep) {
+            case 0:
+              break;
+          }  
+        });
+
+
+        intro.onafterchange(function() { 
+          switch (this._currentStep) {
+            case 0:
+              break;
+          }  
+        });
+
+
+        intro.oncomplete(function() { 
+          //localStorage.setItem('doneTour', 'yeah!'); 
+          revertIntro();
+        });
+
+        intro.onexit(function() {
+          revertIntro();
+        });            
+
+
+        intro.start();
+
+
+
+        function revertIntro() {
+          //0
+          d3.select("#splashScreen").style("display", "none");
+          if(d3.select("#drawDiv").style("opacity") == 1) { toolWindowToggle("draw"); };
+          map.fitBounds([[41.3,-74.6],[42.9,-69.4]]);
+          d3.select("#locateDiv").style("opacity", "").style("display", "");
+          //1
+          d3.select("#launchIntro").style("color", "");
+          //2
+          d3.select("#baselayerListDropdown").style("display", "");
+          //3
+          d3.select("#birdListDropdown").style("display", "");
+          if(d3.select("#layerToggleDiv3").select("span").style("visibility") == "visible") { $("#layerToggleDiv3").click(); };
+          if(d3.select("#legendDiv").style("opacity") == 1) { toolWindowToggle("legend"); };          
+          //5
+          d3.select("#panelTools").selectAll("p").style("color", "");
+          d3.select("#panelTools").selectAll("span").style("color", "");
+        }
+      }
 
     </script>
   </body>

@@ -16,12 +16,22 @@ body.modal-open {
   overflow-y: auto;
 }
 
+.tooltip {
+  z-index: 100070;
+}
+
 .modal {
   position: absolute;
 }
 
 .glyphicon-triangle-top, .glyphicon-triangle-bottom {
   color: black;
+}
+
+.headerIcon {
+  margin-right: -10px;
+  font-size: 12px !important;
+  color: white;
 }
 
 .glyphicon {
@@ -264,7 +274,7 @@ a:focus, select:focus, a:hover {
 }
 
 #panelTools {
-  width: 613px;
+  width: max-content;
   height: 34px;
   display: inline-block;
   float: left;
@@ -345,6 +355,10 @@ a:focus, select:focus, a:hover {
 
 .legTitle:hover {
   //background: rgba(0,0,255,0.5)
+}
+
+.legTitle.occHeader {
+  padding-left: 5px;
 }
 
 .legendTitle {
@@ -580,6 +594,44 @@ input[type=range]:focus::-ms-fill-upper {
   text-align: center;
 }
 
+#hideWelcome {
+  position: relative;
+  top: 12px;
+  font-size: 24px;
+}
+
+#welcomeSpp {
+  text-align: center;
+  padding: 0;
+}
+
+#welcomeSpp li {
+  display: inline-block;
+  font-weight: bold;
+  width: 25%;
+  background: lightgray;
+  margin: 0 2%;
+  padding: 3px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+}
+
+#welcomeSpp li>a:hover {
+  text-decoration: none;
+}
+
+.welcomeLaunch {
+  font-weight: bold;
+  color: #337ab7;
+  opacity: 1;
+  margin: 0;
+}
+
+.welcomeLaunch:hover {
+  color: #23527c;
+  cursor: pointer;
+}
+
 #splashGIF {
   margin: 0px 20px 0px 60px;
   width: 623px;
@@ -610,6 +662,11 @@ input[type=range]:focus::-ms-fill-upper {
 
 #splashButton:active {
   background: silver;
+}
+
+.introjs-tooltip {
+  max-width: 405px;
+  width: max-content;
 }
 
 #downloadDiv {
@@ -644,14 +701,14 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
-#dlButton, #exportFileButtonA, #exportResultsA {
+#dlButton, #exportFileButtonA, #exportResultsA, #silvDefsA {
   color: white;
   width: 100%;
   height: 100%;
   display: inline-block;
 }
 
-#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA:hover, #exportFileButtonA:visited, #exportFileButtonA:focus, #exportResultsA:hover, #exportResultsA:visited, #exportResultsA:focus {
+#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA:hover, #exportFileButtonA:visited, #exportFileButtonA:focus, #exportResultsA:hover, #exportResultsA:visited, #exportResultsA:focus, #silvDefsA:hover, #silvDefsA:visited, #silvDefsA:focus {
   text-decoration: none;
 }
 
@@ -826,7 +883,7 @@ input[type=range]:focus::-ms-fill-upper {
   pointer-events: none;
 }
 
-#importFileButton, #exportFileButton, #exportResults {
+#importFileButton, #exportFileButton, #exportResults, #silvDefsDiv {
   margin: auto;
   width: 50%;
   color: white;
@@ -1091,6 +1148,23 @@ input[type=range]:focus::-ms-fill-upper {
   //font-style: italic;
   font-weight: bold;
   margin: 0;
+}
+
+.radio {
+  display: inline-block;
+}
+
+.radioLabel {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+#matureRad {
+  margin-left: 50px;
+}
+
+#matureSongSelect {
+  display: none;
 }
 
 #graphsDiv {
@@ -1440,10 +1514,14 @@ input[type=range]:focus::-ms-fill-upper {
 
 #conValDiv {
   padding: 5px;
+  background: gainsboro;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  margin: 0 6px;
 }
 
 #conVal, #likelySpp {
-  width: 150px;
+  width: 140px;
   border-radius: 4px;
   border: 1px solid black;
   text-align: center;
@@ -1488,6 +1566,9 @@ input[type=range]:focus::-ms-fill-upper {
 
 #resultsTable thead th {
   border-right: 1px solid black;
+  text-align: left;
+  padding-left: 3px;
+  vertical-align: bottom;
 }
 
 #resultsTable thead th:last-child {
@@ -1516,16 +1597,29 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
+#resultsTable td:nth-child(1) {
+  color: dodgerblue;
+  text-decoration: underline;
+}
+
+#resultsTable td:nth-child(1):hover {
+  color: #00004d;
+}
+
+#resultsTable th:nth-child(3), #resultsTable td:nth-child(3) {
+  display: none;
+}
+
 #resultsTable th, #resultsTable td {
-  width: 79px;
+  width: 108px;
 }
 
 #resultsTable th:nth-child(5), #resultsTable td:nth-child(5) {
-  width: 50px;
+  width: 65px;
 }
 
 #resultsTable th:nth-child(6), #resultsTable td:nth-child(6) {
-  width: 55px;
+  width: 60px;
 }
 
 #resultsTable .glyphicon-stats {
@@ -1537,6 +1631,30 @@ input[type=range]:focus::-ms-fill-upper {
   color: black;
   background: lightblue;
   //cursor: pointer;
+}
+
+.sortTitle {
+    
+}
+
+.sort {
+  float: right;
+  margin: 0;
+  margin-right: 3px;
+  opacity: 0.25;
+}
+
+.sort:hover {
+  opacity: 0.75;
+  color: white;
+}
+
+.sort.active:hover {
+  color: aqua;
+}
+
+.sort.active {
+  opacity: 1;
 }
 
 #baTable {
@@ -1562,13 +1680,55 @@ input[type=range]:focus::-ms-fill-upper {
   font-style: italic;
 }
 
+#exportResults, #silvDefsDiv {
+  width: 40%;
+  display: inline-block;
+  margin-left: 5%;
+  margin-right: 5%;
+  height: 48px;
+}
+
 #exportResults {
-  width: 35%;
+  position: relative;
+  top: -10px;
+}
+
+#silvDefsDiv {
+  background: linear-gradient(#56638f, #434d70);
+}
+
+#exportResultsA {
+  padding-top: 11px;
+}
+
+.btnGlyph {
+  color: white;
+  margin-right: 5px;
+  margin-left: 0;
+  opacity: 1;
+}
+
+.mockA {
+  //color: dodgerblue;
+  color: blue;
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mockA.mockA_dark {
+  color: blue;
+}
+
+.mockA:hover, .mockA_dark:hover {
+  color: #00004d;
+  text-decoration: underline;
 }
 
 #adjustResults {
-  margin-bottom: 5px;
+  //margin-bottom: 5px;
 }
+
 .adjustDiv {
   width: 31.3%;
   margin: 5px;
@@ -1582,6 +1742,67 @@ input[type=range]:focus::-ms-fill-upper {
 .adjustDiv p {
   margin: 0;
   font-weight: bold;
+}
+
+#silvDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.75);
+  z-index: 100000;
+  display: none;
+  padding: 25px;
+}
+
+#silvTitleDiv {
+  width: 60%;
+  background: none;
+  margin: auto;
+}
+
+#silvTitle {
+  font-size: 30px;
+  height: 40px;
+}
+
+#treatDiv {
+  width: 100%;
+  height: calc(100% - 40px);
+  background: white;
+  border-radius: 0 0 4px 4px;
+  padding: 2% 6%;
+  overflow: auto;
+  width: 60%;
+  margin: auto;
+  text-align: center;
+}
+
+#treatDiv p {
+  font-size: 16px;
+  text-align: left;
+}
+
+#treatDiv h3 {
+  text-align: left;
+}
+
+.silvImg {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 650px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  box-shadow: 6px 6px 12px;
+}
+
+#silvAddDiv {
+  background: linear-gradient(#1aff1a, #00b300);
+  padding: 10px;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  color: black;
 }
   
 #outputDiv {

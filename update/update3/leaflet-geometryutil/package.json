@@ -1,0 +1,77 @@
+{
+  "name": "leaflet-geometryutil",
+  "version": "0.7.2",
+  "description": "Leaflet utility functions on geometries",
+  "keywords": [
+    "Leaflet",
+    "GIS"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makinacorpus/Leaflet.GeometryUtil.git"
+  },
+  "license": "BSD-3-Clause",
+  "main": "src/leaflet.geometryutil.js",
+  "scripts": {
+    "test-leaflet-0.7.7": "npm install leaflet@0.7.7 && node_modules/.bin/mocha-phantomjs spec/index.html",
+    "test-leaflet-1.0.0": "npm install leaflet@1.0.0-rc.3 && node_modules/.bin/mocha-phantomjs spec/index.html",
+    "test": "npm run test-leaflet-0.7.7 && npm run test-leaflet-1.0.0",
+    "generate-docs": "rm -rf docs; node_modules/.bin/jsdoc -c jsdoc.config -d ./docs/"
+  },
+  "dependencies": {
+    "leaflet": "^0.7.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "jsdoc": "3.4.0",
+    "minami": "^1.1.1",
+    "mocha": "3.0.2",
+    "mocha-phantomjs": "4.1.0"
+  },
+  "gitHead": "a0a26ea4957fafd91f59438385855eb6f7c4ee8f",
+  "bugs": {
+    "url": "https://github.com/makinacorpus/Leaflet.GeometryUtil/issues"
+  },
+  "homepage": "https://github.com/makinacorpus/Leaflet.GeometryUtil#readme",
+  "_id": "leaflet-geometryutil@0.7.2",
+  "_shasum": "b30e07f0d71940dcbc0ed9dea2b303e585012a80",
+  "_from": "leaflet-geometryutil@latest",
+  "_npmVersion": "2.15.8",
+  "_nodeVersion": "4.4.7",
+  "_npmUser": {
+    "name": "mdartic",
+    "email": "mathieu@dartic.fr"
+  },
+  "dist": {
+    "shasum": "b30e07f0d71940dcbc0ed9dea2b303e585012a80",
+    "tarball": "https://registry.npmjs.org/leaflet-geometryutil/-/leaflet-geometryutil-0.7.2.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "ebrehault",
+      "email": "ebrehault@gmail.com"
+    },
+    {
+      "name": "fredericbonifas",
+      "email": "fredericbonifas@gmail.com"
+    },
+    {
+      "name": "leplatrem",
+      "email": "leplatrem@gmail.com"
+    },
+    {
+      "name": "makinacorpus",
+      "email": "dev+npm@makina-corpus.com"
+    },
+    {
+      "name": "mdartic",
+      "email": "mathieu@dartic.fr"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/leaflet-geometryutil-0.7.2.tgz_1474279425773_0.5786987117026001"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/leaflet-geometryutil/-/leaflet-geometryutil-0.7.2.tgz"
+}

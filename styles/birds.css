@@ -16,6 +16,10 @@ body.modal-open {
   overflow-y: auto;
 }
 
+.tooltip {
+  z-index: 100070;
+}
+
 .modal {
   position: absolute;
 }
@@ -214,13 +218,17 @@ a:focus, select:focus, a:hover {
 }
 
 #birdList {
-  width: 235px;
+  width: 210px;
 }
 
 #birdListDropdown {
-  width: 235px;
+  width: 210px;
   max-height: 526px;
   overflow-y: auto;
+}
+
+#bingGeoLocate {
+  float: right;
 }
 
 #bingGeocoderInput {
@@ -260,7 +268,7 @@ a:focus, select:focus, a:hover {
 }
 
 #panelTools {
-  width: 613px;
+  width: max-content;
   height: 34px;
   display: inline-block;
   float: left;
@@ -420,8 +428,8 @@ a:focus, select:focus, a:hover {
 input[type=range] {
   height: 12px;
   -webkit-appearance: none;
-  margin: 10px 0px 0px 0px;
-  width: 162px;
+  margin: 0px;
+  width: 142px;
   display: inline-block;
   background: none;
 }
@@ -576,6 +584,44 @@ input[type=range]:focus::-ms-fill-upper {
   text-align: center;
 }
 
+#hideWelcome {
+  position: relative;
+  top: 12px;
+  font-size: 24px;
+}
+
+#welcomeSpp {
+  text-align: center;
+  padding: 0;
+}
+
+#welcomeSpp li {
+  display: inline-block;
+  font-weight: bold;
+  width: 25%;
+  background: lightgray;
+  margin: 0 2%;
+  padding: 3px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+}
+
+#welcomeSpp li>a:hover {
+  text-decoration: none;
+}
+
+.welcomeLaunch {
+  font-weight: bold;
+  color: #337ab7;
+  opacity: 1;
+  margin: 0;
+}
+
+.welcomeLaunch:hover {
+  color: #23527c;
+  cursor: pointer;
+}
+
 #splashGIF {
   margin: 0px 20px 0px 60px;
   width: 623px;
@@ -606,6 +652,11 @@ input[type=range]:focus::-ms-fill-upper {
 
 #splashButton:active {
   background: silver;
+}
+
+.introjs-tooltip {
+  max-width: 405px;
+  width: max-content;
 }
 
 #downloadDiv {
@@ -640,14 +691,14 @@ input[type=range]:focus::-ms-fill-upper {
   cursor: pointer;
 }
 
-#dlButton, #exportFileButtonA, #exportResultsA {
+#dlButton, #exportFileButtonA, #exportResultsA, #silvDefsA {
   color: white;
   width: 100%;
   height: 100%;
   display: inline-block;
 }
 
-#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA:hover, #exportFileButtonA:visited, #exportFileButtonA:focus, #exportResultsA:hover, #exportResultsA:visited, #exportResultsA:focus {
+#dlButton:hover, #dlButton:visited, #dlButton:focus, #exportFileButtonA:hover, #exportFileButtonA:visited, #exportFileButtonA:focus, #exportResultsA:hover, #exportResultsA:visited, #exportResultsA:focus, #silvDefsA:hover, #silvDefsA:visited, #silvDefsA:focus {
   text-decoration: none;
 }
 
@@ -659,16 +710,23 @@ input[type=range]:focus::-ms-fill-upper {
   font-size: 15px;
   text-shadow: 0px 2px black;
   box-shadow: none;
-  background: #4d5980;
-  background: linear-gradient(#56638f, #434d70);
+  //background: #008000;
+  //background: linear-gradient(#00cc00, #004d00);
+  background: #00ff00;
+  background: linear-gradient(#1aff1a, #00b300);
   border-radius: 4px;
-  border: solid 1px #333333;
+  border: solid 2px #333333;
   padding-bottom: 2px;
   text-align: center;
 }
 
+.legendBtn.inactive {
+  background: red;
+  background: linear-gradient(#ff3333, #990000);
+}
+
 .legendBtn:hover {
-  border: solid 1px white;
+  border: solid 2px aqua;
 }
 
 .legendBtn:active {
@@ -678,7 +736,7 @@ input[type=range]:focus::-ms-fill-upper {
 
 #drawDiv {
   position: absolute;
-  top: 85px;
+  top: 75px;
   left: 270px;
   width: 300px;
   margin: 0px;
@@ -690,6 +748,10 @@ input[type=range]:focus::-ms-fill-upper {
   border: 1px solid black;
 }
 
+#drawDiv input:hover {
+  border-color: aqua;
+}  
+
 #drawSourceDiv {
   //height: 97px;
   border-bottom: 1px solid #666666;
@@ -697,6 +759,16 @@ input[type=range]:focus::-ms-fill-upper {
 
 #drawSourceDiv .inactive {
   opacity: 0.3;
+  //background: rgba(255,255,255,0.8);
+  background: red;
+  background: linear-gradient(#ff3333, #990000);
+}
+
+#drawSourceDiv .inactive:hover {
+  opacity: 1;
+  border-color: fuchsia;
+  background: aqua;
+  background: linear-gradient(#80ffff, #00b3b3);
 }
 
 #drawSourceDiv .disabled {
@@ -710,9 +782,14 @@ input[type=range]:focus::-ms-fill-upper {
   width: 29%;
   margin: 5px 40px;
   border-radius: 4px;
-  border: 1px solid #666666;
-  background: rgba(255,255,255,0.2);
+  border: 2px solid #333333;
+  //background: rgba(0,255,0,0.7);
+  //background: #008000;
+  //background: linear-gradient(#00cc00, #004d00);
+  background: #00ff00;
+  background: linear-gradient(#1aff1a, #00b300);
   cursor: pointer;
+  text-shadow: 0px 2px black;
 }
 
 #drawSourceDiv>div:hover {
@@ -720,16 +797,17 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #drawSourceDiv span {
-  font-size: 36px;
-  margin: 5px 0 0 0;
+  font-size: 28px;
+  margin: 2px 0 0 0;
   opacity: 1;
-  color: black;
+  color: white;
 }
 
 #drawSourceDiv p {
-  margin: 0px;
+  margin: -2px;
   font-size: 20px;
   font-weight: bold;
+  color: white;
 }
 
 #drawCreateDiv {
@@ -737,31 +815,33 @@ input[type=range]:focus::-ms-fill-upper {
   border-bottom: 1px solid #666666;
 }
 
-#drawToolbar, #measureTool {
+#drawToolbar, #measureTool, #basalTool {
   display: block;
   margin: 5px;
   margin-bottom: 10px;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
 }
 
 #drawToolbar {
-  background: rgba(0,0,102,0.3);
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(102,0,102,0.3);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 5px 10px;
-  //height: 92px;
+  height: 91px;
 }
 
 #drawImport {
-  background: rgba(102,0,102,0.3);
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(102,0,102,0.3);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 5px 10px;
   //height: 72px;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
   display: none;
 }
@@ -770,7 +850,7 @@ input[type=range]:focus::-ms-fill-upper {
   margin-top: 5px;
 }
 
-#drawImport input, #measureTool input, #exportActualDiv input {
+#drawImport input, #measureTool input, #basalTool input, #exportActualDiv input {
   position: relative;
   top: 2px;
   margin-right: 5px;
@@ -793,35 +873,53 @@ input[type=range]:focus::-ms-fill-upper {
   pointer-events: none;
 }
 
-#importFileButton, #exportFileButton, #exportResults {
+#importFileButton, #exportFileButton, #exportResults, #silvDefsDiv {
   margin: auto;
   width: 50%;
   color: white;
   cursor: pointer;
 }
 
-#drawMeasureDiv {
+#drawMeasureDiv, #drawBasalDiv, #drawTSTDiv, #shapeDiv {
   //height: 100px;
   border-bottom: 1px solid #666666;
 }
 
-#measureTool {
-  background: rgba(255,153,0,0.5);
+#measureTool, #basalTool, #tstTool {
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(255,153,0,0.5);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 5px 10px;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
 }
 
+#basalTool {
+  background: rgba(255, 255, 0,0.5);
+  //background: rgba(70, 130, 180,0.5);
+  //padding: 0px;
+}
+
+#tstTool {
+  background: rgba(255, 255, 0,0.5);
+  //padding: 0px;
+}
+
+
+#basalAreaUnits {
+  width: auto;
+}
+
 #measureMetricDiv {
+  //background: rgba(255, 255, 0,0.5);
   background: rgba(0,204,0,0.5);
   border-radius: 4px;
   border: 1px solid black;
   box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
   margin: 0px 15px;
-  padding: 5px;
+  //padding: 5px;
   text-align: center;
 }
 
@@ -833,7 +931,7 @@ input[type=range]:focus::-ms-fill-upper {
   display: none !important;
 }
 
-#openSourceMetrics input {
+#openSourceMetrics input, #basalTool input, #tstTool input {
   width: 100px;
   border-radius: 4px;
   border: 1px solid black;
@@ -860,7 +958,6 @@ input[type=range]:focus::-ms-fill-upper {
 #measureMetricDiv .leaflet-draw-toolbar.leaflet-bar.leaflet-draw-toolbar-top {
   margin-right: 0px;
 }
-
 
 .leaflet-draw-toolbar.leaflet-bar a {
   display: inline-block;
@@ -903,8 +1000,8 @@ input[type=range]:focus::-ms-fill-upper {
 #shapeDiv {
   width: 100%;
   height: 100%;
-  border-radius: 4px;
   padding: 5px;
+  background: lightgray;
 }
 
 .shape {
@@ -917,7 +1014,7 @@ input[type=range]:focus::-ms-fill-upper {
   color: #333333;
   font-weight: 700;
   text-align: center;
-  margin: 2px;
+  margin: -2px;
   font-size: 14px;
 }
 
@@ -958,7 +1055,50 @@ input[type=range]:focus::-ms-fill-upper {
 .shapeUnit:hover {
   background: rgba(255,255,255,1);
   color: black;
-  border-color: black;
+  border-color: aqua;
+}
+
+#hcRunDiv {
+  float: none;
+  top: 0px;
+  height: auto;
+  width: 60%;
+  text-align: center;
+  border: 2px solid #333333;
+  //background: #008000;
+  //background: linear-gradient(#00cc00, #004d00);
+  background: #00ff00;
+  background: linear-gradient(#1aff1a, #00b300);
+  margin: 5px;
+  border-radius: 4px;
+  margin-left: 20%;
+  padding: 0;
+  text-shadow: 0px 2px black;
+}
+
+#hcRunDiv:hover {
+  border: 2px solid aqua;
+}
+
+#hcRunDiv.inactive {
+  background: red;
+  background: linear-gradient(#ff3333, #990000);
+}
+
+#hcRunDiv span {
+  font-size: 22px;
+  color: white;
+  position: relative;
+  top: 2px;
+  margin: 0;
+  margin-right: 5px;
+}
+
+#hcRunDiv p {
+  font-size: 22px;
+  color: white;
+  position: relative;
+  margin: 0;
 }
 
 #songsDiv {
@@ -998,6 +1138,131 @@ input[type=range]:focus::-ms-fill-upper {
   //font-style: italic;
   font-weight: bold;
   margin: 0;
+}
+
+#graphsDiv {
+  position: absolute;
+  top: 73px;
+  left: 580px;
+  width: 100%;
+  max-width: 700px;
+  min-width: 700px;
+  margin: 0px;
+  z-index: 1000;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+  display: none;
+  opacity: 0;
+  border: 1px solid black;
+  text-align: center;
+}
+
+#graphTitles {
+  background: white;
+  text-align: left;
+  border-bottom: 1px solid #333333;
+}
+
+.graphTitle {
+  display: inline-block;
+  width: 27.5%;
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: #4d5980;
+}
+
+#graphs {
+  max-height: 600px;
+  min-height: 203px;
+  overflow: auto;
+}
+
+.graphSppP {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+  background: mediumseagreen;
+  border-radius: 4px 4px 0 0;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.remove-spp {
+  color: red;
+  position: relative;
+  top: -22px;
+  right: 5px;
+  background: white;
+  padding: 2px;
+  border-radius: 10px;
+}
+
+.sppGraphs {
+  background: white;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  margin: 5px;
+}
+
+.graphDiv {
+  display: inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+
+.graphDiv p {
+  font-weight: bold;
+  margin: 0;
+}
+
+.line {
+  fill: none;
+  stroke: blue;
+  stroke-width: 2px;
+}
+
+.graphOp.habOcc {
+  color: black;
+  margin-left: 3px;
+  margin-right: 0;
+}
+
+.point1, .point2 {
+  cursor: pointer;
+}
+
+.point2Pos, .graphOp.habOcc.point2Pos {
+  fill: green;
+  color: green;
+}
+
+.point2Neg, .graphOp.habOcc.point2Neg {
+  fill: red;
+  color: red;
+}
+
+.axis {
+  font-size: 12px;
+}
+
+.domain {
+  fill: none;
+  stroke-width: 2px;
+  stroke: black;
+}
+
+.graphOp {
+  display: inline-block;
+  position: relative;
+  top: -70px;
+  font-size: 30px;
+  font-weight: bold;
+  margin: 0 10px 0 10px;
+  color: darkgrey;
 }
 
 #infoDiv {
@@ -1079,24 +1344,38 @@ input[type=range]:focus::-ms-fill-upper {
   padding-right: 5px;
 }
 
+.a_flex {
+  display: inline-flex;
+}
+
 #usfs {
-  height: 115px;
-  //margin-top: 5px;
+  height: 80px;
 }
 
 #umass {
-  height: 115px;
-  //margin-top: 5px;
-  margin-left: 10px;
-}
-
-#massAudubon {
-  height: 115px;
-  margin-right: 10px;
+  height: 80px;
+  margin-top: 9px;
+  margin-left: 5px;
 }
 
 #nfwf {
-  height: 115px;
+  height: 80px;
+  //margin-left: -10px;
+}
+
+#nrcs {
+  height: 80px;
+  margin-right: -20px;
+}
+
+#massAudubon {
+  height: 80px;
+  margin-top: 9px;
+  margin-right: -20px;
+}
+
+#antioch {
+  height: 80px;
 }
 
 .fundersP {
@@ -1173,7 +1452,7 @@ input[type=range]:focus::-ms-fill-upper {
   top: 85px;
   //left: 678px;
   right: 45px;
-  width: 461px;
+  width: 515px;
   margin: 0px;
   z-index: 1000;
   border-radius: 4px;
@@ -1208,16 +1487,26 @@ input[type=range]:focus::-ms-fill-upper {
 
 #conValDiv {
   padding: 5px;
+  background: gainsboro;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  margin: 0 6px;
 }
 
 #conVal, #likelySpp {
-  width: 70px;
+  width: 140px;
   border-radius: 4px;
   border: 1px solid black;
   text-align: center;
   cursor: text;
   background: white;
   margin-left: 10px;
+  display: inline-block;
+}
+
+#conVal p, #likelySpp p {
+  margin: 0;
+  display: inline-block;
 }
 
 #resultsTable {
@@ -1235,7 +1524,7 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #resultsTable .likely {
-  background: rgba(0,255,0,0.3);
+  background: rgba(0,255,0,0.4);
 }
 
 #resultsTable .likely:hover {
@@ -1250,6 +1539,9 @@ input[type=range]:focus::-ms-fill-upper {
 
 #resultsTable thead th {
   border-right: 1px solid black;
+  text-align: left;
+  padding-left: 3px;
+  vertical-align: bottom;
 }
 
 #resultsTable thead th:last-child {
@@ -1259,7 +1551,7 @@ input[type=range]:focus::-ms-fill-upper {
 #resultsTable tbody {
   display: block;
   overflow-y: auto;
-  height: 400px;
+  height: 420px;
   //margin-left: 1px;
 }
 
@@ -1275,24 +1567,215 @@ input[type=range]:focus::-ms-fill-upper {
 
 #resultsTable th:nth-child(1), #resultsTable td:nth-child(1) {
   width: 150px;
+  cursor: pointer;
+}
+
+#resultsTable td:nth-child(1) {
+  color: dodgerblue;
+  text-decoration: underline;
+}
+
+#resultsTable td:nth-child(1):hover {
+  color: #00004d;
+}
+
+#resultsTable th:nth-child(3), #resultsTable td:nth-child(3) {
+  display: none;
 }
 
 #resultsTable th, #resultsTable td {
-  width: 78px;
+  width: 108px;
 }
 
 #resultsTable th:nth-child(5), #resultsTable td:nth-child(5) {
-  width: 50px;
+  width: 65px;
+}
+
+#resultsTable th:nth-child(6), #resultsTable td:nth-child(6) {
+  width: 60px;
+}
+
+#resultsTable .glyphicon-stats {
+  font-size: 13.9px;
+  margin: 0;
 }
 
 #resultsTable tbody tr:hover {
   color: black;
   background: lightblue;
-  cursor: pointer;
+  //cursor: pointer;
+}
+
+.sortTitle {
+    
+}
+
+.sort {
+  float: right;
+  margin: 0;
+  margin-right: 3px;
+  opacity: 0.25;
+}
+
+.sort:hover {
+  opacity: 0.75;
+  color: white;
+}
+
+.sort.active:hover {
+  color: aqua;
+}
+
+.sort.active {
+  opacity: 1;
+}
+
+#baTable {
+  text-align: center;
+  width: 100%;
+}
+
+#baTable th {
+  text-align: center;
+}
+
+#baTable thead {
+  background-color: #337ab7;
+  color: white;
+}
+
+#baTable td, #baTable th {
+  border: 1px solid gray;
+  border-collapse: collapse;
+}
+
+#baTable a {
+  font-style: italic;
+}
+
+#exportResults, #silvDefsDiv {
+  width: 40%;
+  display: inline-block;
+  margin-left: 5%;
+  margin-right: 5%;
+  height: 48px;
 }
 
 #exportResults {
-  width: 35%;
+  position: relative;
+  top: -10px;
+}
+
+#silvDefsDiv {
+  background: linear-gradient(#56638f, #434d70);
+}
+
+#exportResultsA {
+  padding-top: 11px;
+}
+
+.btnGlyph {
+  color: white;
+  margin-right: 5px;
+  margin-left: 0;
+  opacity: 1;
+}
+
+.mockA {
+  //color: dodgerblue;
+  color: blue;
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mockA.mockA_dark {
+  color: blue;
+}
+
+.mockA:hover, .mockA_dark:hover {
+  color: #00004d;
+  text-decoration: underline;
+}
+
+#adjustResults {
+  //margin-bottom: 5px;
+}
+
+.adjustDiv {
+  width: 31.3%;
+  margin: 5px;
+  display: inline-block;
+  text-align: center;
+  background: chartreuse;
+  border-radius: 4px;
+  border: 1px solid black;
+}
+
+.adjustDiv p {
+  margin: 0;
+  font-weight: bold;
+}
+
+#silvDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.75);
+  z-index: 100000;
+  display: none;
+  padding: 25px;
+}
+
+#silvTitleDiv {
+  width: 60%;
+  background: none;
+  margin: auto;
+}
+
+#silvTitle {
+  font-size: 30px;
+  height: 40px;
+}
+
+#treatDiv {
+  width: 100%;
+  height: calc(100% - 40px);
+  background: white;
+  border-radius: 0 0 4px 4px;
+  padding: 2% 6%;
+  overflow: auto;
+  width: 60%;
+  margin: auto;
+  text-align: center;
+}
+
+#treatDiv p {
+  font-size: 16px;
+  text-align: left;
+}
+
+#treatDiv h3 {
+  text-align: left;
+}
+
+.silvImg {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 650px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  box-shadow: 6px 6px 12px;
+}
+
+#silvAddDiv {
+  background: linear-gradient(#1aff1a, #00b300);
+  padding: 10px;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  color: black;
 }
   
 #outputDiv {
@@ -1318,7 +1801,6 @@ input[type=range]:focus::-ms-fill-upper {
   border: 1px solid black;
   width: 302px;
 }
-
 
 .helpTitle {
   text-align: left;
@@ -1383,6 +1865,103 @@ input[type=range]:focus::-ms-fill-upper {
   background: -o-linear-gradient(lightgray, gray); /* For Opera 11.1 to 12.0 */
   background: -moz-linear-gradient(lightgray, gray); /* For Firefox 3.6 to 15 */
 }
+
+.rangeLabels {
+  padding: 0;
+  margin: 0;
+  margin-left: 2px;
+  list-style: none;
+}
+
+.rangeLabels li {
+  position: relative;
+  float: left;
+  width: 51px;
+  text-align: center;
+  color: gray;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  top: -4px;
+}
+
+.rangeLabels li.first_li {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.rangeLabels li.last_li {
+  text-align: right;
+  padding-right: 10px;
+}
+
+   
+.rangeLabels li::before {
+  position: absolute;
+  top: -25px;
+  right: 0;
+  left: 0;
+  content: "";
+  margin: 0 auto;
+  width: 0px;
+  height: 0px;
+  background: #b2b2b2;
+  border-radius: 50%;
+}
+
+.occPlus {
+  color: darkgreen;
+}
+
+.occMinus {
+  color: red;
+}
+
+.sliderHeading {
+  background: gray;
+  background: -webkit-linear-gradient(darkgray, gray);
+  background: linear-gradient(#56638f, #434d70);
+  border-bottom: 1px solid black;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px !important;
+}
+  
+.sliderTitle {
+  position: relative;
+  top: -7px;
+  height: 30px;
+}
+
+.sliderReset {
+  right: 7px;
+  float: right;
+  margin-top: -25px;
+  font-size: 13px;
+  font-weight: bolder;
+  opacity: 0.8;
+  color: white;
+}
+
+.d3Tooltip {
+  background: rgba(0,0,0,0.7);
+  border-style: solid;
+  border-color: white;
+  border-width: 2px;
+  border-radius: 4px;
+  color: yellow;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 7px;
+  position: absolute;
+  z-index: 3000;
+  visibility: hidden;
+  white-space: nowrap;
+  width: 92px;
+  text-align: center;
+}
+
 
 
 @media print {

@@ -87,7 +87,7 @@ function socket_emit() {
     tmpCSV += "Time Since Treatment (Years): " + d3.select("#tstTime").property("value") + "\n";
     var tmpBbox = drawnItems.getBounds();
     tmpCSV += "Opening Bounding Box (degrees): [[" + tmpBbox._northEast.lat.toFixed(4) + ";" + tmpBbox._northEast.lng.toFixed(4) + "][" + tmpBbox._southWest.lat.toFixed(4) + ";" + tmpBbox._southWest.lng.toFixed(4) + "]]\n";
-    var tmpData = "Species,Regional Occupancy,Opening Area Occupancy,Basal Area Occupancy,Time Since Treatment Occupancy,Habitat Occupancy,Local Occupancy,PIF Score\n";
+    var tmpData = "Species,Regional Occupancy,Opening Area Occupancy,Basal Area Occupancy,Time Since Treatment Occupancy,Habitat Occupancy,Final Occupancy,PIF Score\n";
 
     tmpBirdID = [];
     birdID.forEach(function(spp) { tmpBirdID.push(spp.slice(0,4)); });
@@ -106,7 +106,7 @@ function socket_emit() {
     var tmpAreaTrue = convertHectareVal(tmpArea);
 
     var tmpBasal = parseFloat(d3.select("#basalArea").attr("data-msph"));
-    if(document.getElementById("basalAreaUnits").value == "% Forest") {
+    if(document.getElementById("basalAreaUnits").value == "% Retained") {
       var tmpBasalTrue = tmpBasal * 100;
     }
     else {
@@ -196,7 +196,7 @@ function socket_emit() {
           }
 
           tmpData += d + "," + regOcc + "," + areaOcc + "," + baOcc + "," + tstOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
-          return '<td value="' + birdID[i] + '" title="' + d + ' (' + birds.latin[birdTitles[i].replace(" ","_").toLowerCase()] + '), click to see and hear" onclick="viewSpecies(&#34;' + birdID[i] + '&#34;)">' + d +'</td><td title="Regional Occupancy: ' + regOcc.toFixed(2) + '">' + regOcc.toFixed(2)  + '</td><td title="Habitat Occupancy: ' + habOcc.toFixed(2) + '">' + habOcc.toFixed(2) + '<span></span></td><td title="Local Occupancy: ' + locOcc.toFixed(2) + '">' + locOcc.toFixed(2) + '<span></span></td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td><td><span class="glyphicon glyphicon-stats" title="Click to view occupancy distribution models" value="' + birdID[i].slice(0,4) + '" data-i="' + i + '" onclick="chkSppGraphs(this)"></span></td>';             
+          return '<td value="' + birdID[i] + '" title="' + d + ' (' + birds.latin[birdTitles[i].replace(" ","_").toLowerCase()] + '), click to see and hear" onclick="viewSpecies(&#34;' + birdID[i] + '&#34;)">' + d +'</td><td title="Regional Occupancy: ' + regOcc.toFixed(2) + '">' + regOcc.toFixed(2)  + '</td><td title="Habitat Occupancy: ' + habOcc.toFixed(2) + '">' + habOcc.toFixed(2) + '<span></span></td><td title="Final Occupancy: ' + locOcc.toFixed(2) + '">' + locOcc.toFixed(2) + '<span></span></td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td><td><span class="glyphicon glyphicon-stats" title="Click to view occupancy distribution models" value="' + birdID[i].slice(0,4) + '" data-i="' + i + '" onclick="chkSppGraphs(this)"></span></td>';             
         });
 
     d3.select("#resultsTableBody").selectAll("tr")
@@ -222,13 +222,16 @@ function socket_emit() {
     tmpCSV += "Bird Conservation Region: " + queryBCR + "\n";
     tmpCSV += "Conservation Value: " + conVal.toFixed(2) + "\n";
     tmpCSV += "Predicted Number of Species Present: " + likelySpp + "\n";
-    //tmpCSV += "Species,Regional Occupancy,Habitat Occupancy,Local Occupancy,PIF Score\n";
+    //tmpCSV += "Species,Regional Occupancy,Habitat Occupancy,Final Occupancy,PIF Score\n";
     tmpCSV += tmpData;
     d3.select("#conVal").select("p").text(conVal.toFixed(2));
     d3.select("#likelySpp").select("p").text(likelySpp);
     d3.select("#exportResultsA").attr("href", "data:attachment/csv," +   encodeURIComponent(tmpCSV));
     d3.select("#resultsDefaultDiv").style("display", "none");
     d3.select("#resultsActualDiv").style("display", "block");
+
+    sortResults(3, d3.select(".sort.active")[0][0]);
+
     if(d3.select("#resultsDiv").style("opacity") == 0) { toolWindowToggle("results"); }
     d3.select("#hcResultsDiv").classed("inactive", false);
     d3.select("#waitingDiv").style("display", "none");
@@ -236,7 +239,6 @@ function socket_emit() {
       resizePanels();
     }, 300);
   });
-
 
 
   socket.on('disconnect', function(err) {
@@ -254,6 +256,125 @@ function socket_emit() {
 
 }
 
+
+
+
+
+//******Change the glyph and call sort function
+function startSort(tmpTH) {
+  var tmpSpan = d3.select(tmpTH).select(".sort");
+  if(tmpSpan.classed("active") == true) {
+    if(tmpSpan.classed("glyphicon-sort-by-attributes") == true) {
+      tmpSpan.classed("glyphicon-sort-by-attributes", false).classed("glyphicon-sort-by-attributes-alt", true).property("title", "Click to sort column in ascending order");
+    }
+    else {
+      tmpSpan.classed("glyphicon-sort-by-attributes-alt", false).classed("glyphicon-sort-by-attributes", true).property("title", "Click to sort column in descending order");
+    }
+  }
+  else {
+    d3.selectAll(".sort").classed("active", false); 
+    tmpSpan.classed("active", true);
+    d3.selectAll(".sort").property("title", function() {
+      var tmpD = d3.select(this); 
+      if(tmpD.classed("active") == true) {
+        if(tmpD.classed("glyphicon-sort-by-attributes") == true) {
+          return "Click to sort column in descending order";
+        }
+        else {
+          return "Click to sort column in ascending order";
+        }
+      }
+      else {
+        if(tmpD.classed("glyphicon-sort-by-attributes") == true) {
+          return "Click to sort column in ascending order";
+        }
+        else {
+          return "Click to sort column in descending order";
+        }
+      }
+    });
+  }
+  sortResults(tmpSpan.attr("data-sort"), tmpSpan[0][0]);
+}
+
+
+
+
+//******Sort the results table
+function sortResults(tmpCol, tmpSpan) {
+  var tmpArray = [];
+  var tmpTRs = d3.select("#resultsTableBody").selectAll("tr");
+
+  tmpTRs.each(function() { 
+    var tmpTD = d3.select(this).selectAll("td");  
+    if(tmpCol == 0) {
+      tmpArray.push(d3.select(tmpTD[0][0]).text());
+    }
+    else {
+      tmpArray.push(parseFloat(d3.select(tmpTD[0][tmpCol]).text()))
+    }
+  });
+
+  if(d3.select(tmpSpan).classed("glyphicon-sort-by-attributes") == true) {
+    if(tmpCol == 4) {
+      tmpArray.sort(function(a,b) {
+        if( !isFinite(a) && !isFinite(b) ) {
+          return 0;
+        }
+        if( !isFinite(a) ) {
+          return 1;
+        }
+        if( !isFinite(b) ) {
+          return -1;
+        }
+        return a - b; 
+      });
+    }
+    else {
+      tmpArray.sort();
+    }
+  }
+  else {
+    if(tmpCol == 4) {
+      tmpArray.sort(function(a,b) { 
+        if( !isFinite(a) && !isFinite(b) ) {
+          return 0;
+        }
+        if( !isFinite(a) ) {
+          return 1;
+        }
+        if( !isFinite(b) ) {
+          return -1;
+        }
+        return a - b; 
+      }).reverse();
+    }
+    else {
+      tmpArray.sort().reverse();
+    }
+  }
+  
+  d3.select("#resultsTableBody").selectAll("tr").remove();
+
+  tmpArray.forEach(function(tmpVal) { 
+    var tmpTable = d3.select("#resultsTableBody");
+    tmpTRs.each(function() {
+      var TR = this;
+      var tmpTD = d3.select(this).selectAll("td");  
+      if(tmpCol == 0) {
+        if(d3.select(tmpTD[0][0]).text() == tmpVal) {
+          tmpTable.append(function() { return TR; });
+        }
+      }
+      else {
+        if(parseFloat(d3.select(tmpTD[0][tmpCol]).text()) == tmpVal || (isNaN(parseFloat(d3.select(tmpTD[0][tmpCol]).text())) == true && isNaN(tmpVal) == true)) {
+          tmpTable.append(function() { return TR; });
+        }
+      }
+      
+    });
+  });
+}
 
 
 
@@ -683,10 +804,22 @@ function update_occupancy(tmpSlider) {
 
   //***update results table
   d3.select("#resultsTableBody").selectAll("tr")[0].forEach(function(row,i) {
+    var x = i;
     d3.select(row).selectAll("td")[0].forEach(function(cell,j) {
+      if(j == 0) {
+        var tmpTitle = d3.select(cell).text();
+        birdTitles.some(function(spp,n) {
+          if(spp == tmpTitle) { 
+            x = n;
+            return true;
+          }
+          return false;
+        })
+      }
+
       if(j == 2 || j == 3) {
         d3.select(cell).select("span").text(function() { 
-          if(j == 2) { var tmpOcc = habDiff[i]; } else { var tmpOcc = locDiff[i]; }
+          if(j == 2) { var tmpOcc = habDiff[x]; } else { var tmpOcc = locDiff[x]; }
 
           if(tmpOcc < -0.001) { 
             d3.select(this).classed("occMinus", true).classed("occPlus", false); 
@@ -704,7 +837,7 @@ function update_occupancy(tmpSlider) {
       }
     });
 
-    if(locOcc[i] >= 0.5) {
+    if(locOcc[x] >= 0.5) {
       d3.select(row).classed("likely", true);
     }    
     else {
@@ -845,7 +978,7 @@ function getBasalSliderVal(tmpVal) {
     case "FT^2/AC":
       return basalArea2percForRet(tmpVal/4.356);
       break;
-    case "% Forest":
+    case "% Retained":
       return tmpVal/100;
       break;
   }

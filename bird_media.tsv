@@ -1,42 +1,42 @@
-id	latin	common
-alder_flycatcher	Empidonax alnorum	Alder Flycatcher
-american_goldfinch	Spinus tristis	American Goldfinch
-american_woodcock	Scolopax minor	American Woodcock
-black-and-white_warbler	Mniotilta varia	Black-and-white Warbler
-blue-winged_warbler	Vermivora cyanoptera	Blue-winged Warbler
-brown_thrasher	Toxostoma rufum	Brown Thrasher
-canada_warbler	Cardellina canadensis	Canada Warbler
-carolina_wren	Thryothorus ludovicianus	Carolina Wren
-cedar_waxwing	Bombycilla cedrorum	Cedar Waxwing
-chestnut-sided_warbler	Setophaga pensylvanica	Chestnut-sided Warbler
-common_yellowthroat	Geothlypis trichas	Common Yellowthroat
-dark-eyed_junco	Junco hyemalis	Dark-eyed Junco
-eastern_towhee	Pipilo erythrophthalmus	Eastern Towhee
-field_sparrow	Spizella pusilla	Field Sparrow
-golden-winged_warbler	Vermivora chrysoptera	Golden-winged Warbler
-gray_catbird	Dumetella carolinensis	Gray Catbird
-house_wren	Troglodytes aedon	House Wren
-indigo_bunting	Passerina cyanea	Indigo Bunting
-lincolns_sparrow	Melospiza lincolnii	Lincoln's Sparrow
-magnolia_warbler	Setophaga magnolia	Magnolia Warbler
-mourning_warbler	Geothlypis philadelphia	Mourning Warbler
-nashville_warbler	Oreothlypis ruficapilla	Nashville Warbler
-northern_bobwhite	Colinus virginianus	Northern Bobwhite
-northern_cardinal	Cardinalis cardinalis	Northern Cardinal
-northern_mockingbird	Mimus polyglottos	Northern Mockingbird
-palm_warbler	Setophaga palmarum	Palm Warbler
-prairie_warbler	Setophaga discolor	Prairie Warbler
-ruby-throated_hummingbird	Archilochus colubris	Ruby-throated Hummingbird
-ruffed_grouse	Bonasa umbellus	Ruffed Grouse
-rusty_blackbird	Euphagus carolinus	Rusty Blackbird
-song_sparrow	Melospiza melodia	Song Sparrow
-swamp_sparrow	Melospiza georgiana	Swamp Sparrow
-tennessee_warbler	Oreothlypis peregrina	Tennessee Warbler
-white-eyed_vireo	Vireo griseus	White-eyed Vireo
-white-throated_sparrow	Zonotrichia albicollis	White-throated Sparrow
-willow_flycatcher	Empidonax traillii	Willow Flycatcher
-wilsons_snipe	Gallinago delicata	Wilson's Snipe
-wilsons_warbler	Cardellina pusilla	Wilson's Warbler
-yellow_warbler	Setophaga petechia	Yellow Warbler
-yellow-billed_cuckoo	Coccyzus americanus	Yellow-billed Cuckoo
-yellow-breasted_chat	Icteria virens	Yellow-breasted Chat
+id	latin	common	info
+alder_flycatcher	Empidonax alnorum	Alder Flycatcher	Found in dense, wet stands of shrubs and saplings with minimal to no tree canopy. In addition to occurring in regenerating clearcuts, they are also regularly encountered in wetlands and along the margins of streams and lakes.
+american_goldfinch	Spinus tristis	American Goldfinch	Typically found in open woodlands across North America. Special habitat features include weedy areas with an abundance of composite flowers (especially thistles and dandelions) which provide food (seeds) and nest material.
+american_woodcock	Scolopax minor	American Woodcock	
+black-and-white_warbler	Mniotilta varia	Black-and-white Warbler	Occurs in regenerating patch and clearcuts, but also occur in mature deciduous forests with dense saplings or pole-sized trees. Can be seen probing for insects along tree trunks and branches.
+blue-winged_warbler	Vermivora cyanoptera	Blue-winged Warbler	Prefers openings with dense cover of herbaceous vegetation and patchy shrub/sapling cover. Although they are shrubland specialists, they will use small patches, and they will tolerate the presence of some mature trees. One of the species of highest conservation concern in Massachusetts.
+brown_thrasher	Toxostoma rufum	Brown Thrasher	Large and secretive birds that inhabit open areas with dense clusters of shrubs. This species prefers dry habitats with deep litter cover, where they forage for insects and mast. Brown thrashers have one of the most extensive repertoires of any North American songbird.
+canada_warbler	Cardellina canadensis	Canada Warbler	Tolerant of moderate levels of canopy cover, and are associated with moderate to high densities of saplings and shrubs. An understory with moss and coarse woody debris may provide important habitat for this species. One of the highest priority birds in terms of conservation status in Massachusetts.
+carolina_wren	Thryothorus ludovicianus	Carolina Wren	
+cedar_waxwing	Bombycilla cedrorum	Cedar Waxwing	This fruit-eating species is attracted to open areas with few tall trees and numerous berry-producing shrubs, especially native shrubs. Fruit availability is crucial to habitat selection, so cedar waxwings can be found in berry bushes, evergreens, and along the banks of rivers and ponds.
+chestnut-sided_warbler	Setophaga pensylvanica	Chestnut-sided Warbler	Inhabits areas with dense shrub and sapling cover. They occur in clearcuts, but also nest in shelterwood cuts, although at lower densities. They make frequent forays into adjacent mature forest for forage and collect nesting material, particularly birch bark.
+common_yellowthroat	Geothlypis trichas	Common Yellowthroat	Associated with dense herbaceous vegetation. In addition to silvicultural openings, they occur in wetlands, riparian areas and fallow field on farms.
+dark-eyed_junco	Junco hyemalis	Dark-eyed Junco	A northerly species commonly found in dry areas with moderate to dense cover of shrubs and herbaceous vegetation. Juncos may use areas occupied by taller trees, provided the canopy is somewhat open. Slash and coarse woody debris may be important habitat features for this species.
+eastern_towhee	Pipilo erythrophthalmus	Eastern Towhee	This large sparrow can be found along the shrubby edges of forests, thickets, and old fields. Eastern towhees prefer dry, open habitats with relatively few trees and dense to patchy shrub cover.
+field_sparrow	Spizella pusilla	Field Sparrow	Inhabits dry, grassy areas with low to moderate shrub cover. Some small trees may be tolerated. They are one of the most area-sensitive species that occur in silvicultural openings in Massachusetts.
+golden-winged_warbler	Vermivora chrysoptera	Golden-winged Warbler	Breeds in sites with patchy shrub cover and dense herbaceous vegetation. Golden-winged warblers are one of the highest priority species in Massachusetts with respect to its conservation status and are very sparsely distributed.
+gray_catbird	Dumetella carolinensis	Gray Catbird	A relative of thrashers and mockingbirds, gray catbirds have the ability to mimic the sounds of other species. They use habitats with low or open canopies, and dense patches of shrubs and saplings, including residential yards.
+house_wren	Troglodytes aedon	House Wren	
+indigo_bunting	Passerina cyanea	Indigo Bunting	This brightly colored bird occupies open areas with moderate to dense shrub cover and dense herbaceous vegetation. Indigo buntings will use forest edges and areas with some tall trees for song posts.
+lincolns_sparrow	Melospiza lincolnii	Lincoln's Sparrow	
+magnolia_warbler	Setophaga magnolia	Magnolia Warbler	
+mourning_warbler	Geothlypis philadelphia	Mourning Warbler	This northerly distributed species uses open to moderately closed habitats with low, dense shrubby vegetation. Mourning warblers occur in regenerating clearcuts, but also shelterwoods, although at lower densities.
+nashville_warbler	Oreothlypis ruficapilla	Nashville Warbler	This northerly species is almost never found in unbroken forests, but they may inhabit areas with small or scattered large trees. They breed in moderately open areas with dense shrub cover and a dense herbaceous layer.
+northern_bobwhite	Colinus virginianus	Northern Bobwhite	
+northern_cardinal	Cardinalis cardinalis	Northern Cardinal	
+northern_mockingbird	Mimus polyglottos	Northern Mockingbird	
+palm_warbler	Setophaga palmarum	Palm Warbler	
+prairie_warbler	Setophaga discolor	Prairie Warbler	Occurs in openings with little herbaceous groundcover, is highly area-sensitive, and is relatively intolerant of residual trees. One of the highest priority species in Massachusetts.
+ruby-throated_hummingbird	Archilochus colubris	Ruby-throated Hummingbird	
+ruffed_grouse	Bonasa umbellus	Ruffed Grouse	
+rusty_blackbird	Euphagus carolinus	Rusty Blackbird	
+song_sparrow	Melospiza melodia	Song Sparrow	This widespread species prefers habitats with tall, dense shrub or sapling cover and dense herbaceous vegetation, preferably “mesic” (moister) sites. Song sparrows also occur in wetlands, residential areas and in fallow areas on farms.
+swamp_sparrow	Melospiza georgiana	Swamp Sparrow	
+tennessee_warbler	Oreothlypis peregrina	Tennessee Warbler	
+white-eyed_vireo	Vireo griseus	White-eyed Vireo	Areas with dense, low shrub cover provide ideal habitat for this southerly species. White-eyed vireos are relatively intolerant of residual canopy coverage, are also one of the more area-sensitive species in Massachusetts forest openings.
+white-throated_sparrow	Zonotrichia albicollis	White-throated Sparrow	This northerly species is typical of coniferous habitats with dense shrub cover and significant herbaceous vegetation, although they will also use deciduous habitats. In addition to silvicultural openings, this species also may occur along the edges of meadows, bogs, and ponds, as well as areas regenerating after fires.
+willow_flycatcher	Empidonax traillii	Willow Flycatcher	
+wilsons_snipe	Gallinago delicata	Wilson's Snipe	
+wilsons_warbler	Cardellina pusilla	Wilson's Warbler	
+yellow_warbler	Setophaga petechia	Yellow Warbler	
+yellow-billed_cuckoo	Coccyzus americanus	Yellow-billed Cuckoo	This elusive bird is a voracious predator of caterpillars, cicadas, and other large insects. Yellow-billed cuckoos almost exclusively found in deciduous habitats, often near water. Areas with dense shrubs and saplings are preferred, such as abandoned agricultural land, overgrown orchards, and the edges of streams and marshes.
+yellow-breasted_chat	Icteria virens	Yellow-breasted Chat	
