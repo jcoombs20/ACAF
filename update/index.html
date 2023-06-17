@@ -397,6 +397,8 @@
           format: 'image/png',
           transparent: true,
           version: '1.1.0',
+          tiled: true,
+          tilesorigin: [-180, -90],
           maxZoom: 20,
         });
 
@@ -412,8 +414,8 @@
 
 
       //******Add Geoserver Layers
-      var birdTitles = ["Alder Flycatcher","American Goldfinch","Black-and-white Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","Indigo Bunting","Mourning Warbler","Nashville Warbler","Prairie Warbler","Song Sparrow","White-eyed Vireo","White-throated Sparrow","Yellow-billed Cuckoo","Acadian Flycatcher","American Redstart","Blackburnian Warbler","Black-throated Blue Warbler","Black-throated Blue Warbler","Blue-gray Gnatcatcher","Blue-headed Vireo","Brown Creeper","Cerulean Warbler","Eastern Wood Pewee","Hermit Thrush","Hooded Warbler","Kentucky Warbler","Least Flycatcher","Ovenbird","Red-breasted Nuthatch","Red-eyed Vireo","Rose-breasted Grosbeak","Scarlet Tanager","Veery","Wood Thrush","Worm-eating Warbler","Yellow-bellied Sapsucker","Yellow-rumped Warbler"];
-      var birdID = ["alfl_OH","amgo_OH","baww_OH","bwwa_OH","brth_OH","cawa_OH","cewa_OH","cswa_OH","coye_OH","deju_OH","eato_OH","fisp_OH","gwwa_OH","grca_OH","inbu_OH","mowa_OH","nawa_OH","praw_OH","sosp_OH","wevi_OH","wtsp_OH","ybcu_OH","acfl_OH","amre_OH","blbw_OH","btbw_OH","btgw_OH","bggn_OH","bhvi_OH","brcr_OH","cerw_OH","eawp_OH","heth_OH","howa_OH","kewa_OH","lefl_OH","oven_OH","rbnu_OH","revi_OH","rbgr_OH","scta_OH","veer_OH","woth_OH","wewa_OH","ybsa_OH","yrwa_OH"];
+      var birdTitles = ["Alder Flycatcher","American Goldfinch","Black-and-white Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","Indigo Bunting","Mourning Warbler","Nashville Warbler","Prairie Warbler","Song Sparrow","White-eyed Vireo","White-throated Sparrow","Yellow-billed Cuckoo","Acadian Flycatcher","American Redstart","Blackburnian Warbler","Black-throated Blue Warbler","Black-throated Green Warbler","Blue-gray Gnatcatcher","Blue-headed Vireo","Brown Creeper","Cerulean Warbler","Eastern Wood Pewee","Hermit Thrush","Hooded Warbler","Kentucky Warbler","Least Flycatcher","Ovenbird","Red-breasted Nuthatch","Red-eyed Vireo","Rose-breasted Grosbeak","Scarlet Tanager","Veery","Wood Thrush","Worm-eating Warbler","Yellow-bellied Sapsucker","Yellow-rumped Warbler"];
+      var birdID = ["alfl_OH","amgo_OH","baww_OH","bwwa_OH","brth_OH","cawa_OH","cewa_OH","cswa_OH","coye_OH","deju_OH","eato_OH","fisp_OH","gwwa_OH","grca_OH","inbu_OH","mowa_OH","nawa_OH","praw_OH","sosp_OH","wevi_OH","wtsp_OH","ybcu_OH","acfl_OH","amre_OH","blbw_OH","btbw_OH","btnw_OH","bggn_OH","bhvi_OH","brcr_OH","cerw_OH","eawp_OH","heth_OH","howa_OH","kewa_OH","lefl_OH","oven_OH","rbnu_OH","revi_OH","rbgr_OH","scta_OH","veer_OH","woth_OH","wewa_OH","ybsa_OH","yrwa_OH"];
       var birdGroup = ["shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","shrubland","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature","mature"];
       //var birdTitles = ["Alder Flycatcher","American Goldfinch","Black-and-white Warbler","Blue-winged Warbler","Brown Thrasher","Canada Warbler","Cedar Waxwing","Chestnut-sided Warbler","Common Yellowthroat","Dark-eyed Junco","Eastern Towhee","Field Sparrow","Golden-winged Warbler","Gray Catbird","Indigo Bunting","Mourning Warbler","Nashville Warbler","Prairie Warbler","Song Sparrow","White-eyed Vireo","White-throated Sparrow","Yellow-billed Cuckoo"];
       //var birdID = ["alfl_OH","amgo_OH","baww_OH","bwwa_OH","brth_OH","cawa_OH","cewa_OH","cswa_OH","coye_OH","deju_OH","eato_OH","fisp_OH","gwwa_OH","grca_OH","inbu_OH","mowa_OH","nawa_OH","praw_OH","sosp_OH","wevi_OH","wtsp_OH","ybcu_OH"];
@@ -1062,13 +1064,13 @@
 
       d3.select("#splashScreenDiv")
         .append("p")
-        .html('<p><b>Introduction</b></p><p>As a result of the continued loss of early-successional forest habitat across North America, many native shrubland bird populations are in decline. Forest management can promote the maintenance of robust shrubland bird populations and is a key element in preserving overall avian diversity in New England. The Predictor of Avian Communities Tool, or PACT, illustrates the effects of patch area, basal area retention and time since treatment on shrubland birds for any given geographical location in Massachusetts. Visit the "About PACT" tab to learn more about the tool and shrubland bird conservation.</p>'
+        .html('<p><b>Introduction</b></p><p>Forest management affects bird populations, and provides land-owners opportunities for contributing to bird conservation. Forest management activities vary across a range of intensity, from light thinnings for enhancing tree growth to regeneration treatments designed to encourage shade-intolerant tree species, and this range of conditions is reflected in the bird community (<a href="http://dx.doi.org/10.1016/j.foreco.2013.12.001" target="_blank" title="King, D.I., and Schlossberg, S. (2014) Synthesis of the conservation value of the early-successional stage in forests of eastern North America. Forest Ecology and Management, 324(2014):186-195.">King and Schlossberg 2014</a>). In eastern U.S. forests with closed canopy and large trees the landowner can encounter forest species like wood thrush and scarlet tanager. In contrast, regeneration treatments like clearcuts or shelterwoods are populated by shrubland birds like chestnut-sided warblers and indigo buntings. Both of these groups, mature forest and shrubland birds, benefit from the provision of suitable habitat conditions, and forest management is an effective means for landowners to contribute to the conservation of these species. The purpose of the Predictor of Avian Communities Tool, or PACT, is to illustrate the effects of forestry on bird communities  for any given geographical location in temperate forest of the eastern USA and Canada. Visit the "About PACT" tab to learn more about the tool and bird conservation.</p>'
           //+ '<br>'
           + '<p><b>Getting Started with <span style="font-size:24px;font-variant:small-caps;color:#b3d9ff;text-shadow:1px 2px black;">PACT</span></b></p><p><ol><li>Locate your project site by address, latitude/longitude, or zip code using the "Search Map" feature</li><li>Draw treatment area or upload a shape file, and note if there are any other large openings nearby</li><li>Specify residual basal area</li><li>Click "Analyze" to see what the overall conservation score is for the project, the overall number of species likely to occur in the project area, and which specific species are likely to be present in the project area</li></ol></p>'
-          + '<p>Experiment with the "Opening Area", "Basal Area" and "Time" sliders at the bottom of the "Analysis Results" window to explore how different scenarios compare in terms of their effects on shrubland birds. For additional information, check out the "About PACT" drop-down or the <span class="welcomeLaunch" onclick="startIntro()">tutorial</span>. At any point, hover your mouse over the <span class="glyphicon glyphicon-info-sign welcomeLaunch" data-toggle="tooltip" data-container="body" data-placement="auto top" data-html="true" title="<p>Hover over icons and items to display a tooltip with more information</p>"></span> icons located throughout the tool for additional information about specific features.</p>'
+          + '<p>Experiment with the "Opening Area", "Basal Area" and "Time" sliders at the bottom of the "Analysis Results" window to explore how different scenarios compare in terms of their effects on mature forest and shrubland birds. For additional information, check out the "About PACT" drop-down or the <span class="welcomeLaunch" onclick="startIntro()">tutorial</span>. At any point, hover your mouse over the <span class="glyphicon glyphicon-info-sign welcomeLaunch" data-toggle="tooltip" data-container="body" data-placement="auto top" data-html="true" title="<p>Hover over icons and items to display a tooltip with more information</p>"></span> icons located throughout the tool for additional information about specific features.</p>'
           + '<p>If you would like to launch the interactive walk-through tutorial of PACT\'s various functions, please click <span class="welcomeLaunch" onclick="startIntro()">here</span> to initiate.</p>'
-          + '<p><b>Game Birds</b></p>'
-          + '<p>Although upland game birds also benefit from forest management, this tool does not include these species since their habitat requirements encompass multiple habitat types. If you are interested in accessing information on best management practices for game birds, please click on the links below:<ul id="welcomeSpp"><li><a href="https://www.nwtf.org/conservation/category/landowners-tool-box" target="_blank">Wild Turkey</a></li><li><a href="https://www.fs.fed.us/database/feis/animals/bird/scmi/all.html" target="_blank">American Woodcock</a></li><li><a href="https://www.fs.fed.us/database/feis/animals/bird/boum/all.html#PreferredHabitat" target="_blank">Ruffed Grouse</a></li></ul></p>'
+          //+ '<p><b>Game Birds</b></p>'
+          //+ '<p>Although upland game birds also benefit from forest management, this tool does not include these species since their habitat requirements encompass multiple habitat types. If you are interested in accessing information on best management practices for game birds, please click on the links below:<ul id="welcomeSpp"><li><a href="https://www.nwtf.org/conservation/category/landowners-tool-box" target="_blank">Wild Turkey</a></li><li><a href="https://www.fs.fed.us/database/feis/animals/bird/scmi/all.html" target="_blank">American Woodcock</a></li><li><a href="https://www.fs.fed.us/database/feis/animals/bird/boum/all.html#PreferredHabitat" target="_blank">Ruffed Grouse</a></li></ul></p>'
         )
         .style({"font-size":"16px","margin":"10px 0px"}); 
 
@@ -1714,8 +1716,50 @@
       d3.select("#resultsDiv")
         .append("div")
         .style({"margin-left":"5px"})
-        .html('<h5 style="font-weight:bold;margin-top:5px;margin-bottom:5px;">Species likely to occur in project area (in descending order of occurrence)</h5>');
+        .html('<h5 style="font-weight:bold;margin-top:5px;margin-bottom:5px;">Species likely to occur in project area (in descending order of occurrence)</h5>'
+          + '<div id="groupSelDiv">'
+            + '<input id="birdGroupShrub" class="groupRad" type="radio" name="birdGroup" value="shrub" onclick="showGroup(this)" title="Click to view only shrubland species"><label class="groupLab shrub" for="birdGroupShrub" title="Click to view only shrubland species">Shrubland</label>'
+            + '<input id="birdGroupMature" class="groupRad" type="radio" name="birdGroup" value="mature" onclick="showGroup(this)" title="Click to view only mature forest species"><label class="groupLab mature" for="birdGroupMature" title="Click to view only mature forest species">Mature Forest</label>'
+            + '<input id="birdGroupAll" class="groupRad" type="radio" name="birdGroup" value="all" onclick="showGroup(this)" title="Click to view all species" checked><label class="groupLab" for="birdGroupAll" title="Click to view all species">All</label>'
+            + '<input id="showLikely" class="groupRad" type="checkbox" onclick="showLikely(this)" title="Check to view only likely species"><label class="groupLab likely" for="showLikely" title="Check to view only likely species">Show Likely</label>'
+          + '</div>'
+        );
 
+      function showLikely(tmpChk) {
+        showGroup(document.querySelector('input[name="birdGroup"]:checked'));
+      }
+
+      function showGroup(rad) {
+        //console.log(rad.value);
+        if(d3.select("#showLikely").property("checked") == false) {
+          if(rad.value == "shrub") {
+            d3.selectAll("tr.shrub").style("display", "table-row");
+            d3.selectAll("tr.mature").style("display", "none");
+          }
+          else if(rad.value == "mature") {
+            d3.selectAll("tr.mature").style("display", "table-row");
+            d3.selectAll("tr.shrub").style("display", "none");
+          }
+          else {
+            d3.selectAll("tr.shrub").style("display", "table-row");
+            d3.selectAll("tr.mature").style("display", "table-row");
+          }
+        }
+        else {
+          if(rad.value == "shrub") {
+            d3.selectAll("tr.mature,tr.shrub").style("display", "none");
+            d3.selectAll("tr.shrub.likely").style("display", "table-row");
+          }
+          else if(rad.value == "mature") {
+            d3.selectAll("tr.shrub,tr.mature").style("display", "none");
+            d3.selectAll("tr.mature.likely").style("display", "table-row");
+          }
+          else {
+            d3.selectAll("tr.shrub,tr.mature").style("display", "none");
+            d3.selectAll("tr.likely").style("display", "table-row");
+          }
+        }
+      }
 
       d3.select("#resultsDiv")
         .append("div")
@@ -2094,8 +2138,8 @@
       d3.select("#songs")
         .append("div")
         .html(''
-          + '<input type="radio" id="shrubRad" class="radio" name="habGroup" value="shrubland" title="List of shrubland bird species" checked><label class="radioLabel" for="shrubRad" title="List of shrubland bird species">Shrubland</label>'
-          + '<input type="radio" id="matureRad" class="radio" name="habGroup" value="mature" title="List of mature forest bird species"><label class="radioLabel" for="matureRad" title="List of mature forest bird species">Mature Forest</label>'
+          + '<input type="radio" id="shrubRad" class="radio" name="habGroup" value="shrubland" title="List of shrubland bird species" checked><label class="radioLabel shrub" for="shrubRad" title="List of shrubland bird species">Shrubland</label>'
+          + '<input type="radio" id="matureRad" class="radio" name="habGroup" value="mature" title="List of mature forest bird species"><label class="radioLabel mature" for="matureRad" title="List of mature forest bird species">Mature Forest</label>'
         );
 
       d3.selectAll(".radio")
@@ -2163,13 +2207,20 @@
 
       //******Add species occupancy graphs
       function addGraphs(spp) {
+        if(birds.shrub.indexOf(spp) > -1) {
+          var tmpGroup = "shrub";
+        }
+        else {
+          var tmpGroup = "mature";
+        }
+
         var i = birdID.indexOf(spp + "_OH");
         d3.select("#graphs")
           .insert("div", ":first-child")
           .attr("id", spp + "Graphs")
           .attr("class", "sppGraphs")
           .append("p")
-          .attr("class", "graphSppP")
+          .attr("class", "graphSppP " + tmpGroup)
           .property("title", birdTitles[i])
           .text(birdTitles[i]);
 
@@ -2234,77 +2285,91 @@
           var i;
           var n = 100;
           for (i = 0; i < 101; i++) { 
-            if(type == "area") {
-              var tmpX = getAreaSliderVal((tmpXMax/n)*i);
-              var tmpY = openingArea(spp, prawSource, tmpX, openSourceDist);
-            }
-            else if(type == "basal") {
-              var tmpX = getBasalSliderVal((tmpXMax/n)*i);
-              var tmpY = basalArea(tmpX, spp);
+            if(birds.shrub.indexOf(spp) > -1) {
+              if(type == "area") {
+                var tmpX = getAreaSliderVal((tmpXMax/n)*i);
+                var tmpY = openingArea(spp, prawSource, tmpX, openSourceDist);
+              }
+              else if(type == "basal") {
+                var tmpX = getBasalSliderVal((tmpXMax/n)*i);
+                var tmpY = basalArea(tmpX, spp);
+              }
+              else {
+                var tmpX = (tmpXMax/n)*i;
+                var tmpY = succession(tmpX, spp);
+              }
+              data.push({"x": (tmpXMax/n)*i, "y": tmpY});
             }
             else {
-              var tmpX = (tmpXMax/n)*i;
+              if(type == "basal") {
+                var tmpX = getBasalSliderVal((tmpXMax/n)*i);
+                var tmpY = basalArea(tmpX, spp);
+              }
+              else if(type == "time") {
+                var tmpX = (tmpXMax/n)*i;
+                var tmpY = succession(tmpX, spp);
+              }
+
+              data.push({"x": (tmpXMax/n)*i, "y": tmpY});
+            }
+          }
+
+          if(birds.shrub.indexOf(spp) > -1 || type != 'area') {
+            svg.append("path")	
+              .attr("class", "line")
+              .attr("d", valueline(data));
+ 
+            svg.append("g")  
+              .attr("class", "axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+ 
+            svg.append("g")
+              .attr("class", "axis")
+              .call(yAxis);
+
+            d3.select("#" + spp + "_" + type + "Div")
+              .append("p")
+              .text(function() { if(type == "area") { return d3.select("#areaSlider").property("name"); } else if(type == "basal") { return d3.select("#basalSlider").property("name"); } else { return "Years"; } });
+
+            d3.select("#" + spp + "Graphs")
+              .append("p")
+              .attr("class", "graphOp")
+              .text(function() { if(type == "area" || type == "basal") { return "X"; } else { return "="; } });
+
+            //***Add in a point for initial values (.point1) and one for adjusted values (.point2)
+            if(type == "area") {
+              var tmpX = getAreaSliderVal(parseFloat(d3.select("#areaReset").property("value")));
+              var tmpY = openingArea(spp, prawSource, tmpX, openSourceDist);
+            
+              tmpX = parseFloat(d3.select("#areaReset").property("value"));
+            }
+            else if(type == "basal") {
+              var tmpX = getBasalSliderVal(parseFloat(d3.select("#basalReset").property("value")));
+              var tmpY = basalArea(tmpX, spp);
+              tmpX = parseFloat(d3.select("#basalReset").property("value"));
+            }
+            else {
+              var tmpX = parseFloat(d3.select("#timeReset").property("value"));
               var tmpY = succession(tmpX, spp);
             }
-            
-            data.push({"x": (tmpXMax/n)*i, "y": tmpY});
+
+            svg.append("svg:circle")
+              .attr("class", 'point2')
+              .attr("r", 4)
+              .attr("cx", x(tmpX))
+              .attr("cy", y(tmpY))
+              .append("svg:title")
+              .text(tmpX.toFixed(2) + "," + tmpY.toFixed(2));
+
+            svg.append("svg:circle")
+              .attr("class", 'point1')
+              .attr("r", 4)
+              .attr("cx", x(tmpX))
+              .attr("cy", y(tmpY))
+              .append("svg:title")
+              .text(tmpX.toFixed(2) + "," + tmpY.toFixed(2));
           }
-
-          svg.append("path")	
-            .attr("class", "line")
-            .attr("d", valueline(data));
- 
-          svg.append("g")  
-            .attr("class", "axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
- 
-          svg.append("g")
-            .attr("class", "axis")
-            .call(yAxis);
-
-          d3.select("#" + spp + "_" + type + "Div")
-            .append("p")
-            .text(function() { if(type == "area") { return d3.select("#areaSlider").property("name"); } else if(type == "basal") { return d3.select("#basalSlider").property("name"); } else { return "Years"; } });
-
-          d3.select("#" + spp + "Graphs")
-            .append("p")
-            .attr("class", "graphOp")
-            .text(function() { if(type == "area" || type == "basal") { return "X"; } else { return "="; } });
-
-          //***Add in a point for initial values (.point1) and one for adjusted values (.point2)
-          if(type == "area") {
-            var tmpX = getAreaSliderVal(parseFloat(d3.select("#areaReset").property("value")));
-            var tmpY = openingArea(spp, prawSource, tmpX, openSourceDist);
-            
-            tmpX = parseFloat(d3.select("#areaReset").property("value"));
-          }
-          else if(type == "basal") {
-            var tmpX = getBasalSliderVal(parseFloat(d3.select("#basalReset").property("value")));
-            var tmpY = basalArea(tmpX, spp);
-            tmpX = parseFloat(d3.select("#basalReset").property("value"));
-          }
-          else {
-            var tmpX = parseFloat(d3.select("#timeReset").property("value"));
-            var tmpY = succession(tmpX, spp);
-          }
-
-          svg.append("svg:circle")
-            .attr("class", 'point2')
-            .attr("r", 4)
-            .attr("cx", x(tmpX))
-            .attr("cy", y(tmpY))
-            .append("svg:title")
-            .text(tmpX.toFixed(2) + "," + tmpY.toFixed(2));
-
-          svg.append("svg:circle")
-            .attr("class", 'point1')
-            .attr("r", 4)
-            .attr("cx", x(tmpX))
-            .attr("cy", y(tmpY))
-            .append("svg:title")
-            .text(tmpX.toFixed(2) + "," + tmpY.toFixed(2));
-
         });
 
         d3.select("#" + spp + "Graphs")
@@ -2413,21 +2478,21 @@
         .attr("id", "help-overview")
         .style("display", "inline-block") 
         .html('<h3 style="margin-top:5px;">Background</h3>'
-           + '<p>As a result of changes in natural and anthropogenic disturbance regimes, the extent of early-successional forest across much of eastern North American is near historic lows and continues to decline. This has caused many managers and researchers to identify the conservation of early-successional species as a high priority. Early-successional "shrubland" bird species require conditions and resources present in recently disturbed sites. Historical disturbance regimes such as windthrow, fire, and flooding have been altered or suppressed in eastern forests through human activity such as conversion of forests to younger aged stands more resistant to wind, fire suppression and mesophication of fire-adapted communities, and suppression of beaver activity and flooding. Furthermore, anthropogenic disturbance has shifted over much of the region to types of land use that provide less shrubland habitat of lower quality than historic levels.</p>'
+           + '<p>As a result of the influences of historical land use and changes in natural and anthropogenic disturbance regimes, modern forests in eastern North America are characterized by a lack of age-class diversity (<a href="http://dx.doi.org/10.5849/forsci.13-153" target="_blank" title="Shifley, S.R., Moser, W.K., Nowak, D.J., Miles, P.D., Butler, B.J., Aguilar, F.X., DeSantis, R.D., and Greenfield, E.J. (2014) Five anthropogenic factors that will radically alter forest conditions and management needs in the northern United States. Forest Science, 60(5):914-925.">Shifley et al. 2014</a>). Mature forest is more extensive than it has been in a century or so, because most contemporary forests are even-aged, having regenerated from agricultural land use or even-aged harvest. These stands have not yet reached the stage where extensive canopy gaps, characteristic of natural late-seral or old-growth forests, have formed, and thus these stands are lacking in complex understory conditions, or "structure" that are used by many forest birds for foraging and nesting. Furthermore, the extent of early-successional shrubland habitats across much of eastern North American is near historic lows and continues to decline. Historical disturbance regimes such as windthrow, fire, and flooding have been altered or suppressed in eastern forests through human activity such as conversion of forests to younger aged stands more resistant to wind, fire suppression and mesophication of fire-adapted communities, and suppression of beaver activity and flooding. Furthermore, anthropogenic disturbance has shifted over much of the region to types of land use that provide less shrubland habitat of lower quality than historic levels. Since forest management increases structural diversity by stimulating growth in the understory and creating patches of shrubland habitat, it has great potential to aid landowners in contributing to regional bird conservation goals.</p>'
            + '<h3>Objectives</h3>'
            + '<p>PACT was developed to allow managers and individuals to:</p>'
            + '<ul>'
              + '<li><p>Specify their geographic locality and management footprint</p></li>'
              + '<li><p>Visualize the outputs of habitat management practices</p></li>'
-             + '<li><p>Compare different management scenarios in terms of shrubland bird occupancy probability and species composition</p></li>'
+             + '<li><p>Compare different management scenarios in terms of mature forest and shrubland bird occupancy and species composition</p></li>'
            + '</ul>'
            + '<p>PACT has the intended objectives of enabling users to:</p>'
            + '<ul>'
              + '<li><p>Identify practices that are most likely to achieve target goals</p></li>'
-             + '<li><p>Identify optimal sites on which to manage for shrubland birds</p></li>'
+             + '<li><p>Identify optimal sites on which to manage for forest and shrubland birds</p></li>'
            + '</ul>'
-           + '<br><p>PACT is intended for use in forested landscapes with les than 30% of agricultural and urban development within a mile (1.6 KM) of the project site. A higher percentage of these non-forest cover types in the landscape may increase nest predation and brood parasitism by brown-headed cowbirds (<a href="https://science.sciencemag.org/content/267/5206/1987" target="_blank" title="Robinson, S.K., Thompson III, F.R., Donovan, T.M., Whitehead, D.R., Faaborg, J. (1995) Regional forest fragmentation and the nesting succes of migratory birds. Science, 267(5206):1987-1990.">Robinson et al 1995</a>, <a href="https://www.fs.usda.gov/treesearch/pubs/2898" target="_blank" title="Hunter, W.C., Buehler, D.A., Canterbury, R.A., and Confer, J.L. (2001) Conservation of disturbance-dependent birds in eastern North America. Wildlife Society Bulletin, 29(2):440-455.">Hunter et al 2001</a>, <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1523-1739.2004.00254.x" target="_blank" title="Driscoll, M.J.L., and Donovan, T.M. (2004) Landscape context moderates edge effects: Nesting success of wood thrushes in central New York. Conservation Biology, 18(5):1330-1338.">Driscoll and Donovan 2004</a>).</p>'
-           + '<br><p>In its current formulation, PACT is limited to silvicultural operations within New England. Inclusion of shrubland bird species from other regions, and other forms of shrubland habitat management (e.g. mowing or prescribed burns) is anticipated for future versions.</p>'
+           + '<br><p>PACT is intended for use in forested landscapes with less than 30% of agricultural and urban development within a mile (1.6 KM) of the project site. A higher percentage of these non-forest cover types in the landscape may increase nest predation and brood parasitism by brown-headed cowbirds (<a href="https://science.sciencemag.org/content/267/5206/1987" target="_blank" title="Robinson, S.K., Thompson III, F.R., Donovan, T.M., Whitehead, D.R., Faaborg, J. (1995) Regional forest fragmentation and the nesting succes of migratory birds. Science, 267(5206):1987-1990.">Robinson et al 1995</a>, <a href="https://www.fs.usda.gov/treesearch/pubs/2898" target="_blank" title="Hunter, W.C., Buehler, D.A., Canterbury, R.A., and Confer, J.L. (2001) Conservation of disturbance-dependent birds in eastern North America. Wildlife Society Bulletin, 29(2):440-455.">Hunter et al 2001</a>, <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1523-1739.2004.00254.x" target="_blank" title="Driscoll, M.J.L., and Donovan, T.M. (2004) Landscape context moderates edge effects: Nesting success of wood thrushes in central New York. Conservation Biology, 18(5):1330-1338.">Driscoll and Donovan 2004</a>).</p>'
+           + '<br><p>In its current formulation, PACT is limited to silvicultural operations within temperate forest of the eastern USA and Canada. Inclusion of shrubland bird species from other regions, and other forms of shrubland habitat management (e.g. mowing or prescribed burns) is anticipated for future versions.</p>'
            + '<h3>Tool Development Team</h3>'
            + '<p><u>US Forest Service, Northern Research Unit</u></p>'
            + '<ul>'
@@ -2459,7 +2524,7 @@
         .attr("class", "helpDivs")
         .attr("id", "help-usage")
         .html('<h3 style="margin-top:5px;">Overview</h3>'
-           + '<p>PACT presents users with a means to quickly and easily assess predicted shrubland avian communities for designed management openings of varying size and differing locations through an intuitive map-based interface.</p>'
+           + '<p>PACT presents users with a means to quickly and easily assess predicted avian communities for designed management openings of varying size and differing locations through an intuitive map-based interface.</p>'
            + '<h3>Optimal Performance Requirements</h3>'
            + '<p>PACT is currently supported on the latest versions of all major web browsers, however <a target="_blank" href="https://www.google.com/chrome/" title="www.google.com/chrome">Google Chrome</a> and <a target="_blank" href="https://www.mozilla.org/" title="www.mozilla.org">Mozilla Firefox</a> are highly recommended for the best user experience. PACT is not presently developed for use with mobile devices.</p>'
            + '<h3>Design and Implementation</h3>'
@@ -2492,9 +2557,9 @@
         .append("div")
         .attr("class", "helpDivs")
         .attr("id", "help-videos")
-        .html('<h3 style="margin-top:5px;"><i>Coming soon...</i></h3>'
-           //+ '<h3>Tool Overview</h3>'
-           //+ '<video id="video1" class="video-js vjs-default-skin" controls preload="auto" poster="images/sce_overview.jpg" data-setup="{}"><source src="video/sce_overview.mp4" type="video/mp4"><p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>'
+        .html('<h3 style="margin-top:5px;">Videos</h3>'
+           + '<h3>Tool Overview</h3>'
+           + '<video id="video1" class="video-js vjs-default-skin" style="width:100%;" controls preload="auto" poster="videos/pact_video.jpg" data-setup="{}"><source src="videos/PACT_video_v1.mp4" type="video/mp4"><p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>'
            //+ '<h3>Filters and Spatial Joins</h3>'
            //+ '<video id="video2" class="video-js vjs-default-skin" controls preload="auto" poster="images/sce_filtering.jpg" data-setup="{}"><source src="video/sce_filtering.mp4" type="video/mp4"><p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p></video>'
            //+ '<h3>Case Study Example</h3>'
@@ -2506,11 +2571,13 @@
         .attr("class", "helpDivs")
         .attr("id", "help-sources")
         .html('<h3 style="margin-top:5px;">Species Pool</h3>'
-          + '<p>We included both obligate and facultative shrubland bird species as identified by <a href="data/schlossberg_and_king_2007.pdf" target="_blank" title="Schlossberg, S.R., and King, D.I. (2007) Ecology and management of scrub-shrub birds in New England: A comprehensive review. Report submitted to Natural Resources Conservation Service, Resource Inventory and Assessment Division, Beltsville, Maryland, USA.">Schlossberg and King (2007)</a>.</p>'
+          + '<p>We included both forest birds (species associated with closed-canopy forest in studies of gradients of silvicultural intensity; Annand and Thompson 1997, King and DeGraaf 2000) as well as shrubland birds (species most abundant in stands with little or no canopy, as identified by <a href="data/schlossberg_and_king_2007.pdf" target="_blank" title="Schlossberg, S.R., and King, D.I. (2007) Ecology and management of scrub-shrub birds in New England: A comprehensive review. Report submitted to Natural Resources Conservation Service, Resource Inventory and Assessment Division, Beltsville, Maryland, USA.">Schlossberg and King (2007)</a>.</p>'
           + '<h3>Regional Occupancy</h3>'
           + '<p>Probabilities are acquired from species specific rasters developed by either Steve Matthews or Jon Atwood and <a href="https://www.massaudubon.org/" target="_blank" title="www.massaudubon.org">Mass Audubon</a>. Values are calculated as the mean value of all pixels that intersect the management opening.</p>'
           + '<h3>Habitat Occupancy</h3>'
-          + '<p>Shrubland birds are influenced by <b>opening area</b> (<a href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Journal of Wildlife Management, 81(7):1298-1307.">Roberts and King 2017</a>), <b>residual basal area</b> of trees in the stand (<a href="https://www.sciencedirect.com/science/article/pii/S037811279900167X" target="_blank" title="King, D.I. and DeGraaf, R.M. (2000) Bird species diversity and nesting success in mature, clearcut and shelterwood forest in northern New Hampshire, USA. Forest Ecology and Management, 129(1-3):227-235.">King and DeGraaf 2000</a>), and <b>time since treatment</b> (<a href="https://wildlife.onlinelibrary.wiley.com/doi/abs/10.2193/2007-518" target="_blank" title="Schlossberg, S. and King, D.I. (2009) Postlogging succession and habitat usage of shrubland birds. Journal of Wildlife Management, 73(2):226-231.">Schlossberg and King 2009</a>). In PACT, habitat occupancy probabilities are calculated by the following function, multiplying three separate occupancy probabilities per species:</p>'
+          + '<p>Both forest and shrubland birds are influenced by residual basal area of trees in a stand (<a href="https://www.sciencedirect.com/science/article/pii/S037811279900167X" target="_blank" title="King, D.I. and DeGraaf, R.M. (2000) Bird species diversity and nesting success in mature, clearcut and shelterwood forest in northern New Hampshire, USA. Forest Ecology and Management, 129(1-3):227-235.">King and DeGraaf 2000</a>). Shrubland birds are also associated with managed, opening area (<a href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Journal of Wildlife Management, 81(7):1298-1307.">Roberts and King 2017</a>), and time since treatment (<a href="https://wildlife.onlinelibrary.wiley.com/doi/abs/10.2193/2007-518" target="_blank" title="Schlossberg, S. and King, D.I. (2009) Postlogging succession and habitat usage of shrubland birds. Journal of Wildlife Management, 73(2):226-231.">Schlossberg and King 2009</a>). Forest birds are likely also influenced by managed opening area and time since treatment, but insufficient data are available for this group for a formal analysis. In PACT, habitat occupancy probabilities are calculated by the following function, multiplying three separate occupancy probabilities per species:</p>'
+
+          //+ '<p>Both forest and shrubland birds are influenced by residual basal area of trees in a stand <a href="https://www.sciencedirect.com/science/article/pii/S037811279900167X" target="_blank">(King and DeGraaf 2000)</a>. Shrubland birds are also associated with managed <b>opening area</b> (<a href="https://wildlife.onlinelibrary.wiley.com/doi/full/10.1002/jwmg.21286" target="_blank" title="Roberts, H.P. and King, D.I. (2017) Area requirements and landscape-level factors influencing shrubland birds. Journal of Wildlife Management, 81(7):1298-1307.">Roberts and King 2017</a>), <b>residual basal area</b> of trees in the stand (<a href="https://www.sciencedirect.com/science/article/pii/S037811279900167X" target="_blank" title="King, D.I. and DeGraaf, R.M. (2000) Bird species diversity and nesting success in mature, clearcut and shelterwood forest in northern New Hampshire, USA. Forest Ecology and Management, 129(1-3):227-235.">King and DeGraaf 2000</a>), and <b>time since treatment</b> (<a href="https://wildlife.onlinelibrary.wiley.com/doi/abs/10.2193/2007-518" target="_blank" title="Schlossberg, S. and King, D.I. (2009) Postlogging succession and habitat usage of shrubland birds. Journal of Wildlife Management, 73(2):226-231.">Schlossberg and King 2009</a>). In PACT, habitat occupancy probabilities are calculated by the following function, multiplying three separate occupancy probabilities per species:</p>'
           + '<p style="text-align:center;"><b>Habitat occupancy = opening area * basal area * time since treatment</b></p>'
           + '<p>Calculations for each of these three separate occupancy probabilities are detailed below.</p>'
           + '<br>'
@@ -2546,7 +2613,7 @@
           + '<br>'
           + '<br>'
           + '<h4><u>Residual Basal Area</u></h4>'
-          + '<p>We generated functions for the relationship between basal area and tree retention on shrubland bird abundance using a meta-analysis of published studies (Akresh et al in prep). To determine the relationship, we compared three models for each species:</p>'
+          + '<p>We generated functions for the relationship between basal area and tree retention on bird abundance using a meta-analysis of published studies (<a href="https://doi.org/10.1016/j.foreco.2020.118730" target="_blank" title="Akresh, M.E., King, D.I., Lott, C.A., Larkin, J.L., and D\'Amato, A.W. (2021) A meta-analysis of the effects of tree retention on shrubland birds. Forest Ecology and Management, 483(2021): 118730">Akresh et al 2021</a>). To determine the relationship, we compared three models for each species:</p>'
           + '<ul>'
             + '<li>A null model depicting constant density (without a predictor variable)</li>'
             + '<li>A model with a linear predictor of tree retention</li>'
@@ -2559,7 +2626,7 @@
             + '<li>Golden-winged Warbler are assigned the Common Yellowthroat function based on <a href="https://www.ace-eco.org/vol13/iss1/art22/" target="_blank" title="McNeil, D.J., Fiss, C.J., Wood, E.M., Duchamp, J.E., Bakermans, M., and Larkin, J.L. (2018) Using a natural reference system to evaluate songbird habitat restoration. Avian Conservation and Ecology, 13(1):Article 22.">McNeil et al (2018)</a></li>'
             + '<li><img src="images/coye_ba.jpg" style="width:150px;margin:0;"></li>'
           + '</ul>'
-          + '<p>For the meta-analysis, we quantified the relationship between basal area and perenctage forest retained:</p>'
+          + '<p>For the meta-analysis, we quantified the relationship between basal area and percentage forest retained:</p>'
           + '<p style="text-align:center;"><img src="images/BA_PFR_plot.jpg" style="width:350px;margin:0;margin-left:-100px"></p>'
           + '<p>In PACT, basal area may be entered as square meters/hectare (M^2/HA), square feet/acre (FT^2/AC), or percent forest retained (% Retained). Changing the measurement unit in PACT automatically converts the existing value to the new selection. Based on the above relationship, basal area measurements greater than or equal to 26.239 M^2/HA or 114.297 FT^2/AC will be converted to 100% forest retained.</p>'
           + '<p>If managers want to specifically harvest stands with shelterwood or selective logging, the below table contains the recommended residual basal area values for those treatments for a given forest type. <b>NOTE</b>: Recommendations are in <u>square feet/acre</u></p>'
@@ -2611,7 +2678,7 @@
             + '<li>A model with a linear predictor of year since treatment</li>'
             + '<li>A model with a quadratic and linear predictor of year since treatment</li>'
           + '</ul>'
-          + '<p>The parameters from the best-supported model for each species are used by PACT to calculate occupancy probabily for time since treatment. However, due to insufficient data we use alternative approaches for the following species:</p>'
+          + '<p>The parameters from the best-supported model for each species are used by PACT to calculate occupancy probability for time since treatment. However, due to insufficient data we use alternative approaches for the following species:</p>'
           + '<ul>'
             + '<li>American Goldfinch, Blue-winged Warbler, and Brown Thrasher</li>'
             + '<ul>'
@@ -2635,7 +2702,7 @@
           + '<h3>Final Occupancy</h3>'
           + '<p>Calculated as the product of regional occupancy and habitat occupancy probabilities.</p>'
           + '<h3>Partners In Flight Score</h3>'
-          + '<p>The Regional Concern Score (breeding season) (RCS-b) value from the Partners In Flight <a href="http://pif.birdconservancy.org/ACAD/Database.aspx" target="_blank" title="pif.birdconservancy.org/ACAD/Database.aspx">database</a> is retreived for each species. Values are dependent on the <a href="http://nabci-us.org/resources/bird-conservation-regions-map/" target="_blank" title="nabci-us.org/resources/bird-conservation-regions-map">Bird Conservation Region</a> (BCR) in which the management opening occurs. For openings overlapping multiple regions, values are taken from the region covering the greatest proportion of the opening. An empty cell indicates that there is no RCS-b score for that species in that BCR.</p>'
+          + '<p>The Regional Concern Score (breeding season) (RCS-b) value from the Partners In Flight <a href="http://pif.birdconservancy.org/ACAD/Database.aspx" target="_blank" title="pif.birdconservancy.org/ACAD/Database.aspx">database</a> is retrieved for each species. Values are dependent on the <a href="http://nabci-us.org/resources/bird-conservation-regions-map/" target="_blank" title="nabci-us.org/resources/bird-conservation-regions-map">Bird Conservation Region</a> (BCR) in which the management opening occurs. For openings overlapping multiple regions, values are taken from the region covering the greatest proportion of the opening. An empty cell indicates that there is no RCS-b score for that species in that BCR.</p>'
           + '<h3>Conservation Value</h3>'
           + '<p>The product of the final occupancy and Partners In Flight score for each species summed over all species. The formula is based on a modification to equation 1 in <a href="https://academic.oup.com/auk/article/120/2/541/5147889" target="_blank" title="Nuttle, T., Leidolf, A., and Burger Jr., L.W. (2003) Assessing conservation value of bird communities with Partners In Flight-based ranks. The Auk 120(2):541-549.">Nuttle et al (2003)</a> in which species occupancy probability is substituted for abundance (<i>a<sub>i</sub></i>)</p>'
           + '<div style="text-align:center;"><img src="images/nuttle_equ_1.PNG" style="width:initial;"></div>'
@@ -2655,13 +2722,13 @@
             + '<a href="https://www.umass.edu/" target="_blank">'
               + '<img id="umass" src="images/umass_amherst.png" title="University of Massachusetts, Amherst">'
             + '</a>'
-            + '<a href="https://www.nfwf.org/" target="_blank" class="a_flex">'
-              + '<img id="nfwf" src="images/nfwf.png" title="National Fish and Wildlife Foundation">'
+            + '<a href="https://www.nrcs.usda.gov/" target="_blank" class="a_flex">'
+              + '<img id="nrcs" src="images/NRCS.png" title="Natural Resources Conservation Service">'
             + '</a>'
           + '</div>'
           + '<div id="fundingRightImg">'
-            + '<a href="https://www.nrcs.usda.gov/" target="_blank" class="a_flex">'
-              + '<img id="nrcs" src="images/NRCS.png" title="Natural Resources Conservation Service">'
+            + '<a href="https://www.nfwf.org/" target="_blank" class="a_flex">'
+              + '<img id="nfwf" src="images/nfwf.png" title="National Fish and Wildlife Foundation">'
             + '</a>'
             + '<a href="https://www.massaudubon.org/" target="_blank">'
               + '<img id="massAudubon" src="images/mass_audubon.png" title="Mass Audubon">'
@@ -2670,7 +2737,7 @@
               + '<img id="antioch" src="images/antioch.png" title="Antioch University - New England">'
             + '</a>'
           + '</div>'
-          + '<p class="fundersP">This project was funded by the <a href="https://www.nfwf.org" target="_blank" title="www.nfwf.org" target="_blank">National Fish and Wildlife Foundation</a> and the <a href="https://www.nrcs.usda.gov/" target="_blank" title="www.nrcs.usda.gov" target="_blank">Natural Resources Conservation Service</a>.</p><p class="fundersP">Additional support was provided by the <a href="https://www.fs.fed.us/" title="www.fs.fed.us" target="_blank">U.S. Forest Service</a>,<br>and the <a href="https://www.umass.edu/" title="www.umass.edu" target="_blank">University of Massachusetts, Amherst</a>.</p>'
+          + '<p class="fundersP">This project was funded by the <a href="https://www.nrcs.usda.gov/" target="_blank" title="www.nrcs.usda.gov" target="_blank">Natural Resources Conservation Service</a> and the <a href="https://www.nfwf.org" target="_blank" title="www.nfwf.org" target="_blank">National Fish and Wildlife Foundation</a>.</p><p class="fundersP">Additional support was provided by the <a href="https://www.fs.fed.us/" title="www.fs.fed.us" target="_blank">U.S. Forest Service</a>,<br>and the <a href="https://www.umass.edu/" title="www.umass.edu" target="_blank">University of Massachusetts, Amherst</a>.</p>'
         );
 
 
@@ -2758,6 +2825,17 @@
 
         var tmpShrub = birds.media.filter(function(d) { return d.group == "shrubland"; });
         var tmpMature = birds.media.filter(function(d) { return d.group == "mature"; });
+        
+        birds.shrub = [];
+        birds.mature = [];
+        birds.media.forEach(function(d) {
+          if(d.group == "shrubland") {
+            birds.shrub.push(d.abbr);
+          }
+          else if(d.group == "mature") {
+            birds.mature.push(d.abbr);
+          }
+        });
 
         //******Add selection to change bird media
         var select = d3.select("#songs")
@@ -2792,7 +2870,7 @@
           .enter()
             .append("option")
               .attr("value", function(d) { return d.id; })
-              .attr("data-spp", function(d,i) { return birdID[i]; })
+              .attr("data-spp", function(d,i) { return d.abbr + "_OH"; })
               .attr("data-group", function(d,i) { return d.group; })
               .property("title", function(d,i) { return d.common + " (" + birds.latin[d.id] + ")"; })
               .text(function(d) { return d.common; });
@@ -2853,7 +2931,7 @@
         intro.setOptions({
           steps: [
             //0
-            { intro: '<p style="text-align:center;"><b>Welcome to the<br><span style="font-variant:small-caps;color:#b3d9ff;text-shadow:1px 2px black;font-size:21px;">Predictor of Avian Communities Tool</span></b></p><img src="images/bird-silhouette.png" style="height:50px;display:block;margin:auto;"></img>This app is designed to predict occurrence for 22 species of shrubland birds based on the location and size of management openings drawn on a map.' },
+            { intro: '<p style="text-align:center;"><b>Welcome to the<br><span style="font-variant:small-caps;color:#b3d9ff;text-shadow:1px 2px black;font-size:21px;">Predictor of Avian Communities Tool</span></b></p><img src="images/bird-silhouette.png" style="height:50px;display:block;margin:auto;"></img>This app is designed to predict occurrence for 22 species of shrubland birds and 24 species of mature forest birds based on the location, size, and time since creation of management openings drawn on the map.' },
             //1
             { element: document.querySelector("#launchIntro"), intro: "To access this guide at any time simply click on the 'Tutorial' link." },
             //2
@@ -2863,14 +2941,14 @@
             //4
             { element: document.querySelector("#legendDiv"), intro: "The Legend window displays the legend for the top-most layer and enables the user to control it's transparancy" },
             //5
-            { element: document.querySelector("#panelTools"), intro: 'These icons are used to show/hide tool windows and zoom the map to the managment opening:<ul><li><span class="fa fa-th-list intro-fa"></span> Show/hide map legend window</li><li><span class="fa fa-info intro-fa"></span> Show/hide feature identification window</li><li><span class="fa fa-pencil-square intro-fa"></span> Show/hide Catchment Updater window</li><li><span class="fa fa-search intro-fa"></span> Show/hide map location search window</li><li><span class="fa fa-globe intro-fa"></span> Zoom to full-extent of the map</li></ul>' },
+            { element: document.querySelector("#panelTools"), intro: 'These icons are used to create and work with your management opening:<ul><li><span class="glyphicon glyphicon-pencil intro-fa"></span> Create or import a management opening</li><li><span class="glyphicon glyphicon-export intro-fa"></span> Export the management opening as a shapefile or geojson file</li><li><span class="glyphicon glyphicon-zoom-in intro-fa"></span> Zoom to your management opening on the map</li><li><span class="glyphicon glyphicon-list-alt intro-fa"></span> Show/hide results window after analyzing your management opening</li></ul>' },
           ],
 
           tooltipPosition: 'auto',
           positionPrecedence: ['left', 'right', 'bottom', 'top'],
           showStepNumbers: false,
           hidePrev: true,
-          hideNext: true,
+          hideNext: false,
           scrollToElement: true,
           disableInteraction: true,
         });
@@ -2896,11 +2974,14 @@
               break;
             case 4:
               revertIntro();
-              $("#layerToggleDiv3").click();
+              //$("#layerToggleDiv3").click();
+              d3.select("#legendDiv").style("visibility", "visible").style("opacity", 1);
+              break;
             case 5:
               revertIntro();
               d3.select("#panelTools").selectAll("p").style("color", "navy");
               d3.select("#panelTools").selectAll("span").style("color", "navy");
+              d3.selectAll(".hcPanelDivs.inactive").style("opacity", 1);
               break;
           }
         });
@@ -2947,11 +3028,14 @@
           d3.select("#baselayerListDropdown").style("display", "");
           //3
           d3.select("#birdListDropdown").style("display", "");
-          if(d3.select("#layerToggleDiv3").select("span").style("visibility") == "visible") { $("#layerToggleDiv3").click(); };
-          if(d3.select("#legendDiv").style("opacity") == 1) { toolWindowToggle("legend"); };          
+          if(d3.select("#layerToggleDiv3").select("span").style("visibility") == "visible") {console.log("here"); $("#layerToggleDiv3").click(); };
+          //if(d3.select("#legendDiv").style("opacity") == 1) { toolWindowToggle("legend"); };  
+          //4
+          d3.select("#legendDiv").style("visibility", "").style("opacity", "");        
           //5
           d3.select("#panelTools").selectAll("p").style("color", "");
           d3.select("#panelTools").selectAll("span").style("color", "");
+          d3.selectAll(".hcPanelDivs.inactive").style("opacity", "");
         }
       }
 

@@ -34,6 +34,7 @@ function socket_emit() {
 
   socket.on('get_bcr', function(bcrData) {
     queryBCR = bcrData[0][0].bcr;
+    //console.log(queryBCR);
     socket.emit("get_pif", {"bcr": queryBCR});
   });
 
@@ -43,22 +44,30 @@ function socket_emit() {
 
   socket.on('get_pif', function(pifData) {
     var tmpPIF = pifData[0].map(function(d) { return d.scientificname; });
+    //console.log(pifData);
     queryPIF = [];
     
+    var i = 0
     for(spp in birds.latin) {
-      if(tmpPIF.indexOf(birds.latin[spp]) > -1) {
-        if(pifData[0][tmpPIF.indexOf(birds.latin[spp])].rcs_b != null) {
-          queryPIF.push(pifData[0][tmpPIF.indexOf(birds.latin[spp])].rcs_b);
+      var tmpIndex = tmpPIF.indexOf(birds.latin[spp]);
+      if(tmpIndex > -1) {
+        if(pifData[0][tmpIndex].rcs_b != null) {
+          queryPIF.push(pifData[0][tmpIndex].rcs_b);
         }
         else {
+          console.log(i + " " + spp + " is null");
           queryPIF.push("");
         }
       }
       else {
+        console.log(i + " " + spp + " isn't present")
         queryPIF.push("");
       }
+      //console.log(spp + ": " + queryPIF[queryPIF.length -1]);
+      i += 1;
     }
 
+    //console.log(queryPIF);
     socket.emit("get_occ", {"geom": drawnItems.toGeoJSON().features[0].geometry, "birds": birdID, "queryType": queryType, "centGeom": queryCentroid, "rid": queryRID});
   });
 
@@ -68,6 +77,8 @@ function socket_emit() {
 
 
   socket.on('get_occ', function(occData) {
+    //console.log(occData);
+    d3.select("#groupAllRad").property("checked", true);
     d3.select("#resultsTableBody").selectAll("tr").remove();
 
     var conVal = 0;
@@ -87,7 +98,7 @@ function socket_emit() {
     tmpCSV += "Time Since Treatment (Years): " + d3.select("#tstTime").property("value") + "\n";
     var tmpBbox = drawnItems.getBounds();
     tmpCSV += "Opening Bounding Box (degrees): [[" + tmpBbox._northEast.lat.toFixed(4) + ";" + tmpBbox._northEast.lng.toFixed(4) + "][" + tmpBbox._southWest.lat.toFixed(4) + ";" + tmpBbox._southWest.lng.toFixed(4) + "]]\n";
-    var tmpData = "Species,Regional Occupancy,Opening Area Occupancy,Basal Area Occupancy,Time Since Treatment Occupancy,Habitat Occupancy,Final Occupancy,PIF Score\n";
+    var tmpData = "Species,Group,Regional Occupancy,Opening Area Occupancy,Basal Area Occupancy,Time Since Treatment Occupancy,Habitat Occupancy,Final Occupancy,PIF Score\n";
 
     tmpBirdID = [];
     birdID.forEach(function(spp) { tmpBirdID.push(spp.slice(0,4)); });
@@ -141,12 +152,22 @@ function socket_emit() {
     tmpHA = parseFloat(d3.select("#areaText").attr("data-ha"));
     openSourceDist = parseFloat(d3.select("#openSourceDist").property("value"));
 
+    var tmpGroup = "";
+
     d3.select("#resultsTableBody").selectAll("tr")
       .data(birdTitles)
       .enter()
         .append("tr")
         //.on("click", function() { viewSpecies(d3.select(this).select("td")[0][0]); }) 
+        .attr("class", function(d,i) { if(birds.shrub.indexOf(tmpBirdID[i]) > -1) { return "shrub"; } else { return "mature"; } })
         .html(function(d,i) {
+          if(birds.shrub.indexOf(tmpBirdID[i]) > -1) {
+            tmpGroup = "shrub";
+          }
+          else {
+            tmpGroup = "mature";
+          }
+
           birds.occ[tmpBirdID[i]] = {"model": {}};
 
           if(queryType == "stats") {
@@ -159,14 +180,18 @@ function socket_emit() {
           }
 
           //***Get opening area occupancy value
-          var areaOcc = openingArea(tmpBirdID[i], prawSource, tmpHA, openSourceDist);
+          if(tmpGroup == "shrub") {
+            var areaOcc = openingArea(tmpBirdID[i], prawSource, tmpHA, openSourceDist);
+          }
 
           //***Get basal area occupancy
           var baOcc = basalArea(tmpBasal, tmpBirdID[i]);
 
           //***Get time since treatment occupancy
           //var tstOcc = succession(6, tmpBirdID[i]);
-          var tstOcc = succession(tmpTST, tmpBirdID[i]);
+          //if(tmpGroup == "shrub") {
+            var tstOcc = succession(tmpTST, tmpBirdID[i]);
+          //}
 
           //***Add occ values to birds objects
           birds.occ[tmpBirdID[i]].area =  areaOcc;
@@ -174,11 +199,16 @@ function socket_emit() {
           birds.occ[tmpBirdID[i]].time =  tstOcc;
           birds.occ[tmpBirdID[i]].pif = queryPIF[i];
 
-          habOcc = (areaOcc * baOcc * tstOcc);
+          if(tmpGroup == "shrub") {
+            habOcc = (areaOcc * baOcc * tstOcc);
+          }
+          else {
+            habOcc = (baOcc * tstOcc);
+          }
 
           birds.occ[tmpBirdID[i]].hab = habOcc;
 
-          if(habOcc == "") {
+          if(habOcc == "" && habOcc != 0) {
             var locOcc = "";
           }
           else {
@@ -195,8 +225,15 @@ function socket_emit() {
             likelySpp += 1;
           }
 
-          tmpData += d + "," + regOcc + "," + areaOcc + "," + baOcc + "," + tstOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
-          return '<td value="' + birdID[i] + '" title="' + d + ' (' + birds.latin[birdTitles[i].replace(" ","_").toLowerCase()] + '), click to see and hear" onclick="viewSpecies(&#34;' + birdID[i] + '&#34;)">' + d +'</td><td title="Regional Occupancy: ' + regOcc.toFixed(2) + '">' + regOcc.toFixed(2)  + '</td><td title="Habitat Occupancy: ' + habOcc.toFixed(2) + '">' + habOcc.toFixed(2) + '<span></span></td><td title="Final Occupancy: ' + locOcc.toFixed(2) + '">' + locOcc.toFixed(2) + '<span></span></td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td><td><span class="glyphicon glyphicon-stats" title="Click to view occupancy distribution models" value="' + birdID[i].slice(0,4) + '" data-i="' + i + '" onclick="chkSppGraphs(this)"></span></td>';             
+          if(tmpGroup == "shrub") {
+            var tmpHab = "Shrubland";
+          }
+          else {
+            var tmpHab = "Mature Forest";
+          }
+
+          tmpData += d + "," + tmpHab + "," + regOcc + "," + areaOcc + "," + baOcc + "," + tstOcc + "," + habOcc + "," + locOcc + "," + queryPIF[i] + "\n";
+          return '<td class="' + tmpGroup + '" value="' + birdID[i] + '" title="' + d + ' (' + birds.latin[birdTitles[i].replace(" ","_").toLowerCase()] + '), click to see and hear" onclick="viewSpecies(&#34;' + birdID[i] + '&#34;)">' + d +'</td><td title="Regional Occupancy: ' + regOcc.toFixed(2) + '">' + regOcc.toFixed(2)  + '</td><td title="Habitat Occupancy: ' + habOcc.toFixed(2) + '">' + habOcc.toFixed(2) + '<span></span></td><td title="Final Occupancy: ' + locOcc.toFixed(2) + '">' + locOcc.toFixed(2) + '<span></span></td><td title="PIF Score: ' + queryPIF[i] + '">' + queryPIF[i] + '</td><td><span class="glyphicon glyphicon-stats" title="Click to view occupancy distribution models" value="' + birdID[i].slice(0,4) + '" data-i="' + i + '" data-group="' + tmpGroup + '" onclick="chkSppGraphs(this)"></span></td>';             
         });
 
     d3.select("#resultsTableBody").selectAll("tr")
@@ -235,6 +272,8 @@ function socket_emit() {
     if(d3.select("#resultsDiv").style("opacity") == 0) { toolWindowToggle("results"); }
     d3.select("#hcResultsDiv").classed("inactive", false);
     d3.select("#waitingDiv").style("display", "none");
+    showGroup(document.querySelector('input[name="birdGroup"]:checked'));
+    
     setTimeout(function() {
       resizePanels();
     }, 300);
@@ -396,6 +435,7 @@ function chkSppGraphs(tmpGlyph) {
 
 
 function viewSpecies(tmpSpp) {
+  //console.log(tmpSpp);
   if(d3.select("#songsDiv").style("opacity") == 0) {
     toolWindowToggle("songs");
   }
@@ -403,15 +443,25 @@ function viewSpecies(tmpSpp) {
   //var spp = d3.select(tmpSpp).attr("value");
   var j = -1;
 
-  d3.select("#songSelect").selectAll("option")[0].some(function(d,i) {
+  if(birds.shrub.indexOf(tmpSpp.slice(0,-3)) > -1) {
+    var tmpSel = "shrubland";
+    $("#shrubRad").click();
+  }
+  else {
+    var tmpSel = "mature";
+    $("#matureRad").click();
+  }
+
+  d3.select("#" + tmpSel + "SongSelect").selectAll("option")[0].some(function(d,i) {
     if(d3.select(d).attr("data-spp") == tmpSpp) {
       j = i;
     }
     return j >= 0;
   });
 
-  d3.select("#songSelect").property("selectedIndex", j);
-  changeSpecies(d3.select("#songSelect")[0][0]);
+  //console.log(j);
+  d3.select("#" + tmpSel + "SongSelect").property("selectedIndex", j);
+  changeSpecies(d3.select("#" + tmpSel + "SongSelect")[0][0], tmpSel, 1);
 }
 
 
@@ -649,20 +699,48 @@ function openingArea(tmpBird, prawSource, tmpHA, openSourceDist) {
 
 
 function basalArea(percForRet, spp) {
-  switch(birds.basal[spp].model) {
-    case "linear":
-      var basalOcc = Math.exp((birds.basal[spp].a * percForRet) + birds.basal[spp].b)/birds.basal[spp].max;
-      break;
-    case "quadratic":
-      var basalOcc = Math.exp((birds.basal[spp].a * Math.pow(percForRet,2)) + (birds.basal[spp].b * percForRet) + birds.basal[spp].c)/birds.basal[spp].max;
-      break;
-    case "null":
-      var basalOcc = 1;
-      break;
+  if(birds.basal[spp].habitat == "shrubland") {
+    switch(birds.basal[spp].model) {
+      case "linear":
+        var basalOcc = Math.exp((birds.basal[spp].a * percForRet) + birds.basal[spp].b)/birds.basal[spp].max;
+        break;
+      case "quadratic":
+        var basalOcc = Math.exp((birds.basal[spp].a * Math.pow(percForRet,2)) + (birds.basal[spp].b * percForRet) + birds.basal[spp].c)/birds.basal[spp].max;
+        break;
+      case "null":
+        var basalOcc = 1;
+        break;
+    }
+  }
+  else if(birds.basal[spp].habitat == "mature") {
+    switch(birds.basal[spp].model) {
+      case "linear":
+        var basalOcc = ((birds.basal[spp].a * percForRet) + birds.basal[spp].b)/birds.basal[spp].max;
+        break;
+      case "quadratic":
+        var basalOcc = ((birds.basal[spp].a * Math.pow(percForRet,2)) + (birds.basal[spp].b * percForRet) + birds.basal[spp].c)/birds.basal[spp].max;
+        break;
+      case "logarithmic":
+        if(percForRet <= 0) {
+          var tmpPerc = 0.0001;
+        }
+        else {
+          var tmpPerc = percForRet;
+        }
+        var basalOcc = ((birds.basal[spp].a * Math.log(tmpPerc)) + birds.basal[spp].b)/birds.basal[spp].max;
+        break;
+      case "null":
+        var basalOcc = 1;
+        break;
+    }
   }
 
-  if(basalOcc > 1) {
-    return 1;
+  //console.log(basalOcc);
+  if(basalOcc < 0) {
+    return 0.0;
+  }
+  else if(basalOcc > 1) {
+    return 1.0;
   }
   else {
     return basalOcc;
@@ -672,28 +750,97 @@ function basalArea(percForRet, spp) {
 
 function loadBasalParams() {
   //For linear models: a = slope, b = intercept; For quadratic models: a = quadratic, b = slope, c = intercept
-  birds.basal.alfl = {"model": "linear", "a": -1.97, "b": -0.606, "max": 0.545528625};
-  birds.basal.amgo = {"model": "linear", "a": -1.429, "b": -0.525, "max": 0.591555364};
-  birds.basal.baww = {"model": "null", "a": 1};
-  birds.basal.bwwa = {"model": "linear", "a": -1.34, "b": -1.081, "max": 0.3392561};
-  birds.basal.brth = {"model": "quadratic", "a": -2.023, "b": 1.352, "c": -1.361, "max": 0.321386851};  //****Using GRCA coefficients
-  birds.basal.cawa = {"model": "linear", "a": -0.599, "b": -1.228, "max": 0.292877748};
-  birds.basal.cewa = {"model": "linear", "a": -1.18, "b": -0.451, "max": 0.636990842};
-  birds.basal.cswa = {"model": "quadratic", "a": -2.235, "b": 0.044, "c": 0.355, "max": 1.426489534};
-  birds.basal.coye = {"model": "linear", "a": -2.298, "b": 0.336, "max": 1.399339025};
-  birds.basal.deju = {"model": "null", "a": 1};
-  birds.basal.eato = {"model": "linear", "a": -2.012, "b": 0.389, "max": 1.475504551};
-  birds.basal.fisp = {"model": "linear", "a": -1.655, "b": -0.409, "max": 0.664314232};
-  birds.basal.gwwa = {"model": "linear", "a": -2.298, "b": 0.336, "max": 1.399339025};  //****Using COYE coefficients
-  birds.basal.grca = {"model": "quadratic", "a": -2.023, "b": 1.352, "c": -1.361, "max": 0.321386851};
-  birds.basal.inbu = {"model": "quadratic", "a": -2.637, "b": 0.814, "c": -0.102, "max": 0.961574933};
-  birds.basal.mowa = {"model": "quadratic", "a": -4.222, "b": 2.838, "c": -0.956, "max": 0.619353633};
-  birds.basal.nawa = {"model": "linear", "a": -1.022, "b": -1.354, "max": 0.258205371};
-  birds.basal.praw = {"model": "linear", "a": -2.377, "b": 0.056, "max": 1.057597684};
-  birds.basal.sosp = {"model": "linear", "a": -1.943, "b": -0.378, "max": 0.685230501};
-  birds.basal.wevi = {"model": "linear", "a": -2.046, "b": -0.135, "max": 0.873715912};
-  birds.basal.wtsp = {"model": "linear", "a": -2.499, "b": 0.559, "max": 1.748922703};
-  birds.basal.ybcu = {"model": "null", "a": 1};
+
+  //Shrubland species
+  birds.basal.alfl = {"model": "linear", "a": -1.97, "b": -0.606, "max": 0.545528625, "habitat": "shrubland"};
+  birds.basal.amgo = {"model": "linear", "a": -1.429, "b": -0.525, "max": 0.591555364, "habitat": "shrubland"};
+  birds.basal.baww = {"model": "null", "a": 1, "habitat": "shrubland"};
+  birds.basal.bwwa = {"model": "linear", "a": -1.34, "b": -1.081, "max": 0.3392561, "habitat": "shrubland"};
+  birds.basal.brth = {"model": "quadratic", "a": -2.023, "b": 1.352, "c": -1.361, "max": 0.321386851, "habitat": "shrubland"};  //****Using GRCA coefficients
+  birds.basal.cawa = {"model": "linear", "a": -0.599, "b": -1.228, "max": 0.292877748, "habitat": "shrubland"};
+  birds.basal.cewa = {"model": "linear", "a": -1.18, "b": -0.451, "max": 0.636990842, "habitat": "shrubland"};
+  birds.basal.cswa = {"model": "quadratic", "a": -2.235, "b": 0.044, "c": 0.355, "max": 1.426489534, "habitat": "shrubland"};
+  birds.basal.coye = {"model": "linear", "a": -2.298, "b": 0.336, "max": 1.399339025, "habitat": "shrubland"};
+  birds.basal.deju = {"model": "null", "a": 1, "habitat": "shrubland"};
+  birds.basal.eato = {"model": "linear", "a": -2.012, "b": 0.389, "max": 1.475504551, "habitat": "shrubland"};
+  birds.basal.fisp = {"model": "linear", "a": -1.655, "b": -0.409, "max": 0.664314232, "habitat": "shrubland"};
+  birds.basal.gwwa = {"model": "linear", "a": -2.298, "b": 0.336, "max": 1.399339025, "habitat": "shrubland"};  //****Using COYE coefficients
+  birds.basal.grca = {"model": "quadratic", "a": -2.023, "b": 1.352, "c": -1.361, "max": 0.321386851, "habitat": "shrubland"};
+  birds.basal.inbu = {"model": "quadratic", "a": -2.637, "b": 0.814, "c": -0.102, "max": 0.961574933, "habitat": "shrubland"};
+  birds.basal.mowa = {"model": "quadratic", "a": -4.222, "b": 2.838, "c": -0.956, "max": 0.619353633, "habitat": "shrubland"};
+  birds.basal.nawa = {"model": "linear", "a": -1.022, "b": -1.354, "max": 0.258205371, "habitat": "shrubland"};
+  birds.basal.praw = {"model": "linear", "a": -2.377, "b": 0.056, "max": 1.057597684, "habitat": "shrubland"};
+  birds.basal.sosp = {"model": "linear", "a": -1.943, "b": -0.378, "max": 0.685230501, "habitat": "shrubland"};
+  birds.basal.wevi = {"model": "linear", "a": -2.046, "b": -0.135, "max": 0.873715912, "habitat": "shrubland"};
+  birds.basal.wtsp = {"model": "linear", "a": -2.499, "b": 0.559, "max": 1.748922703, "habitat": "shrubland"};
+  birds.basal.ybcu = {"model": "null", "a": 1, "habitat": "shrubland"};
+
+//*******Dave King values
+  //Mature forest species
+  birds.basal.blbw = {"model": "linear", "a": 0.3348, "b": 0.0016, "max": 0.3364, "habitat": "mature"};
+  birds.basal.btbw = {"model": "linear", "a": 0.5941, "b": 0, "max": 0.5941, "habitat": "mature"};
+  birds.basal.brcr = {"model": "linear", "a": 0.3003, "b": 0, "max": 0.3003, "habitat": "mature"};
+  birds.basal.heth = {"model": "linear", "a": 0.5912, "b": -0.0053, "max": 0.5859, "habitat": "mature"};
+
+  birds.basal.acfl = {"model": "quadratic", "a": -0.2401, "b": 0.5685, "c": 0.0176, "max": 0.346, "habitat": "mature"};
+  birds.basal.amre = {"model": "quadratic", "a": -1.2153, "b": 1.5896, "c": 0.0069, "max": 0.526695, "habitat": "mature"};
+  birds.basal.btnw = {"model": "quadratic", "a": 0.1126, "b": 0.5684, "c": 0, "max": 0.681, "habitat": "mature"};
+  birds.basal.bhvi = {"model": "quadratic", "a": -0.8097, "b": 1.0875, "c": -0.0219, "max": 0.343253, "habitat": "mature"};
+  birds.basal.cerw = {"model": "quadratic", "a": -0.9804, "b": 1.2524, "c": 0.0085, "max": 0.408466, "habitat": "mature"};    //****Using EAWP coefficients
+  birds.basal.eawp = {"model": "quadratic", "a": -0.9804, "b": 1.2524, "c": 0.0085, "max": 0.408466, "habitat": "mature"};
+  birds.basal.lefl = {"model": "quadratic", "a": -0.9804, "b": 1.2524, "c": 0.0085, "max": 0.408466, "habitat": "mature"};   //****Using EAWP coefficients
+  birds.basal.oven = {"model": "quadratic", "a": 0.7237, "b": 0.1859, "c": 0.0301, "max": 0.9397, "habitat": "mature"};
+  birds.basal.revi = {"model": "quadratic", "a": -0.7657, "b": 1.6708, "c": 0.0131, "max": 0.9182, "habitat": "mature"};
+  birds.basal.rbgr = {"model": "quadratic", "a": -1.0221, "b": 1.2192, "c": 0.0317, "max": 0.395277, "habitat": "mature"};
+  birds.basal.wewa = {"model": "quadratic", "a": 0.7237, "b": 0.1859, "c": 0.0301, "max": 0.9397, "habitat": "mature"};      //****Using OVEN coefficients
+  birds.basal.woth = {"model": "quadratic", "a": -0.5297, "b": 0.7683, "c": 0.0175, "max": 0.296094, "habitat": "mature"};
+  birds.basal.ybsa = {"model": "quadratic", "a": -0.6382, "b": 1.136, "c": -0.0218, "max": 0.483722, "habitat": "mature"};
+  birds.basal.yrwa = {"model": "quadratic", "a": -0.7269, "b": 1.0077, "c": 0.0027, "max": 0.351943, "habitat": "mature"};
+
+
+  birds.basal.bggn = {"model": "logarithmic", "a": 0.05, "b": 0.4094, "max": 0.4094, "habitat": "mature"};
+  birds.basal.howa = {"model": "logarithmic", "a": 0.0347, "b": 0.292, "max": 0.292, "habitat": "mature"};
+  birds.basal.kewa = {"model": "logarithmic", "a": 0.0347, "b": 0.292, "max": 0.292, "habitat": "mature"};    //****Using HOWA coefficients
+  birds.basal.rbnu = {"model": "logarithmic", "a": 0.0227, "b": 0.1853, "max": 0.1853, "habitat": "mature"};
+  birds.basal.scta = {"model": "logarithmic", "a": 0.0366, "b": 0.2941, "max": 0.2941, "habitat": "mature"};
+  birds.basal.veer = {"model": "logarithmic", "a": 0.0502, "b": 0.4175, "max": 0.4175, "habitat": "mature"};
+
+
+
+/*
+//*******Mike Akresh values
+  //Mature forest species
+  birds.basal.acfl = {"model": "linear", "a": 1.124, "b": -2.113, "max": 0.371948454, "habitat": "mature"};
+  birds.basal.btnw = {"model": "linear", "a": 1.509, "b": -1.860, "max": 0.703983754, "habitat": "mature"};
+  birds.basal.brcr = {"model": "linear", "a": 1.154, "b": -2.328, "max": 0.309127953, "habitat": "mature"};
+  birds.basal.heth = {"model": "linear", "a": 1.681, "b": -2.315, "max": 0.530465689, "habitat": "mature"};
+  birds.basal.oven = {"model": "linear", "a": 2.313, "b": -2.284, "max": 1.029424594, "habitat": "mature"};
+  birds.basal.rbnu = {"model": "linear", "a": 0.290, "b": -1.915, "max": 0.196911675, "habitat": "mature"};
+  birds.basal.woth = {"model": "linear", "a": 0.361, "b": -1.667, "max": 0.270901498, "habitat": "mature"};
+  
+  birds.basal.blbw = {"model": "quadratic", "a": -2.650, "b": 4.647, "c": -3.123, "max": 0.337640778, "habitat": "mature"};
+  birds.basal.btbw = {"model": "quadratic", "a": -2.215, "b": 3.743, "c": -2.123, "max": 0.581740759, "habitat": "mature"};
+  birds.basal.bggn = {"model": "quadratic", "a": -1.492, "b": 1.964, "c": -1.476, "max": 0.436193101, "habitat": "mature"};
+  birds.basal.bhvi = {"model": "quadratic", "a": -5.653, "b": 7.507, "c": -3.370, "max": 0.415722592, "habitat": "mature"};
+  birds.basal.eawp = {"model": "quadratic", "a": -2.564, "b": 3.217, "c": -1.948, "max": 0.391048589, "habitat": "mature"};
+  birds.basal.lefl = {"model": "quadratic", "a": -5.387, "b": 7.835, "c": -2.978, "max": 0.878850499, "habitat": "mature"};
+  birds.basal.revi = {"model": "quadratic", "a": -1.483, "b": 2.877, "c": -1.464, "max": 0.933639677, "habitat": "mature"};
+  birds.basal.scta = {"model": "quadratic", "a": -1.200, "b": 1.962, "c": -1.899, "max": 0.333860346, "habitat": "mature"};
+  birds.basal.ybsa = {"model": "quadratic", "a": -2.689, "b": 4.081, "c": -2.196, "max": 0.523298761, "habitat": "mature"};
+
+  birds.basal.amre = {"model": "null", "a": 1, "habitat": "mature"};
+  birds.basal.howa = {"model": "null", "a": 1, "habitat": "mature"};
+  birds.basal.rbgr = {"model": "null", "a": 1, "habitat": "mature"};
+  birds.basal.veer = {"model": "null", "a": 1, "habitat": "mature"};
+  birds.basal.yrwa = {"model": "null", "a": 1, "habitat": "mature"};
+
+  //Species not assigned a model
+  birds.basal.cerw = {"model": "null", "a": 1, "habitat": "mature"};
+  birds.basal.kewa = {"model": "null", "a": 1, "habitat": "mature"};
+  birds.basal.wewa = {"model": "null", "a": 1, "habitat": "mature"};
+*/
+
+
 }
 
 
@@ -702,46 +849,118 @@ function loadBasalParams() {
 
 
 function succession(tst, spp) {
-  switch(birds.succession[spp].model) {
-    case "linear":
-      var tstOcc = Math.exp((birds.succession[spp].a * tst) + birds.succession[spp].b)/(1 + Math.exp((birds.succession[spp].a * tst) + birds.succession[spp].b))/birds.succession[spp].max;
-      break;
-    case "quadratic":
-      var tstOcc = Math.exp((birds.succession[spp].a * Math.pow(tst,2)) + (birds.succession[spp].b * tst) + birds.succession[spp].c)/(1 + Math.exp((birds.succession[spp].a * Math.pow(tst,2)) + (birds.succession[spp].b * tst) + birds.succession[spp].c))/birds.succession[spp].max;
-      break;
-    case "null":
-      var tstOcc = 1;
-      break;
+  if(birds.succession[spp].habitat == "shrubland") {
+    switch(birds.succession[spp].model) {
+      case "linear":
+        var tstOcc = Math.exp((birds.succession[spp].a * tst) + birds.succession[spp].b)/(1 + Math.exp((birds.succession[spp].a * tst) + birds.succession[spp].b))/birds.succession[spp].max;
+        break;
+      case "quadratic":
+        var tstOcc = Math.exp((birds.succession[spp].a * Math.pow(tst,2)) + (birds.succession[spp].b * tst) + birds.succession[spp].c)/(1 + Math.exp((birds.succession[spp].a * Math.pow(tst,2)) + (birds.succession[spp].b * tst) + birds.succession[spp].c))/birds.succession[spp].max;
+        break;
+      case "null":
+        var tstOcc = 1;
+        break;
+    }
+  }
+  else if(birds.succession[spp].habitat == "mature") {
+    switch(birds.succession[spp].model) {
+      case "linear":
+        var tstOcc = ((birds.succession[spp].a * tst) + birds.succession[spp].b)/birds.succession[spp].max;
+        break;
+      case "quadratic":
+        var tstOcc = ((birds.succession[spp].a * Math.pow(tst,2)) + (birds.succession[spp].b * tst) + birds.succession[spp].c)/birds.succession[spp].max;
+        break;
+      case "logarithmic":
+        if(tst <= 0) {
+          var tmpTst = 0.0001;
+        }
+        else {
+          var tmpTst = tst;
+        }
+        var tstOcc = ((birds.succession[spp].a * Math.log(tmpTst)) + birds.succession[spp].b)/birds.succession[spp].max;
+        break;
+      case "null":
+        var tstOcc = 1;
+        break;
+    }
   }
 
-  return tstOcc;
+  //console.log(tstOcc);
+  if(tstOcc < 0) {
+    return 0.0;
+  }
+  else if(tstOcc > 1) {
+    return 1.0;
+  }
+  else {
+    return tstOcc;
+  }
+
+  //return tstOcc;
 }
 
 
 function loadSuccessionParams() {
   //For linear models: a = slope, b = intercept; For quadratic models: a = quadratic, b = slope, c = intercept
-  birds.succession.alfl = {"model": "quadratic", "a": -0.02761, "b": 0.46532, "c": -2.91871, "t6": 0.24587219275425412, max: 0.277245947};
-  birds.succession.amgo = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};  //***Using CSWA coefficients
-  birds.succession.baww = {"model": "linear", "a": 0.26188, "b": -2.68389, "t6": 0.24738462414802126, max: 0.927822361};
-  birds.succession.bwwa = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};  //***Using CSWA coefficients
-  birds.succession.brth = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};  //***Using CSWA coefficients  
-  birds.succession.cawa = {"model": "quadratic", "a": -0.03882, "b": 0.81713, "c": -4.50385, "t6": 0.2692187344964851, max: 0.449209164};
-  birds.succession.cewa = {"model": "linear", "a": -0.19424, "b": 0.48724, "t6": 0.33666316227726084, max: 0.619456032};
-  birds.succession.cswa = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873};
-  birds.succession.coye = {"model": "quadratic", "a": -0.02864, "b": 0.35029, "c": -0.33934, "t6": 0.6751036442415684, max: 0.675187292};
-  birds.succession.deju = {"model": "quadratic", "a": 0.01752, "b": -0.58904, "c": 2.33263, "t6": 0.36103148736844415, max: 0.911543628};
-  birds.succession.eato = {"model": "linear", "a": -0.19989, "b": 0.37432, "t6": 0.30469909348476604, max: 0.592502429};
-  birds.succession.fisp = {"model": "quadratic", "a": -0.13687, "b": 1.80323, "c": -2.8614, "t6": 0.953940181, max: 0.955971148};  
-  birds.succession.gwwa = {"model": "quadratic", "a": -0.06916, "b": 1.30762, "c": -3.60057, "t6": 0.8526313496270167, max: 0.929581534};  
-  birds.succession.grca = {"model": "linear", "a": -0.15587, "b": -0.54894, "t6": 0.18479989796562146, max: 0.366110372};
-  birds.succession.inbu = {"model": "linear", "a": -0.26774, "b": 0.64398, "t6": 0.2763859323329537, max: 0.65565259};
-  birds.succession.mowa = {"model": "quadratic", "a": -0.02063, "b": 0.24519, "c": -0.53929, "t6": 0.5471519715490976, max: 0.547168837};
-  birds.succession.nawa = {"model": "quadratic", "a": -0.03557, "b": 0.60386, "c": -3.26571, "t6": 0.2843327738207411, max: 0.331185598};
-  birds.succession.praw = {"model": "quadratic", "a": -0.10623, "b": 1.85625, "c": -4.48487, "t6": 0.9441887167368233, max: 0.974019909};
-  birds.succession.sosp = {"model": "linear", "a": -0.21686, "b": -0.1771, "t6": 0.1856903798789213, max: 0.45584036};
-  birds.succession.wevi = {"model": "quadratic", "a": -0.02864, "b": 0.35029, "c": -0.33934, "t6": 0.6751036442415684, max: 0.675187292};  //***Using COYE coefficients
-  birds.succession.wtsp = {"model": "linear", "a": -0.27658, "b": 2.28833, "t6": 0.6522286574775128, max: 0.907905912};
-  birds.succession.ybcu = {"model": "null", "a": 1};
+
+  //Shrubland species
+  birds.succession.alfl = {"model": "quadratic", "a": -0.02761, "b": 0.46532, "c": -2.91871, "t6": 0.24587219275425412, max: 0.277245947, "habitat": "shrubland"};
+  birds.succession.amgo = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873, "habitat": "shrubland"};  //***Using CSWA coefficients
+  birds.succession.baww = {"model": "linear", "a": 0.26188, "b": -2.68389, "t6": 0.24738462414802126, max: 0.927822361, "habitat": "shrubland"};
+  birds.succession.bwwa = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873, "habitat": "shrubland"};  //***Using CSWA coefficients
+  birds.succession.brth = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873, "habitat": "shrubland"};  //***Using CSWA coefficients  
+  birds.succession.cawa = {"model": "quadratic", "a": -0.03882, "b": 0.81713, "c": -4.50385, "t6": 0.2692187344964851, max: 0.449209164, "habitat": "shrubland"};
+  birds.succession.cewa = {"model": "linear", "a": -0.19424, "b": 0.48724, "t6": 0.33666316227726084, max: 0.619456032, "habitat": "shrubland"};
+  birds.succession.cswa = {"model": "quadratic", "a": -0.04284, "b": 0.73445, "c": -2.27423, "t6": 0.6434179166341512, max: 0.705499873, "habitat": "shrubland"};
+  birds.succession.coye = {"model": "quadratic", "a": -0.02864, "b": 0.35029, "c": -0.33934, "t6": 0.6751036442415684, max: 0.675187292, "habitat": "shrubland"};
+  birds.succession.deju = {"model": "quadratic", "a": 0.01752, "b": -0.58904, "c": 2.33263, "t6": 0.36103148736844415, max: 0.911543628, "habitat": "shrubland"};
+  birds.succession.eato = {"model": "linear", "a": -0.19989, "b": 0.37432, "t6": 0.30469909348476604, max: 0.592502429, "habitat": "shrubland"};
+  birds.succession.fisp = {"model": "quadratic", "a": -0.13687, "b": 1.80323, "c": -2.8614, "t6": 0.953940181, max: 0.955971148, "habitat": "shrubland"};  
+  birds.succession.gwwa = {"model": "quadratic", "a": -0.06916, "b": 1.30762, "c": -3.60057, "t6": 0.8526313496270167, max: 0.929581534, "habitat": "shrubland"};  
+  birds.succession.grca = {"model": "linear", "a": -0.15587, "b": -0.54894, "t6": 0.18479989796562146, max: 0.366110372, "habitat": "shrubland"};
+  birds.succession.inbu = {"model": "linear", "a": -0.26774, "b": 0.64398, "t6": 0.2763859323329537, max: 0.65565259, "habitat": "shrubland"};
+  birds.succession.mowa = {"model": "quadratic", "a": -0.02063, "b": 0.24519, "c": -0.53929, "t6": 0.5471519715490976, max: 0.547168837, "habitat": "shrubland"};
+  birds.succession.nawa = {"model": "quadratic", "a": -0.03557, "b": 0.60386, "c": -3.26571, "t6": 0.2843327738207411, max: 0.331185598, "habitat": "shrubland"};
+  birds.succession.praw = {"model": "quadratic", "a": -0.10623, "b": 1.85625, "c": -4.48487, "t6": 0.9441887167368233, max: 0.974019909, "habitat": "shrubland"};
+  birds.succession.sosp = {"model": "linear", "a": -0.21686, "b": -0.1771, "t6": 0.1856903798789213, max: 0.45584036, "habitat": "shrubland"};
+  birds.succession.wevi = {"model": "quadratic", "a": -0.02864, "b": 0.35029, "c": -0.33934, "t6": 0.6751036442415684, max: 0.675187292, "habitat": "shrubland"};  //***Using COYE coefficients
+  birds.succession.wtsp = {"model": "linear", "a": -0.27658, "b": 2.28833, "t6": 0.6522286574775128, max: 0.907905912, "habitat": "shrubland"};
+  birds.succession.ybcu = {"model": "null", "a": 1, "habitat": "shrubland"};
+  
+
+//*******Dave King values
+  //Mature forest species
+  birds.succession.blbw = {"model": "linear", "a": 0.0136, "b": 0.0016, "max": 0.2736, "habitat": "mature"};
+  birds.succession.btbw = {"model": "linear", "a": 0.0241, "b": 0, "max": 0.482, "habitat": "mature"};
+  birds.succession.brcr = {"model": "linear", "a": 0.0122, "b": 0, "max": 0.244, "habitat": "mature"};
+  birds.succession.heth = {"model": "linear", "a": 0.0239, "b": -0.0053, "max": 0.4727, "habitat": "mature"};
+
+  birds.succession.acfl = {"model": "quadratic", "a": -0.0004, "b": 0.023, "c": 0.0176, "max": 0.348225, "habitat": "mature"};
+  birds.succession.amre = {"model": "quadratic", "a": -0.002, "b": 0.0644, "c": 0.0069, "max": 0.52532, "habitat": "mature"};
+  birds.succession.btnw = {"model": "quadratic", "a": 0.0002, "b": 0.023, "c": 0, "max": 0.54, "habitat": "mature"};
+  birds.succession.bhvi = {"model": "quadratic", "a": -0.0013, "b": 0.044, "c": -0.0219, "max": 0.350408, "habitat": "mature"};
+  birds.succession.cerw = {"model": "quadratic", "a": -0.0016, "b": 0.0507, "c": 0.0085, "max": 0.410139, "habitat": "mature"};    //****Using EAWP coefficients
+  birds.succession.eawp = {"model": "quadratic", "a": -0.0016, "b": 0.0507, "c": 0.0085, "max": 0.410139, "habitat": "mature"};
+  birds.succession.lefl = {"model": "quadratic", "a": -0.0016, "b": 0.0507, "c": 0.0085, "max": 0.410139, "habitat": "mature"};    //****Using EAWP coefficients
+  birds.succession.oven = {"model": "quadratic", "a": 0.0012, "b": 0.0075, "c": 0.0301, "max": 0.6601, "habitat": "mature"};
+  birds.succession.revi = {"model": "quadratic", "a": -0.0013, "b": 0.0676, "c": 0.0131, "max": 0.8451, "habitat": "mature"};
+  birds.succession.rbgr = {"model": "quadratic", "a": -0.0017, "b": 0.0494, "c": 0.0317, "max": 0.390576, "habitat": "mature"};
+  birds.succession.wewa = {"model": "quadratic", "a": 0.0012, "b": 0.0075, "c": 0.0301, "max": 0.6601, "habitat": "mature"};    //****Using EAWP coefficients
+  birds.succession.woth = {"model": "quadratic", "a": -0.0009, "b": 0.0311, "c": 0.0175, "max": 0.286169, "habitat": "mature"};
+  birds.succession.ybsa = {"model": "quadratic", "a": -0.001, "b": 0.046, "c": -0.0218, "max": 0.4982, "habitat": "mature"};
+  birds.succession.yrwa = {"model": "quadratic", "a": -0.0012, "b": 0.0408, "c": 0.0027, "max": 0.3495, "habitat": "mature"};
+
+
+  birds.succession.bggn = {"model": "logarithmic", "a": 0.05, "b": 0.249, "max": 0.398787, "habitat": "mature"};
+  birds.succession.howa = {"model": "logarithmic", "a": 0.0347, "b": 0.1808, "max": 0.284752, "habitat": "mature"};
+  birds.succession.kewa = {"model": "logarithmic", "a": 0.0347, "b": 0.1808, "max": 0.284752, "habitat": "mature"};    //****Using HOWA coefficients
+  birds.succession.rbnu = {"model": "logarithmic", "a": 0.0227, "b": 0.1125, "max": 0.180503, "habitat": "mature"};
+  birds.succession.scta = {"model": "logarithmic", "a": 0.0366, "b": 0.1769, "max": 0.286544, "habitat": "mature"};
+  birds.succession.veer = {"model": "logarithmic", "a": 0.0502, "b": 0.2563, "max": 0.406686, "habitat": "mature"};
+
+
+
+
 }
 
 
@@ -777,16 +996,25 @@ function update_occupancy(tmpSlider) {
   birdID.forEach(function(spp,i) {
     var tmpSpp = spp.slice(0,4);
 
-    var areaOcc = openingArea(tmpSpp, prawSource, areaVal, openSourceDist);
+    if(birds.shrub.indexOf(tmpBirdID[i]) > -1) {
+      var areaOcc = openingArea(tmpSpp, prawSource, areaVal, openSourceDist);
+    }
     var baOcc = basalArea(baVal, tmpSpp);
     var tstOcc = succession(tstVal, tmpSpp);
 
     //***Add slider occupancy to birds JSON
-    birds.occ[tmpSpp].model.areaOcc = areaOcc;
+    if(birds.shrub.indexOf(tmpBirdID[i]) > -1) {
+      birds.occ[tmpSpp].model.areaOcc = areaOcc;
+    }
     birds.occ[tmpSpp].model.basalOcc = baOcc;
     birds.occ[tmpSpp].model.timeOcc = tstOcc;
 
-    habOcc.push(areaOcc * baOcc * tstOcc);
+    if(birds.shrub.indexOf(tmpBirdID[i]) > -1) {
+      habOcc.push(areaOcc * baOcc * tstOcc);
+    }
+    else {
+      habOcc.push(baOcc * tstOcc);
+    }
     habDiff.push(habOcc[i] - birds.occ[tmpSpp].hab);
     locOcc.push(birds.occ[tmpSpp].reg * habOcc[i]);
     locDiff.push(locOcc[i] - birds.occ[tmpSpp].loc);
@@ -878,6 +1106,7 @@ function update_occupancy(tmpSlider) {
   });
 
   updatePlots(tmpSlider);
+  showGroup(document.querySelector('input[name="birdGroup"]:checked'));
 }
 
 
@@ -896,20 +1125,22 @@ function updatePlots(tmpSlider) {
   }
 
   graphSpp.forEach(function(spp) {
-    var tmpDiv = d3.select("#" + spp + "_" + type + "Div");
+    if(birds.shrub.indexOf(spp) > -1 || type != "area") {
+      var tmpDiv = d3.select("#" + spp + "_" + type + "Div");
 
-    tmpDiv.select(".point2")
-      .attr("cx", birds.occ[spp].model[type + "X"](parseFloat(tmpSlider.value)))
-      .attr("cy", birds.occ[spp].model[type + "Y"](birds.occ[spp].model[type + "Occ"]))
-      .classed("point2Pos", birds.occ[spp].model[type + "Occ"] > birds.occ[spp][type])
-      .classed("point2Neg", birds.occ[spp].model[type + "Occ"] < birds.occ[spp][type])
-      .select("title")
-      .text(parseFloat(tmpSlider.value).toFixed(2) + "," + birds.occ[spp].model[type + "Occ"].toFixed(2));
+      tmpDiv.select(".point2")
+        .attr("cx", birds.occ[spp].model[type + "X"](parseFloat(tmpSlider.value)))
+        .attr("cy", birds.occ[spp].model[type + "Y"](birds.occ[spp].model[type + "Occ"]))
+        .classed("point2Pos", birds.occ[spp].model[type + "Occ"] > birds.occ[spp][type])
+        .classed("point2Neg", birds.occ[spp].model[type + "Occ"] < birds.occ[spp][type])
+        .select("title")
+        .text(parseFloat(tmpSlider.value).toFixed(2) + "," + birds.occ[spp].model[type + "Occ"].toFixed(2));
 
-    d3.select("#" + spp + "OccP")
-      .text(birds.occ[spp].model.habOcc.toFixed(2))
-      .classed("point2Pos", birds.occ[spp].model.habOcc - birds.occ[spp].hab > 0.001)
-      .classed("point2Neg", birds.occ[spp].model.habOcc - birds.occ[spp].hab < -0.001);      
+      d3.select("#" + spp + "OccP")
+        .text(birds.occ[spp].model.habOcc.toFixed(2))
+        .classed("point2Pos", birds.occ[spp].model.habOcc - birds.occ[spp].hab > 0.001)
+        .classed("point2Neg", birds.occ[spp].model.habOcc - birds.occ[spp].hab < -0.001);      
+    }
   });
   
 }

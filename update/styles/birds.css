@@ -46,6 +46,13 @@ body.modal-open {
   opacity: 1;
 }
 
+span.glyphicon.intro-fa {
+  opacity: 1;
+  color: navy;
+  font-size: 18px;
+  margin: 0;
+}
+
 .glyphicon-info-sign {
   margin-right: 5px;
 }
@@ -224,11 +231,11 @@ a:focus, select:focus, a:hover {
 }
 
 #birdList {
-  width: 210px;
+  width: 222px;
 }
 
 #birdListDropdown {
-  width: 210px;
+  width: 222px;
   max-height: 526px;
   overflow-y: auto;
 }
@@ -338,8 +345,9 @@ a:focus, select:focus, a:hover {
   z-index: 1002;
   border-radius: 4px;
   box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
-  display: none;
+  //display: none;
   opacity: 0;
+  visibility: hidden;
   border: 1px solid black;
 }
 
@@ -1152,11 +1160,13 @@ input[type=range]:focus::-ms-fill-upper {
 
 .radio {
   display: inline-block;
+  cursor: pointer;
 }
 
 .radioLabel {
   display: inline-block;
   margin-left: 5px;
+  cursor: pointer;
 }
 
 #matureRad {
@@ -1211,10 +1221,18 @@ input[type=range]:focus::-ms-fill-upper {
   font-weight: bold;
   margin: 0;
   color: white;
-  background: mediumseagreen;
+  //background: mediumseagreen;
   border-radius: 4px 4px 0 0;
   text-align: left;
   padding-left: 5px;
+}
+
+.graphSppP.shrub {
+  background: darkorange;
+}
+
+.graphSppP.mature {
+  background: darkviolet;
 }
 
 .remove-spp {
@@ -1387,12 +1405,11 @@ input[type=range]:focus::-ms-fill-upper {
 
 #nfwf {
   height: 80px;
-  //margin-left: -10px;
+  margin-right: -20px;
 }
 
 #nrcs {
   height: 80px;
-  margin-right: -20px;
 }
 
 #massAudubon {
@@ -1479,7 +1496,7 @@ input[type=range]:focus::-ms-fill-upper {
   top: 85px;
   //left: 678px;
   right: 45px;
-  width: 515px;
+  width: 522px;
   margin: 0px;
   z-index: 1000;
   border-radius: 4px;
@@ -1578,7 +1595,7 @@ input[type=range]:focus::-ms-fill-upper {
 #resultsTable tbody {
   display: block;
   overflow-y: auto;
-  height: 420px;
+  height: 353px;
   //margin-left: 1px;
 }
 
@@ -1593,12 +1610,12 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #resultsTable th:nth-child(1), #resultsTable td:nth-child(1) {
-  width: 150px;
+  width: 178px;
   cursor: pointer;
 }
 
 #resultsTable td:nth-child(1) {
-  color: dodgerblue;
+  //color: dodgerblue;
   text-decoration: underline;
 }
 
@@ -1611,15 +1628,15 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #resultsTable th, #resultsTable td {
-  width: 108px;
+  width: 94px;
 }
 
 #resultsTable th:nth-child(5), #resultsTable td:nth-child(5) {
-  width: 65px;
+  width: 61px;
 }
 
 #resultsTable th:nth-child(6), #resultsTable td:nth-child(6) {
-  width: 60px;
+  width: 52px;
 }
 
 #resultsTable .glyphicon-stats {
@@ -1631,6 +1648,50 @@ input[type=range]:focus::-ms-fill-upper {
   color: black;
   background: lightblue;
   //cursor: pointer;
+}
+
+td.mature, .radioLabel.mature {
+  color: darkviolet;
+}
+
+td.shrub, .radioLabel.shrub {
+  color: darkorange;
+}
+
+#groupSelDiv {
+  text-align: center;
+}
+
+.groupLab.mature {
+  background: darkviolet;
+  color: white;
+}
+
+.groupLab.shrub {
+  background: darkorange;
+  color: white;
+}
+
+.groupLab.likely {
+  background: lime;
+  color: white;
+  margin-right: 5px;
+}
+
+.groupLab {
+  margin-left: 5px;
+  margin-right: 35px;
+  position: relative;
+  top: -2px;
+  cursor: pointer;
+  padding: 0 3px;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  background: white;
+}
+
+.groupRad {
+  cursor: pointer;
 }
 
 .sortTitle {
